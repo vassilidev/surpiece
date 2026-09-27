@@ -1,0 +1,10 @@
+# secrets
+.env
+# plans déposés : PDF des promoteurs et visites générées, jamais versionnés
+plans/*
+!plans/.gitkeep
+# divers
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store

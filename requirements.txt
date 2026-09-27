@@ -1,0 +1,7 @@
+pymupdf
+pillow
+numpy
+shapely>=2.1
+opencv-python-headless
+anthropic
+certifi

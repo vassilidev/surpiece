@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plan en visite 3D</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#EDEFEA;--panel:#FAFBF8;--panel-2:#F2F4F0;--ink:#161918;--ink-2:#555B57;--line:#CDD2CB;--accent:#2C49B8;--accent-ink:#fff;--ok:#2F7A4A;--warn:#A8471F;--ui:"Archivo","Helvetica Neue",Arial,sans-serif;--mono:"DM Mono",ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#101312;--panel:#181C1A;--panel-2:#1F2421;--ink:#E6E9E4;--ink-2:#A1A8A2;--line:#2E3431;--accent:#93A8FF;--accent-ink:#0E1120;--ok:#6FCB8F;--warn:#F08A5D;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#101312;--panel:#181C1A;--panel-2:#1F2421;--ink:#E6E9E4;--ink-2:#A1A8A2;--line:#2E3431;--accent:#93A8FF;--accent-ink:#0E1120;--ok:#6FCB8F;--warn:#F08A5D;color-scheme:dark}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--ui);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 20px 80px;display:grid;gap:28px}
+header{display:grid;gap:8px}
+.kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);font-weight:700}
+h1{margin:0;font-weight:800;font-variation-settings:"wdth" 112;font-size:clamp(30px,4.6vw,54px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
+.lead{margin:0;max-width:62ch;color:var(--ink-2);font-size:17px}
+.drop{border:2px dashed var(--ink);background:var(--panel);min-height:230px;display:grid;place-items:center;text-align:center;padding:28px;cursor:pointer;transition:background .15s,border-color .15s}
+.drop.over{background:color-mix(in srgb,var(--accent) 10%,var(--panel));border-color:var(--accent)}
+.drop b{display:block;font-size:24px;font-weight:800;font-variation-settings:"wdth" 110}
+.drop span{color:var(--ink-2)}
+.dz{display:flex;flex-direction:column;align-items:center;gap:6px}.drop .btn{margin-top:10px}
+a.btn{text-decoration:none;display:inline-block}
+.btn{border:1.5px solid var(--ink);background:var(--panel);color:var(--ink);padding:10px 16px;font:600 15px var(--ui);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.facts div{border-top:1.5px solid var(--ink);padding-top:8px;font-size:14px;color:var(--ink-2)}
+.facts b{display:block;color:var(--ink);font-size:15px}
+.job{background:var(--panel);border:1.5px solid var(--ink);padding:20px;display:grid;gap:14px}
+.job h2{margin:0;font-size:20px;font-weight:800;font-variation-settings:"wdth" 108}
+.bar{position:relative;height:30px;background:var(--panel-2);border:1.5px solid var(--ink);overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent);transition:width 1.2s ease}
+.bar .pct{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:600 14px var(--mono);mix-blend-mode:difference;color:#fff}
+.notif{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-2)}
+.fun{margin:0;min-height:1.5em;font-size:17px;font-weight:600;font-variation-settings:"wdth" 105;transition:opacity .4s}
+.fun.fade{opacity:0}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:baseline}
+.steps li::before{content:"";width:12px;height:12px;border:1.5px solid var(--line);border-radius:50%;justify-self:center;transform:translateY(1px)}
+.steps li.done::before{background:var(--ok);border-color:var(--ok)}
+.steps li.cur::before{border-color:var(--accent);background:var(--accent);animation:pulse 1.2s infinite}
+.steps li.wait::before{border-color:var(--warn)}
+.steps small{display:block;color:var(--ink-2);font-family:var(--mono);font-size:12px}
+@keyframes pulse{50%{opacity:.35}}
+.msg{font-weight:600}
+.msg.refus,.msg.erreur{color:var(--warn)}
+.detail{margin:-8px 0 0;font:500 12px var(--mono);color:var(--ink-2)}
+.warn{margin:0;padding-left:18px;color:var(--warn);font-size:14px;display:grid;gap:3px}
+.calib{display:grid;gap:10px}
+.calib .imgbox{position:relative;overflow:auto;max-height:70vh;border:1px solid var(--line);background:var(--panel-2)}
+.calib img{display:block;max-width:none;cursor:crosshair;box-shadow:0 0 0 1px var(--ink-2)}
+.calib svg{position:absolute;inset:0;pointer-events:none}
+.calib .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.calib input{font:500 16px var(--mono);width:110px;padding:8px;border:1.5px solid var(--ink);background:var(--panel-2);color:var(--ink)}
+.result{display:grid;gap:12px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.thumbs img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#111}
+.rooms{display:flex;flex-wrap:wrap;gap:6px}.rooms span{border:1px solid var(--line);background:var(--panel-2);padding:3px 8px;font:500 13px var(--mono)}
+.list h2{margin:0 0 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--panel);border:1.5px solid var(--ink);text-decoration:none;color:inherit;display:grid}
+.card img,.card .ph{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:var(--panel-2)}
+.card div{padding:8px 10px;font-weight:600;font-size:14px}
+.card small{display:block;color:var(--ink-2);font-weight:400;font-family:var(--mono);font-size:11.5px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div class="kicker">Plan de vente → visite 3D</div>
+    <h1>Déposez le plan de votre appartement, visitez-le en 3D</h1>
+    <p class="lead">Le PDF du promoteur donne le meilleur résultat. En quelques minutes : plan 2D coté, maquette 3D, visite à la première personne et galerie photo, à partir des cotes du plan.</p>
+  </header>
+
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept=".pdf,.png,.jpg,.jpeg,.webp" hidden>
+    <div class="dz"><b>Glissez le plan ici</b><span>PDF vectoriel du promoteur de préférence · PNG ou JPG accepté</span><span class="btn">Choisir un fichier</span></div>
+  </label>
+
+  <section class="facts">
+    <div><b>PDF du promoteur</b>Murs, cotes et échelle lus directement dans le fichier. Précision au centimètre.</div>
+    <div><b>Capture ou photo</b>Lecture sur image. On vous demande une cote connue pour caler l'échelle. Précision de 5 à 10 cm.</div>
+    <div><b>Contrôle</b>Les surfaces lues sont comparées au tableau du promoteur. Chaque écart est signalé.</div>
+  </section>
+
+  <section class="job" id="job" hidden>
+    <h2 id="jobTitle">Traitement</h2>
+    <div class="bar" id="bar"><i id="barFill"></i><span id="barPct" class="pct">0 %</span></div>
+    <div class="notif" id="notifBox" hidden><button class="btn" id="notifBtn" type="button">Me prévenir quand c’est prêt</button><span id="notifTxt">Vous pouvez fermer cet onglet ou faire autre chose, on vous prévient.</span></div>
+    <p class="fun" id="fun"></p>
+    <ol class="steps" id="steps"></ol>
+    <p class="msg" id="msg"></p>
+    <p class="detail" id="detail" hidden></p>
+    <ul class="warn" id="warns"></ul>
+    <div><button class="btn" id="retry" type="button" hidden>Relancer cette étape</button></div>
+    <div class="calib" id="calib" hidden>
+      <div class="imgbox" id="imgbox"><img id="cimg" alt="Plan à calibrer"><svg id="csvg"></svg></div>
+      <div class="row"><span id="cstate">Cliquez la première extrémité de la cote.</span>
+        <label>Longueur <input id="clen" inputmode="decimal" placeholder="4,12" aria-describedby="cstate"> m</label>
+        <button class="btn" id="cfix" type="button" hidden></button>
+        <button class="btn" id="creset" type="button">Recommencer</button>
+        <button class="btn primary" id="cok" type="button" disabled>Valider la cote</button></div>
+    </div>
+    <div class="result" id="result" hidden>
+      <div class="rooms" id="rooms"></div>
+      <div class="thumbs" id="thumbs"></div>
+      <div><a class="btn primary" id="open" href="#">Ouvrir la visite</a></div>
+    </div>
+  </section>
+
+  <section class="list"><h2>Plans traités</h2><div class="grid" id="list"></div></section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const STEPS = [['analyse', 'Analyse du fichier'], ['calibration', 'Échelle'], ['lecture', 'Lecture du plan'], ['controle', 'Visite de contrôle'], ['photos', '3D et photos'], ['fini', 'Visite prête']];
+let cur = null, timer = null, pts = [], shown = 0, lastPct = 0, busy = false, sendTok = 0;
+// chronologie de chantier : chaque phrase apparaît quand la barre atteint son pourcentage, une seule fois, dans l'ordre
+const CHANTIER = [
+  [0, 'Réception du plan…'], [2, 'On déroule le plan sur la table de chantier…'], [4, 'On cherche le nord…'], [6, 'On vérifie l’échelle au mètre ruban…'], [8, 'On repère les murs porteurs…'],
+  [10, 'Ouverture du chantier : on monte la palissade…'], [13, 'Livraison de la grue…'], [16, 'Implantation : on trace les axes au sol…'], [19, 'On coffre la dalle…'],
+  [22, 'On coule la dalle, le béton prend son temps…'], [25, 'Décoffrage de la dalle…'], [28, 'On monte les voiles béton…'], [31, 'On réserve les trous des fenêtres…'],
+  [34, 'On pose les linteaux…'], [37, 'On monte les gaines techniques…'], [40, 'On pose les doublages isolants…'], [43, 'On trace les cloisons au cordeau…'],
+  [46, 'Rails et plaques de plâtre…'], [49, 'On pose les huisseries des portes…'], [52, 'On vérifie le sens d’ouverture de chaque porte…'], [55, 'On pose les fenêtres et la porte-fenêtre…'],
+  [58, 'On fixe les garde-corps…'], [61, 'On installe les brise-soleil…'], [64, 'Le plombier arrive : arrivées d’eau et évacuations…'], [67, 'On pose la douche, la vasque et le WC…'],
+  [70, 'L’électricien tire ses câbles…'], [73, 'On mesure chaque pièce au télémètre laser…'], [76, 'On compare les surfaces au tableau du promoteur…'],
+  [79, 'Enduits et bandes sur les plaques…'], [81, 'Première couche de peinture…'], [83, 'Deuxième couche, c’est plus propre…'], [85, 'On pose le parquet…'],
+  [87, 'Carrelage et faïence dans la salle d’eau…'], [89, 'On pose les plinthes…'], [91, 'On branche les luminaires…'], [93, 'Ménage de fin de chantier, on lave les vitres…'],
+  [95, 'On ouvre les stores, la lumière entre…'], [97, 'Le photographe cherche le bon angle…'], [99, 'Dernières photos…'], [100, 'Réception des travaux : les clés sont sur la porte.'],
+];
+let chantierIdx = -1, stopped = false, notified = {};
+const canNotify = 'Notification' in window;
+function notify(title, body) {
+  if (!canNotify || Notification.permission !== 'granted' || !document.hidden) return;
+  try { const n = new Notification(title, { body }); n.onclick = () => { window.focus(); n.close(); }; } catch (e) {}
+}
+function notifUI(active) {
+  const box = $('#notifBox'); box.hidden = !active || !canNotify || Notification.permission === 'denied';
+  if (canNotify && Notification.permission === 'granted') { $('#notifBtn').hidden = true; $('#notifTxt').textContent = 'Vous serez prévenu dès que la visite est prête, même dans un autre onglet.'; }
+}
+if (canNotify) document.addEventListener('click', e => { if (e.target.id === 'notifBtn') Notification.requestPermission().then(() => notifUI(true)); });
+function chantier(p) {
+  if (stopped) return;
+  let i = 0; while (i + 1 < CHANTIER.length && CHANTIER[i + 1][0] <= p) i++;
+  if (i <= chantierIdx) return; chantierIdx = i;
+  const el = $('#fun'); el.classList.add('fade'); setTimeout(() => { el.textContent = CHANTIER[i][1]; el.classList.remove('fade'); }, 300);
+}
+// la barre avance en douceur entre deux nouvelles du serveur, sans jamais reculer ; elle s'arrête avec le chantier (refus, erreur, attente d'échelle)
+setInterval(() => { if (shown < lastPct) shown = Math.min(lastPct, shown + Math.max(0.3, (lastPct - shown) * 0.25)); else if (!stopped && lastPct && lastPct < 100 && shown < Math.min(97, lastPct + 10)) shown += 0.04; $('#barFill').style.width = shown + '%'; $('#barPct').textContent = Math.floor(shown) + ' %'; chantier(shown); }, 250);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fr = (v, n = 2) => (Math.round(v * 10 ** n) / 10 ** n).toString().replace('.', ',');
+const planUrl = (id, f = '') => `/plans/${encodeURIComponent(id)}/${f}`;
+
+// changer de plan (dépôt ou carte) : rien de l'ancien ne reste affiché, et ses réponses en retard sont ignorées
+function reset() {
+  clearInterval(timer); timer = null; cur = null; pts = []; shown = lastPct = 0; chantierIdx = -1; stopped = false;
+  ['#calib', '#result', '#retry', '#detail', '#cfix'].forEach(s => $(s).hidden = true);
+  ['#steps', '#warns', '#thumbs', '#rooms'].forEach(s => $(s).innerHTML = '');
+  $('#msg').className = 'msg'; $('#msg').textContent = ''; $('#fun').textContent = ''; $('#clen').value = ''; $('#cok').disabled = true;
+}
+async function send(file) {
+  if (!file) return;
+  const tok = ++sendTok; reset(); $('#job').hidden = false; $('#jobTitle').textContent = file.name; $('#msg').textContent = 'Envoi…';
+  const fail = t => { if (tok !== sendTok) return; $('#msg').className = 'msg refus'; $('#msg').textContent = t; };
+  try {
+    if (!file.size) return fail('Fichier vide.');
+    if (file.size > 40e6) return fail('Fichier trop lourd (40 Mo maximum).');
+    const r = await fetch('/api/depot', { method: 'POST', headers: { 'x-nom': encodeURIComponent(file.name) }, body: file });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.id) return fail(j.erreur || `Envoi impossible (erreur ${r.status}).`);
+    if (tok === sendTok) { follow(j.id); list(); }
+  } catch (e) { fail('Envoi impossible : le serveur ne répond pas.'); }
+  finally { $('#file').value = ''; }
+}
+function follow(id) { if (id !== cur) { shown = 0; lastPct = 0; chantierIdx = -1; } stopped = false; cur = id; clearInterval(timer); poll(); timer = setInterval(poll, 1500); }
+async function poll() {
+  const id = cur; if (!id) return;
+  let s; try { const r = await fetch('/api/etat/' + encodeURIComponent(id)); if (!r.ok) return; s = await r.json(); } catch (e) { return; }
+  if (id !== cur) return;  // réponse d'un plan qu'on a quitté entre-temps
+  const doneSteps = (s.etapes || []).map(e => e.etape), idx = STEPS.findIndex(t => t[0] === s.etape);
+  $('#steps').innerHTML = STEPS.filter(t => t[0] !== 'calibration' || doneSteps.includes('calibration') || s.etape === 'calibration').map(([k, t]) => {
+    const d = (s.etapes || []).find(e => e.etape === k), i = STEPS.findIndex(x => x[0] === k);
+    const cls = d || s.statut === 'fini' || i < idx ? 'done' : k === s.etape ? (s.statut === 'attente' ? 'wait' : s.statut === 'en_cours' ? 'cur' : '') : '';
+    return `<li class="${cls}"><span>${t}${d ? `<small>${esc(d.texte)}</small>` : ''}</span></li>`;
+  }).join('');
+  $('#msg').className = 'msg ' + (s.statut || ''); $('#msg').textContent = ['refus', 'erreur', 'attente'].includes(s.statut) ? (s.message || '') : '';
+  if (s.pct != null) lastPct = Math.max(lastPct, s.pct);
+  notifUI(s.statut === 'en_cours');
+  document.title = s.statut === 'en_cours' ? `${Math.floor(Math.max(shown, s.pct || 0))} % · Plan en visite 3D` : 'Plan en visite 3D';
+  const key = id + ':' + s.statut + ':' + s.etape;
+  if (!notified[key]) {
+    if (s.statut === 'fini') { notified[key] = 1; notify('Votre visite 3D est prête', 'Le plan, la maquette et les photos vous attendent.'); }
+    else if (s.statut === 'attente') { notified[key] = 1; notify('Une précision est nécessaire', 'Indiquez une cote connue du plan pour continuer.'); }
+    else if (s.statut === 'erreur' || s.statut === 'refus') { notified[key] = 1; notify('Le traitement s’est arrêté', s.message || ''); }
+  }
+  stopped = ['refus', 'erreur', 'attente'].includes(s.statut);
+  if (stopped) $('#fun').textContent = s.statut === 'attente' ? 'Le chantier attend votre coup de mètre.' : 'Chantier à l’arrêt.';
+  $('#warns').innerHTML = (s.avertissements || []).map(a => `<li>${esc(a)}</li>`).join('');
+  if (!(s.statut === 'attente' && s.etape === 'calibration')) $('#calib').hidden = true;
+  else if ($('#calib').hidden) showCalib(s);
+  $('#retry').hidden = s.statut !== 'erreur';
+  $('#detail').hidden = !(['erreur', 'refus'].includes(s.statut) && s.technique_erreur); $('#detail').textContent = s.technique_erreur || '';
+  if (['refus', 'erreur', 'fini'].includes(s.statut)) clearInterval(timer);
+  if (s.statut !== 'fini') { $('#result').hidden = true; return; }
+  $('#open').href = s.lien || planUrl(id);
+  $('#rooms').innerHTML = (s.pieces || []).map(p => `<span>${esc(p[0])}${p[1] ? ' · ' + esc(p[1]) + (/^\d/.test(p[1]) ? ' m²' : '') : ''}</span>`).join('');
+  let plan = {}; try { plan = await (await fetch(planUrl(id, 'plan.json'))).json(); } catch (e) {}
+  if (id !== cur) return;
+  $('#thumbs').innerHTML = (plan.photos || []).map(p => `<a href="${esc(s.lien || planUrl(id))}"><img src="${esc(planUrl(id, 'photos/' + encodeURIComponent(p.id) + '-jour.jpg'))}" alt="${esc(p.t)}" loading="lazy"></a>`).join('');
+  $('#result').hidden = false;
+  list();
+}
+function showCalib(s) {
+  pts = []; $('#calib').hidden = false; $('#cok').disabled = true; const img = $('#cimg');
+  img.onload = () => { const w = Math.min(img.naturalWidth, $('#imgbox').clientWidth * 1.6); img.style.width = w + 'px'; draw(); };
+  img.src = planUrl(cur, encodeURIComponent(s.image || 'calibration.png')) + `?t=${Date.now()}`;
+}
+// cote en mètres, entre 0,30 et 25 : « 412 » (centimètres, comme sur les plans) n'est pas pris pour 412 m
+const lenVal = () => parseFloat($('#clen').value.replace(/\s/g, '').replace(',', '.'));
+function calibOk() {
+  const m = lenVal(), px = pts.length === 2 ? Math.hypot(pts[1][0] - pts[0][0], pts[1][1] - pts[0][1]) : 0;
+  return { m, px, ok: pts.length === 2 && m >= 0.3 && m <= 25 && px >= 40, cm: !(m <= 25) && m / 100 >= 0.3 && m / 100 <= 25 };
+}
+function draw() {
+  const img = $('#cimg'), k = img.clientWidth / (img.naturalWidth || 1), svg = $('#csvg');
+  svg.setAttribute('width', img.clientWidth); svg.setAttribute('height', img.clientHeight);
+  svg.innerHTML = pts.map(p => `<circle cx="${p[0] * k}" cy="${p[1] * k}" r="6" fill="none" stroke="#e33" stroke-width="2"/>`).join('') + (pts.length === 2 ? `<line x1="${pts[0][0] * k}" y1="${pts[0][1] * k}" x2="${pts[1][0] * k}" y2="${pts[1][1] * k}" stroke="#e33" stroke-width="2"/>` : '');
+  const { m, px, ok, cm } = calibOk(), typed = $('#clen').value.trim();
+  let t = pts.length === 0 ? 'Cliquez la première extrémité de la cote.' : pts.length === 1 ? 'Cliquez la seconde extrémité.' : 'Indiquez la longueur de cette cote, en mètres.';
+  if (pts.length === 2 && px < 40) t = 'Les deux points sont trop proches : choisissez une cote plus longue.';
+  else if (pts.length === 2 && typed) t = cm ? `« ${typed} » ressemble à des centimètres : la longueur se saisit en mètres, soit ${fr(m / 100)} m.`
+    : !ok ? 'Indiquez la longueur en mètres, entre 0,30 et 25 (ex. 4,12).'
+    : `Échelle obtenue : 1 m = ${Math.round(px / m)} px ; la page entière mesurerait ${fr(img.naturalWidth * m / px, 1)} × ${fr(img.naturalHeight * m / px, 1)} m.`;
+  $('#cstate').textContent = t;
+  $('#cfix').hidden = !(pts.length === 2 && cm); if (cm) $('#cfix').textContent = `Corriger en ${fr(m / 100)} m`;
+  $('#cok').disabled = busy || !ok;
+}
+$('#cimg').addEventListener('click', e => {
+  const img = e.currentTarget, r = img.getBoundingClientRect(), k = img.naturalWidth / img.clientWidth, x = (e.clientX - r.left) * k, y = (e.clientY - r.top) * k;
+  if (!(x >= 0 && y >= 0 && x <= img.naturalWidth && y <= img.naturalHeight)) return;  // hors de l'image : ignoré
+  if (pts.length >= 2) pts = []; pts.push([x, y]); draw();
+});
+$('#clen').addEventListener('input', draw);
+$('#cfix').addEventListener('click', () => { const m = lenVal(); $('#clen').value = fr(m / 100); draw(); });
+$('#retry').addEventListener('click', async () => {
+  const id = cur; $('#retry').disabled = true;
+  try {
+    const r = await fetch('/api/relancer/' + encodeURIComponent(id), { method: 'POST' }), j = await r.json().catch(() => ({}));
+    if (id !== cur) return;
+    if (!r.ok && r.status !== 409) { $('#msg').textContent = j.erreur || `Relance impossible (erreur ${r.status}).`; return; }
+    $('#retry').hidden = true; follow(id);  // 409 : déjà relancé ailleurs, on suit simplement l'état
+  } catch (e) { $('#msg').textContent = 'Le serveur ne répond pas : réessayez.'; }
+  finally { $('#retry').disabled = false; }
+});
+$('#creset').addEventListener('click', () => { pts = []; draw(); });
+$('#cok').addEventListener('click', async () => {
+  const id = cur, { m } = calibOk(); busy = true; $('#cok').disabled = true;
+  try {
+    const r = await fetch('/api/calibration/' + encodeURIComponent(id), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ p1: pts[0], p2: pts[1], m }) });
+    const j = await r.json().catch(() => ({}));
+    if (id !== cur) return;
+    if (!r.ok) { $('#cstate').textContent = j.erreur || `Calibration refusée (erreur ${r.status}).`; return; }
+    $('#calib').hidden = true; follow(id);
+  } catch (e) { $('#cstate').textContent = 'Le serveur ne répond pas : réessayez.'; }
+  finally { busy = false; $('#cok').disabled = !calibOk().ok; }
+});
+const drop = $('#drop');
+['dragenter', 'dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => send(e.dataTransfer.files[0]));
+$('#file').addEventListener('change', e => send(e.target.files[0]));
+async function list() {
+  let l; try { const r = await fetch('/api/plans'); if (!r.ok) return; l = await r.json(); } catch (e) { return; }
+  const st = { fini: 'prêt', en_cours: 'en cours', attente: 'en attente', erreur: 'erreur', refus: 'refusé', inconnu: 'inconnu' };
+  $('#list').innerHTML = l.map(p => `<a class="card" href="${p.statut === 'fini' ? esc(planUrl(p.id)) : '#'}" data-id="${esc(p.id)}" data-titre="${esc(p.titre)}">${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy">` : '<span class="ph"></span>'}<div>${esc(p.titre)}<small>${esc(st[p.statut] || p.statut || '')}</small></div></a>`).join('') || '<p style="color:var(--ink-2)">Aucun plan pour l’instant.</p>';
+}
+$('#list').addEventListener('click', e => { const a = e.target.closest('a.card'); if (a && a.getAttribute('href') === '#') { e.preventDefault(); sendTok++; reset(); $('#job').hidden = false; $('#jobTitle').textContent = a.dataset.titre || 'Votre plan'; follow(a.dataset.id); } });
+list();
+</script>
+</body>
+</html>

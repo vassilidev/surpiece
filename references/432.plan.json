@@ -1,0 +1,1871 @@
+{
+ "id": "432",
+ "source": {
+  "document": "t2-432.pdf, plan de vente Icade du 07/11/2025, A3 au 1/50, export Archicad vectoriel",
+  "methode": "Tracés vectoriels du PDF convertis en mètres (1 m = 56,693 pt). Surfaces recalculées : 26,60 / 11,91 / 5,12 / 5,74 m², écart < 0,5 % avec le tableau du promoteur."
+ },
+ "titre": "T2 de 43,6 m² avec loggia de 5,7 m²",
+ "kicker": "Côté Montessuy · Icade · Caluire-et-Cuire · logement 432",
+ "cartouche": {
+  "id": "432",
+  "l1": "T2 · R+3",
+  "l2": "43,6 m² hab. · loggia 5,7 m²",
+  "l3": "Côté Montessuy · Caluire-et-Cuire"
+ },
+ "facts": [
+  "2 pièces",
+  "3ᵉ étage (R+3)",
+  "Séjour et cuisine 26,6 m²",
+  "Chambre 11,9 m²",
+  "Salle d'eau et WC 5,1 m²",
+  "Loggia 5,7 m²",
+  "Séjour à l'est, loggia et chambre au sud"
+ ],
+ "note": "Images de synthèse calculées à partir du plan de vente du 07/11/2025. Logement livré vide : cuisine non fournie, finitions supposées (la notice n'est pas jointe). Non contractuel.",
+ "geo": {
+  "lat": 45.79,
+  "lon": 4.84,
+  "nord": 0
+ },
+ "H": 2.5,
+ "etage": 3,
+ "outline": [
+  [
+   -0.2,
+   -0.2
+  ],
+  [
+   11.143,
+   -0.2
+  ],
+  [
+   8.679,
+   4.12
+  ],
+  [
+   4.65,
+   4.12
+  ],
+  [
+   4.65,
+   6.47
+  ],
+  [
+   -0.2,
+   6.47
+  ]
+ ],
+ "bounds": [
+  -0.6,
+  11.6,
+  -0.6,
+  6.9
+ ],
+ "rooms": [
+  {
+   "id": "sejour",
+   "name": "Salon / Cuisine",
+   "area": "26,6",
+   "poly": [
+    [
+     3.66,
+     0
+    ],
+    [
+     10.637,
+     0
+    ],
+    [
+     8.51,
+     3.73
+    ],
+    [
+     4.31,
+     3.73
+    ],
+    [
+     4.31,
+     3.19
+    ],
+    [
+     3.66,
+     3.19
+    ],
+    [
+     3.66,
+     2.22
+    ],
+    [
+     4.31,
+     2.22
+    ],
+    [
+     4.31,
+     1.82
+    ],
+    [
+     3.66,
+     1.82
+    ]
+   ],
+   "label": [
+    6.55,
+    1.55
+   ],
+   "floor": "dry",
+   "inclut": [
+    "entree",
+    "placard"
+   ]
+  },
+  {
+   "id": "entree",
+   "name": "Entrée",
+   "areaNote": "comprise dans le séjour",
+   "poly": [
+    [
+     0,
+     1.89
+    ],
+    [
+     2.22,
+     1.89
+    ],
+    [
+     2.22,
+     2.22
+    ],
+    [
+     3.66,
+     2.22
+    ],
+    [
+     3.66,
+     3.19
+    ],
+    [
+     0,
+     3.19
+    ]
+   ],
+   "label": [
+    1.62,
+    2.8
+   ],
+   "floor": "dry",
+   "small": true
+  },
+  {
+   "id": "chambre",
+   "name": "Chambre",
+   "area": "11,9",
+   "poly": [
+    [
+     0.14,
+     3.24
+    ],
+    [
+     4.26,
+     3.24
+    ],
+    [
+     4.26,
+     6.13
+    ],
+    [
+     0.14,
+     6.13
+    ]
+   ],
+   "label": [
+    2.2,
+    4.55
+   ],
+   "floor": "dry"
+  },
+  {
+   "id": "sdb",
+   "name": "Salle d'eau / WC",
+   "area": "5,1",
+   "poly": [
+    [
+     0,
+     0
+    ],
+    [
+     3.61,
+     0
+    ],
+    [
+     3.61,
+     1.52
+    ],
+    [
+     2.22,
+     1.52
+    ],
+    [
+     2.22,
+     1.82
+    ],
+    [
+     0,
+     1.82
+    ]
+   ],
+   "label": [
+    1.72,
+    1.12
+   ],
+   "floor": "wet"
+  },
+  {
+   "id": "placard",
+   "name": "Placard",
+   "poly": [
+    [
+     2.27,
+     1.57
+    ],
+    [
+     3.61,
+     1.57
+    ],
+    [
+     3.61,
+     2.22
+    ],
+    [
+     2.27,
+     2.22
+    ]
+   ],
+   "hidden": true,
+   "floor": "dry"
+  },
+  {
+   "id": "loggia",
+   "name": "Loggia",
+   "area": "5,7",
+   "poly": [
+    [
+     4.65,
+     4.12
+    ],
+    [
+     8.449,
+     4.12
+    ],
+    [
+     8.251,
+     4.467
+    ],
+    [
+     5.992,
+     6.27
+    ],
+    [
+     4.65,
+     6.27
+    ]
+   ],
+   "label": [
+    5.75,
+    5.05
+   ],
+   "ext": true,
+   "floor": "loggia"
+  },
+  {
+   "id": "seuil-ch",
+   "poly": [
+    [
+     0.19,
+     3.19
+    ],
+    [
+     1.02,
+     3.19
+    ],
+    [
+     1.02,
+     3.24
+    ],
+    [
+     0.19,
+     3.24
+    ]
+   ],
+   "hidden": true,
+   "floor": "dry",
+   "of": "chambre"
+  },
+  {
+   "id": "seuil-sdb",
+   "poly": [
+    [
+     1.34,
+     1.82
+    ],
+    [
+     2.17,
+     1.82
+    ],
+    [
+     2.17,
+     1.89
+    ],
+    [
+     1.34,
+     1.89
+    ]
+   ],
+   "hidden": true,
+   "floor": "wet",
+   "of": "sdb"
+  },
+  {
+   "id": "seuil-pf",
+   "poly": [
+    [
+     5.3,
+     3.73
+    ],
+    [
+     7.2,
+     3.73
+    ],
+    [
+     7.2,
+     4.12
+    ],
+    [
+     5.3,
+     4.12
+    ]
+   ],
+   "hidden": true,
+   "floor": "seuil",
+   "of": "sejour"
+  }
+ ],
+ "walls": [
+  {
+   "id": "nord",
+   "k": "beton",
+   "a": [
+    -0.2,
+    0
+   ],
+   "b": [
+    10.751,
+    0
+   ],
+   "t": 0.2,
+   "side": -1
+  },
+  {
+   "id": "ouest",
+   "k": "beton",
+   "a": [
+    0,
+    0
+   ],
+   "b": [
+    0,
+    3.24
+   ],
+   "t": 0.2,
+   "side": 1,
+   "open": [
+    "entree"
+   ]
+  },
+  {
+   "id": "ouestCh",
+   "k": "beton",
+   "a": [
+    -0.02,
+    3.24
+   ],
+   "b": [
+    -0.02,
+    6.47
+   ],
+   "t": 0.18,
+   "side": 1,
+   "ext": true
+  },
+  {
+   "id": "ouestChD",
+   "k": "doublage",
+   "a": [
+    0.14,
+    3.24
+   ],
+   "b": [
+    0.14,
+    6.29
+   ],
+   "t": 0.16,
+   "side": 1
+  },
+  {
+   "id": "sudChD",
+   "k": "doublage",
+   "a": [
+    -0.02,
+    6.13
+   ],
+   "b": [
+    4.26,
+    6.13
+   ],
+   "t": 0.16,
+   "side": 1,
+   "open": [
+    "Fch"
+   ]
+  },
+  {
+   "id": "sudCh",
+   "k": "beton",
+   "a": [
+    -0.2,
+    6.29
+   ],
+   "b": [
+    4.65,
+    6.29
+   ],
+   "t": 0.18,
+   "side": 1,
+   "ext": true,
+   "open": [
+    "Fch"
+   ]
+  },
+  {
+   "id": "estCh",
+   "k": "beton",
+   "a": [
+    4.26,
+    3.73
+   ],
+   "b": [
+    4.26,
+    6.47
+   ],
+   "t": 0.39,
+   "side": -1,
+   "ext": true,
+   "layers": [
+    [
+     0,
+     0.16,
+     "doublage"
+    ],
+    [
+     0.16,
+     0.39,
+     "beton"
+    ]
+   ]
+  },
+  {
+   "id": "sudSal",
+   "k": "beton",
+   "a": [
+    4.26,
+    3.73
+   ],
+   "b": [
+    8.6,
+    3.73
+   ],
+   "t": 0.39,
+   "side": 1,
+   "ext": true,
+   "open": [
+    "PF"
+   ],
+   "layers": [
+    [
+     0,
+     0.16,
+     "doublage"
+    ],
+    [
+     0.16,
+     0.39,
+     "beton"
+    ]
+   ]
+  },
+  {
+   "id": "diag",
+   "k": "beton",
+   "a": [
+    10.751,
+    -0.2
+   ],
+   "b": [
+    8.288,
+    4.12
+   ],
+   "t": 0.34,
+   "side": -1,
+   "ext": true,
+   "open": [
+    "Fsal"
+   ],
+   "layers": [
+    [
+     0,
+     0.16,
+     "doublage"
+    ],
+    [
+     0.16,
+     0.34,
+     "beton"
+    ]
+   ]
+  },
+  {
+   "id": "clChN",
+   "k": "cloison",
+   "a": [
+    0,
+    3.19
+   ],
+   "b": [
+    4.31,
+    3.19
+   ],
+   "t": 0.05,
+   "side": 1,
+   "open": [
+    "ch"
+   ]
+  },
+  {
+   "id": "clChE",
+   "k": "cloison",
+   "a": [
+    4.26,
+    3.24
+   ],
+   "b": [
+    4.26,
+    3.73
+   ],
+   "t": 0.05,
+   "side": -1
+  },
+  {
+   "id": "clSdbS",
+   "k": "cloison",
+   "a": [
+    0,
+    1.82
+   ],
+   "b": [
+    2.22,
+    1.82
+   ],
+   "t": 0.07,
+   "side": 1,
+   "open": [
+    "sdb"
+   ]
+  },
+  {
+   "id": "clPlacW",
+   "k": "cloison",
+   "a": [
+    2.22,
+    1.52
+   ],
+   "b": [
+    2.22,
+    2.22
+   ],
+   "t": 0.05,
+   "side": -1
+  },
+  {
+   "id": "clPlacN",
+   "k": "cloison",
+   "a": [
+    2.22,
+    1.52
+   ],
+   "b": [
+    3.61,
+    1.52
+   ],
+   "t": 0.05,
+   "side": 1
+  },
+  {
+   "id": "clSdbE",
+   "k": "cloison",
+   "a": [
+    3.61,
+    0.7
+   ],
+   "b": [
+    3.61,
+    2.22
+   ],
+   "t": 0.05,
+   "side": -1
+  },
+  {
+   "id": "clTeN",
+   "k": "cloison",
+   "a": [
+    3.66,
+    1.82
+   ],
+   "b": [
+    4.31,
+    1.82
+   ],
+   "t": 0.1,
+   "side": 1
+  },
+  {
+   "id": "clTeE",
+   "k": "cloison",
+   "a": [
+    4.31,
+    1.82
+   ],
+   "b": [
+    4.31,
+    2.22
+   ],
+   "t": 0.05,
+   "side": 1
+  },
+  {
+   "id": "clTeS",
+   "k": "cloison",
+   "a": [
+    3.61,
+    2.17
+   ],
+   "b": [
+    4.31,
+    2.17
+   ],
+   "t": 0.05,
+   "side": 1,
+   "open": [
+    "te"
+   ]
+  }
+ ],
+ "gaines": [
+  {
+   "id": "VH",
+   "poly": [
+    [
+     0,
+     0
+    ],
+    [
+     0.72,
+     0
+    ],
+    [
+     0.72,
+     0.62
+    ],
+    [
+     0,
+     0.62
+    ]
+   ],
+   "label": "VH",
+   "style": "conduit"
+  },
+  {
+   "id": "gaine1",
+   "poly": [
+    [
+     0.72,
+     0
+    ],
+    [
+     1.0,
+     0
+    ],
+    [
+     1.0,
+     0.62
+    ],
+    [
+     0.72,
+     0.62
+    ]
+   ]
+  },
+  {
+   "id": "gaine2",
+   "poly": [
+    [
+     3.01,
+     0
+    ],
+    [
+     3.66,
+     0
+    ],
+    [
+     3.66,
+     0.7
+    ],
+    [
+     3.01,
+     0.7
+    ]
+   ]
+  }
+ ],
+ "openings": {
+  "entree": {
+   "kind": "entry",
+   "wall": "ouest",
+   "s": [
+    1.94,
+    2.97
+   ],
+   "sill": 0,
+   "head": 2.18,
+   "hinge": "s0",
+   "swing": -1,
+   "label": "Entrée"
+  },
+  "ch": {
+   "kind": "door",
+   "wall": "clChN",
+   "s": [
+    0.14,
+    1.07
+   ],
+   "sill": 0,
+   "head": 2.08,
+   "hinge": "s0",
+   "swing": -1,
+   "label": "Chambre"
+  },
+  "sdb": {
+   "kind": "door",
+   "wall": "clSdbS",
+   "s": [
+    1.29,
+    2.22
+   ],
+   "sill": 0,
+   "head": 2.08,
+   "hinge": "s1",
+   "swing": 1,
+   "label": "Salle d'eau",
+   "closed": true
+  },
+  "te": {
+   "kind": "door",
+   "wall": "clTeS",
+   "s": [
+    0.05,
+    0.65
+   ],
+   "sill": 0,
+   "head": 2.04,
+   "hinge": "s1",
+   "swing": 1,
+   "jamb": 0.02,
+   "closed": true,
+   "label": "Tableau électrique"
+  },
+  "Fch": {
+   "kind": "window",
+   "wall": "sudChD",
+   "s": [
+    1.545,
+    2.945
+   ],
+   "sill": 0.6,
+   "head": 2.2,
+   "leaves": 2,
+   "frame": [
+    -0.02,
+    0.05
+   ],
+   "bso": true,
+   "gc": [
+    0.215,
+    0.265
+   ],
+   "depth": 0.34,
+   "label": "F · GC · BSO · allège 60"
+  },
+  "PF": {
+   "kind": "french",
+   "wall": "sudSal",
+   "s": [
+    0.99,
+    2.99
+   ],
+   "sill": 0,
+   "head": 2.2,
+   "leaves": 2,
+   "frame": [
+    -0.025,
+    0.05
+   ],
+   "vr": true,
+   "depth": 0.39,
+   "seuil": 0.02,
+   "label": "PF · VR · seuil 2 cm",
+   "labelD": 0.5
+  },
+  "Fsal": {
+   "kind": "window",
+   "wall": "diag",
+   "s": [
+    1.004,
+    2.404
+   ],
+   "sill": 0.6,
+   "head": 2.2,
+   "leaves": 2,
+   "frame": [
+    -0.02,
+    0.05
+   ],
+   "bso": true,
+   "gc": [
+    0.215,
+    0.265
+   ],
+   "depth": 0.34,
+   "label": "F · GC · BSO · allège 60"
+  }
+ },
+ "fixtures": [
+  {
+   "type": "shower",
+   "x": [
+    0,
+    0.9
+   ],
+   "z": [
+    0.62,
+    1.82
+   ],
+   "drain": [
+    0.175,
+    0.795
+   ],
+   "valve": {
+    "wall": [
+     0.45,
+     0.62
+    ],
+    "dir": [
+     0,
+     1
+    ]
+   }
+  },
+  {
+   "type": "wc",
+   "p": [
+    3.01,
+    0.35
+   ],
+   "dir": [
+    -1,
+    0
+   ]
+  },
+  {
+   "type": "vanity",
+   "x": [
+    3.15,
+    3.61
+   ],
+   "z": [
+    0.71,
+    1.51
+   ],
+   "dir": [
+    -1,
+    0
+   ]
+  },
+  {
+   "type": "towel",
+   "x": [
+    1.1,
+    1.6
+   ],
+   "z": [
+    0,
+    0.09
+   ],
+   "dir": [
+    0,
+    1
+   ]
+  },
+  {
+   "type": "tableau",
+   "x": [
+    3.66,
+    4.26
+   ],
+   "z": [
+    1.92,
+    2.17
+   ]
+  },
+  {
+   "type": "placard",
+   "x": [
+    2.27,
+    3.61
+   ],
+   "z": [
+    1.57,
+    2.22
+   ],
+   "track": [
+    2.14,
+    2.22
+   ]
+  },
+  {
+   "type": "dep",
+   "p": [
+    4.7,
+    4.2
+   ],
+   "r": 0.05
+  }
+ ],
+ "faience": [
+  {
+   "a": [
+    0,
+    0.62
+   ],
+   "b": [
+    0,
+    1.82
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "y": [
+    0,
+    2.1
+   ]
+  },
+  {
+   "a": [
+    0,
+    0.62
+   ],
+   "b": [
+    0.9,
+    0.62
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "y": [
+    0,
+    2.1
+   ]
+  },
+  {
+   "a": [
+    0,
+    1.82
+   ],
+   "b": [
+    0.9,
+    1.82
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "y": [
+    0,
+    2.1
+   ]
+  },
+  {
+   "a": [
+    3.61,
+    0.71
+   ],
+   "b": [
+    3.61,
+    1.51
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "y": [
+    0.85,
+    1.45
+   ]
+  }
+ ],
+ "kitchenHint": [
+  {
+   "r": [
+    3.66,
+    4.31,
+    0.7,
+    1.82
+   ],
+   "t": "plaques",
+   "tp": [
+    3.985,
+    1.0
+   ],
+   "rot": -90
+  },
+  {
+   "r": [
+    4.31,
+    6.73,
+    0,
+    0.65
+   ],
+   "t": "évier · LV · LL · F",
+   "tp": [
+    5.52,
+    0.34
+   ]
+  }
+ ],
+ "loggia": {
+  "slab": [
+   [
+    4.65,
+    4.12
+   ],
+   [
+    8.679,
+    4.12
+   ],
+   [
+    8.41,
+    4.6
+   ],
+   [
+    6.08,
+    6.47
+   ],
+   [
+    4.65,
+    6.47
+   ]
+  ],
+  "rail": [
+   [
+    4.66,
+    6.37
+   ],
+   [
+    6.03,
+    6.37
+   ],
+   [
+    8.33,
+    4.53
+   ],
+   [
+    8.55,
+    4.14
+   ]
+  ],
+  "tile": 0.5
+ },
+ "lamps": [
+  {
+   "p": [
+    1.3,
+    2.55
+   ],
+   "blind": true
+  },
+  {
+   "p": [
+    6.3,
+    1.6
+   ]
+  },
+  {
+   "p": [
+    4.95,
+    0.95
+   ]
+  },
+  {
+   "p": [
+    2.2,
+    4.7
+   ]
+  },
+  {
+   "p": [
+    1.8,
+    1.0
+   ],
+   "blind": true,
+   "drop": 0.05
+  },
+  {
+   "wall": [
+    7.7,
+    4.125
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "y": 2.0,
+   "ext": true
+  }
+ ],
+ "probes": {
+  "entree": [
+   1.3,
+   2.55
+  ],
+  "sejour": [
+   6.4,
+   1.7
+  ],
+  "chambre": [
+   2.2,
+   4.7
+  ],
+  "sdb": [
+   1.9,
+   1.0
+  ]
+ },
+ "exposure": {
+  "entree": 0.8,
+  "sdb": 0.6
+ },
+ "passages": [
+  {
+   "a": "entree",
+   "b": "sejour",
+   "p": [
+    3.66,
+    2.7
+   ],
+   "r": 1.0
+  },
+  {
+   "a": "entree",
+   "b": "chambre",
+   "p": [
+    0.6,
+    3.215
+   ],
+   "r": 0.8
+  },
+  {
+   "a": "entree",
+   "b": "sdb",
+   "p": [
+    1.75,
+    1.855
+   ],
+   "r": 0.8
+  },
+  {
+   "a": "sejour",
+   "b": "loggia",
+   "p": [
+    6.25,
+    3.93
+   ],
+   "r": 1.2
+  }
+ ],
+ "stops": [
+  {
+   "id": "entree",
+   "label": "Entrée",
+   "p": [
+    0.5,
+    2.6
+   ],
+   "yaw": -1.546,
+   "pitch": -0.06
+  },
+  {
+   "id": "sejour",
+   "label": "Séjour",
+   "p": [
+    3.95,
+    0.45
+   ],
+   "yaw": -2.209,
+   "pitch": -0.06
+  },
+  {
+   "id": "cuisine",
+   "label": "Cuisine",
+   "p": [
+    6.6,
+    2.9
+   ],
+   "yaw": 0.785,
+   "pitch": -0.14
+  },
+  {
+   "id": "loggia",
+   "label": "Loggia",
+   "p": [
+    5.05,
+    4.45
+   ],
+   "yaw": -2.172,
+   "pitch": -0.05,
+   "open": [
+    "PF"
+   ]
+  },
+  {
+   "id": "chambre",
+   "label": "Chambre",
+   "p": [
+    0.5,
+    3.55
+   ],
+   "yaw": -2.272,
+   "pitch": -0.08,
+   "open": [
+    "ch"
+   ]
+  },
+  {
+   "id": "sdb",
+   "label": "Salle d'eau",
+   "p": [
+    1.05,
+    1.62
+   ],
+   "yaw": -1.144,
+   "pitch": -0.16,
+   "open": [
+    "sdb"
+   ]
+  }
+ ],
+ "dims": [
+  [
+   3.66,
+   0.277,
+   10.479,
+   0.277,
+   "6,82"
+  ],
+  [
+   6.946,
+   0,
+   6.946,
+   3.73,
+   "3,73"
+  ],
+  [
+   4.31,
+   3.19,
+   8.822,
+   3.19,
+   "4,51"
+  ],
+  [
+   0.14,
+   5.417,
+   4.26,
+   5.417,
+   "4,12"
+  ],
+  [
+   3.497,
+   3.24,
+   3.497,
+   6.13,
+   "2,89"
+  ],
+  [
+   3.497,
+   1.57,
+   3.497,
+   2.22,
+   "0,65"
+  ],
+  [
+   4.65,
+   4.39,
+   8.295,
+   4.39,
+   "3,65"
+  ],
+  [
+   5.09,
+   4.12,
+   5.09,
+   6.27,
+   "2,15"
+  ],
+  [
+   4.65,
+   6.065,
+   6.249,
+   6.065,
+   "1,60"
+  ]
+ ],
+ "underlay": {
+  "file": "plan-432.png",
+  "x": -0.35,
+  "z": -0.35,
+  "w": 11.85,
+  "h": 7.15
+ },
+ "context": {
+  "level": 2.8,
+  "below": 3,
+  "above": 2,
+  "masses": [
+   {
+    "poly": [
+     [
+      -14.7,
+      -6.9
+     ],
+     [
+      10.0,
+      -6.9
+     ],
+     [
+      13.0,
+      -4.2
+     ],
+     [
+      11.143,
+      -0.2
+     ],
+     [
+      -14.7,
+      -0.2
+     ]
+    ]
+   },
+   {
+    "poly": [
+     [
+      -14.7,
+      -0.2
+     ],
+     [
+      -2.4,
+      -0.2
+     ],
+     [
+      -2.4,
+      6.47
+     ],
+     [
+      -14.7,
+      6.47
+     ]
+    ]
+   },
+   {
+    "poly": [
+     [
+      -2.4,
+      -0.2
+     ],
+     [
+      -0.2,
+      -0.2
+     ],
+     [
+      -0.2,
+      1.1
+     ],
+     [
+      -2.4,
+      1.1
+     ]
+    ]
+   },
+   {
+    "poly": [
+     [
+      -2.4,
+      3.8
+     ],
+     [
+      -0.2,
+      3.8
+     ],
+     [
+      -0.2,
+      6.47
+     ],
+     [
+      -2.4,
+      6.47
+     ]
+    ]
+   },
+   {
+    "poly": [
+     [
+      -2.4,
+      1.1
+     ],
+     [
+      -0.2,
+      1.1
+     ],
+     [
+      -0.2,
+      3.8
+     ],
+     [
+      -2.4,
+      3.8
+     ]
+    ],
+    "notAt0": true
+   }
+  ],
+  "palier": {
+   "poly": [
+    [
+     -2.4,
+     1.1
+    ],
+    [
+     -0.2,
+     1.1
+    ],
+    [
+     -0.2,
+     3.8
+    ],
+    [
+     -2.4,
+     3.8
+    ]
+   ]
+  },
+  "trees": [
+   [
+    2,
+    14
+   ],
+   [
+    9,
+    13.5
+   ],
+   [
+    15,
+    12
+   ],
+   [
+    21,
+    7
+   ],
+   [
+    24,
+    -1
+   ],
+   [
+    -5,
+    15
+   ],
+   [
+    -12,
+    16
+   ],
+   [
+    27,
+    12
+   ],
+   [
+    5,
+    22
+   ],
+   [
+    13,
+    21
+   ],
+   [
+    -8,
+    24
+   ],
+   [
+    19,
+    19
+   ],
+   [
+    31,
+    4
+   ],
+   [
+    26,
+    -10
+   ],
+   [
+    11,
+    30
+   ],
+   [
+    -2,
+    31
+   ],
+   [
+    35,
+    15
+   ]
+  ],
+  "blocks": [
+   [
+    -30,
+    -8,
+    16,
+    30,
+    15
+   ],
+   [
+    16,
+    40,
+    20,
+    34,
+    12
+   ],
+   [
+    28,
+    44,
+    -14,
+    6,
+    18
+   ],
+   [
+    -34,
+    -12,
+    -30,
+    -14,
+    14
+   ],
+   [
+    0,
+    22,
+    -34,
+    -18,
+    16
+   ],
+   [
+    -48,
+    -32,
+    -6,
+    14,
+    12
+   ]
+  ]
+ },
+ "photos": [
+  {
+   "id": "sejour",
+   "t": "Séjour",
+   "a": "26,6 m² avec cuisine et entrée",
+   "cam": [
+    3.95,
+    0.4,
+    -2.216,
+    -0.05,
+    70
+   ]
+  },
+  {
+   "id": "sejour-inverse",
+   "t": "Séjour, vers la cuisine",
+   "a": "cuisine ouverte, entrée à gauche",
+   "cam": [
+    8.05,
+    3.3,
+    0.994,
+    -0.06,
+    70
+   ]
+  },
+  {
+   "id": "fenetre",
+   "t": "Fenêtre d'angle",
+   "a": "façade biaise, lever du soleil",
+   "cam": [
+    6.85,
+    2.35,
+    -1.21,
+    0.0,
+    64
+   ]
+  },
+  {
+   "id": "loggia",
+   "t": "Loggia",
+   "a": "5,7 m² au sud",
+   "cam": [
+    4.95,
+    4.4,
+    -2.167,
+    -0.08,
+    70
+   ],
+   "open": [
+    "PF"
+   ]
+  },
+  {
+   "id": "loggia-vue",
+   "t": "Depuis la loggia",
+   "a": "vue vers le sud-est",
+   "cam": [
+    5.3,
+    5.6,
+    -1.034,
+    0.02,
+    66
+   ],
+   "open": [
+    "PF"
+   ]
+  },
+  {
+   "id": "chambre",
+   "t": "Chambre",
+   "a": "11,9 m², fenêtre au sud",
+   "cam": [
+    0.45,
+    3.52,
+    -2.27,
+    -0.05,
+    70
+   ],
+   "open": [
+    "ch"
+   ]
+  },
+  {
+   "id": "chambre-inverse",
+   "t": "Chambre, vers la porte",
+   "a": "4,12 × 2,89 m",
+   "cam": [
+    3.95,
+    5.85,
+    0.91,
+    -0.05,
+    70
+   ],
+   "open": [
+    "ch"
+   ],
+   "close": [
+    "ch"
+   ]
+  },
+  {
+   "id": "sdb",
+   "t": "Salle d'eau et WC",
+   "a": "5,1 m², meuble vasque et WC",
+   "cam": [
+    1.05,
+    1.62,
+    -1.144,
+    -0.14,
+    76
+   ],
+   "open": [
+    "sdb"
+   ]
+  },
+  {
+   "id": "douche",
+   "t": "Salle d'eau, douche",
+   "a": "douche 90 × 120",
+   "cam": [
+    2.75,
+    1.2,
+    1.493,
+    -0.16,
+    76
+   ],
+   "open": [
+    "sdb"
+   ]
+  },
+  {
+   "id": "entree",
+   "t": "Entrée",
+   "a": "placard coulissant 1,34 m, porte palière",
+   "cam": [
+    3.55,
+    2.78,
+    1.506,
+    -0.05,
+    66
+   ],
+   "close": [
+    "ch"
+   ]
+  },
+  {
+   "id": "maquette",
+   "t": "Vue d'ensemble",
+   "a": "maquette 3D",
+   "orbit": true
+  }
+ ],
+ "moments": [
+  {
+   "id": "jour",
+   "t": "Jour",
+   "season": "automne",
+   "hour": 13
+  }
+ ],
+ "fiche": {
+  "surfaces": [
+   [
+    "Salon / Cuisine (avec entrée et placard)",
+    "26,6 m²",
+    "6,82 × 3,73 · 4,51"
+   ],
+   [
+    "Chambre",
+    "11,9 m²",
+    "4,12 × 2,89"
+   ],
+   [
+    "Salle d'eau / WC",
+    "5,1 m²",
+    "douche 0,90 × 1,20"
+   ],
+   [
+    "Surface habitable",
+    "43,6 m²",
+    "",
+    "tot"
+   ],
+   [
+    "Loggia",
+    "5,7 m²",
+    "3,65 × 2,15 · 1,60"
+   ]
+  ],
+  "sections": [
+   {
+    "h": "Ce que dit le plan",
+    "items": [
+     [
+      "ok",
+      "Séjour ouvert sur une façade biaise, orientée à l'est-sud-est, avec une fenêtre de 1,40 m sur allège de 60 cm, garde-corps et BSO."
+     ],
+     [
+      "ok",
+      "Porte-fenêtre de 2,00 m vers la loggia, avec volet roulant et seuil de 2 cm. Loggia au sud, garde-corps en biais."
+     ],
+     [
+      "ok",
+      "Chambre de 4,12 × 2,89 m, fenêtre de 1,40 m au sud sur allège de 60 cm, garde-corps et BSO."
+     ],
+     [
+      "ok",
+      "Salle d'eau et WC réunis : douche 90 × 120, meuble vasque 80 cm, WC au sol, sèche-serviettes. Cercle de giration de 1,50 m dessiné (logement accessible)."
+     ],
+     [
+      "ok",
+      "Entrée avec placard coulissant de 1,34 × 0,65 m. Tableau électrique dans un placard technique ouvrant sur l'entrée, contre la cuisine."
+     ],
+     [
+      "ok",
+      "Cuisine en L indicative : plaques contre la salle d'eau, évier, lave-vaisselle, lave-linge et réfrigérateur au nord."
+     ]
+    ]
+   },
+   {
+    "h": "Points à faire confirmer",
+    "items": [
+     [
+      "w",
+      "La cuisine n'est pas fournie (avertissement du plan) : demander les attentes réelles (eau, évacuation, prises, plaques 32 A, hotte)."
+     ],
+     [
+      "w",
+      "Hauteur sous plafond non indiquée. La maquette suppose 2,50 m. Aucun faux plafond n'est hachuré."
+     ],
+     [
+      "w",
+      "Aucun radiateur dessiné, hormis le sèche-serviettes : mode de chauffage et émetteurs à lire dans la notice."
+     ],
+     [
+      "w",
+      "Douche sans paroi dessinée : demander si une paroi fixe ou une barre de rideau est prévue."
+     ],
+     [
+      "w",
+      "Trois gaines dans la salle d'eau, dont un conduit repéré VH : à ne pas percer, trappes éventuelles à situer."
+     ],
+     [
+      "h",
+      "Le lave-linge est prévu dans la cuisine, pas dans la salle d'eau."
+     ]
+    ]
+   },
+   {
+    "h": "Hypothèses de la maquette",
+    "items": [
+     [
+      "h",
+      "Plafond à 2,50 m, allèges de 60 cm (plan), linteaux à 2,20 m, portes intérieures de 2,04 m, porte palière de 2,15 m."
+     ],
+     [
+      "h",
+      "Finitions de livraison supposées : murs et plafonds peints en blanc, sol stratifié chêne, carrelage 45 × 45 et faïence toute hauteur autour de la douche, plinthes blanches. Menuiseries blanches, BSO gris."
+     ],
+     [
+      "h",
+      "Loggia en dalles de 50 × 50 sur plots (quadrillage du plan). Immeuble supposé en R+5, étages de 2,80 m. Voisinage et arbres schématiques."
+     ]
+    ]
+   }
+  ]
+ },
+ "simple": true
+}
