@@ -7,6 +7,9 @@
 ## Pourquoi
 Décision de l'utilisateur du 27/09/2026 (n° 11) : les logements sur plusieurs niveaux (duplex, triplex) sont gérés, toujours validés plan par plan. La chaîne a été développée et validée sur la duplex `plans/3081-613-ef700f1f` avec une lecture préparée à la main (`reponse-ia.json`), sans aucun appel à l'IA : contrôle réussi, 12 photos. La lecture payante lancée sur ce plan avait été annulée. Personne n'a donc encore vu l'IA lire un plan à plusieurs niveaux : séparation et noms des niveaux, escalier, trémie, légende des sigles de baies, garde-corps dessinés comme des cloisons. L'utilisateur va redéposer le PDF. Le même jour, il a confirmé : « oui le duplex on l'a géré c'est bon, c'était avant ça ». Les duplex sont acceptés en service (`niveaux_max = 2`, L4-08) et affichés au périmètre (« un ou deux niveaux ») sans attendre ce ticket. Il reste une vérification utile : mesurer le coût réel et voir l'IA lire une duplex, pour en tirer des contrôles automatiques.
 
+## Défaut trouvé le 29/09/2026 (test de bout en bout)
+`outils/bout_en_bout.mjs` redépose le PDF de la duplex (`plans/3081-613-ef700f1f/source.pdf`, vectoriel) par le site : l'analyse s'arrête sur « échelle » (calibration demandée) au lieu de lire le plan. Les 4 autres plans de référence passent du dépôt à la visite (187 à 283 s). La lecture de référence de la duplex avait été préparée à la main : ce chemin n'avait jamais été suivi par le site. À corriger en premier, puis rejouer `node outils/bout_en_bout.mjs 3081-613-ef700f1f` (sans appel payant).
+
 ## À faire
 1. **Préalables gratuits** :
    - rejeu sans IA de la duplex (`outils/finalise.sh 3081-613-ef700f1f`, clés vidées) : visite de contrôle réussie ;
