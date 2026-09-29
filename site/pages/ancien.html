@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<title>{{MARQUE}} · Votre logement en visite 3D</title>
+<meta name="description" content="Un plan de votre appartement suffit : visitez-le en 3D, préparez vos travaux, vérifiez que vos meubles passent et montrez-le à vos proches. Premier plan offert.">
+{{> tete}}
+</head>
+<body>
+{{ILLUSTRATIONS}}
+{{> entete}}
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-txt">
+      <h1>Votre logement comme vous ne l'avez jamais vu.</h1>
+      <p class="lede">Un plan suffit, même une image nette. En quelques minutes, visitez votre appartement en 3D, préparez vos travaux sans mauvaise surprise, et montrez-le à qui vous voulez.</p>
+      <div class="hero-cta">
+        <a class="btn primary big" href="#demo">Voir la démo</a>
+        <a class="btn big" href="#plan">Trouver mon plan</a>
+      </div>
+      {{> assurances}}
+    </div>
+    <div class="hero-viz">
+      <div id="cine-hero" class="cine" aria-label="Animation : un plan devient une visite 3D"></div>
+      <div class="cap"><span>Un vrai T2 de 47,9 m², traité automatiquement</span><span>Animation accélérée</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="head center">
+      <h2>Voyez avant d'agir.</h2>
+      <p class="lede">Acheter, rénover, meubler ou vendre : tout commence par savoir exactement à quoi ressemble le logement.</p>
+    </div>
+    <div class="uses">
+      <div class="use" id="acheter"><svg class="ill"><use href="#i-cles"/></svg><h3>Avant d'acheter</h3><p>Faites le tour de l'appartement depuis le plan de l'annonce, avant la visite pour choisir, ou après pour vous décider.</p></div>
+      <div class="use" id="travaux"><svg class="ill"><use href="#i-travaux"/></svg><h3>Préparer des travaux</h3><p>L'existant en 3D, avec les cotes et les surfaces de chaque pièce : parlez-en avec votre artisan sur des bases claires.</p></div>
+      <div class="use" id="meubles"><svg class="ill"><use href="#i-meuble"/></svg><h3>Emménager sereinement</h3><p>Le canapé passe-t-il ? Le lit tient-il avec la commode ? Toutes les cotes, pièce par pièce.</p></div>
+      <div class="use" id="vendre"><svg class="ill"><use href="#i-annonce"/></svg><h3>Vendre ou louer</h3><p>Un lien de visite 3D à joindre à votre annonce : les visiteurs arrivent en sachant déjà s'il leur plaît.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="plan">
+  <div class="wrap">
+    <div class="head split">
+      <h2>Un plan propre suffit.</h2>
+      <p class="lede">Pas besoin de le redessiner : on part de ce que vous avez. Plus il est net, plus la visite est précise.</p>
+    </div>
+    <div class="uses three">
+      <div class="use"><svg class="ill"><use href="#i-fiche"/></svg><h3>Un PDF, idéalement</h3><p>Celui de votre acte de vente, de l'agence, de votre architecte ou d'un diagnostic : murs, cotes et échelle sont lus directement dans le fichier.</p></div>
+      <div class="use"><svg class="ill"><use href="#i-plan"/></svg><h3>Ou une image nette</h3><p>Une capture de l'annonce ou une photo bien droite : vous indiquez une cote connue pour caler l'échelle, à 5 à 10 cm près.</p></div>
+      <div class="use"><svg class="ill"><use href="#i-question"/></svg><h3>On vous dit tout de suite</h3><p>Si le plan ne suffit pas, on vous le dit dès le dépôt, et vous ne payez rien.</p></div>
+    </div>
+  </div>
+</section>
+
+{{> demo}}
+{{> planche}}
+{{> preuves}}
+{{> confidentialite}}
+{{> prix}}
+
+<section class="sec" id="questions">
+  <div class="wrap">
+    <div class="head"><h2>Vos questions.</h2></div>
+    <div class="faq">
+      <details><summary>Je n'ai pas de plan. Comment en trouver un ?</summary><p>Regardez dans votre acte de vente, les documents de l'agence, le dossier de diagnostics ou auprès de votre syndic. Pour un bien en vente, l'annonce en contient souvent un.</p></details>
+      <details><summary>Le plan de l'annonce est une simple image.</summary><p>Ça marche si elle est nette : vous indiquez une cote connue, par exemple la largeur d'une pièce, pour caler l'échelle. Comptez 5 à 10 cm d'écart possible.</p></details>
+      <details><summary>Puis-je voir mes travaux dans la visite ?</summary><p>Vous voyez l'existant, avec toutes ses cotes. Si votre architecte vous remet un plan des travaux, déposez-le comme un nouveau plan et comparez les deux versions.</p></details>
+      <details><summary>Et les maisons ?</summary><p>Les appartements sur un ou deux niveaux sont pris en charge. Les maisons ne le sont pas encore.</p></details>
+      <details><summary>Les meubles et la décoration sont-ils repris ?</summary><p>Non : le logement est présenté vide, avec des finitions neutres, pour que vous voyiez les volumes tels qu'ils sont.</p></details>
+      <details><summary>Qui voit mon plan ?</summary><p>Vous, et les personnes à qui vous envoyez un lien. Votre plan n'est ni publié, ni partagé, ni utilisé pour nos démonstrations.</p></details>
+      <details><summary>Faut-il installer quelque chose ?</summary><p>Non. Tout se passe dans votre navigateur, sur ordinateur, tablette ou téléphone.</p></details>
+      <details><summary>Et si nous n'arrivons pas à créer la visite ?</summary><p>Vous ne payez rien, et le plan vous est rendu.</p></details>
+    </div>
+    {{> proband}}
+  </div>
+</section>
+
+<section class="final" style="background-image:url(demo/visite.jpg)">
+  <div class="wrap">
+    <h2>Redécouvrez votre logement.</h2>
+    <p>Déposez son plan : quelques minutes plus tard, vous en faites le tour. Le premier plan est offert.</p>
+    <a class="btn primary big" href="#demo">Essayer gratuitement</a>
+  </div>
+</section>
+</main>
+
+{{> pied}}
+{{> scripts}}
+<script>Cinema(document.getElementById('cine-hero'), { loop: true, endHtml: '<a class="btn primary" href="#demo">Entrer dans le logement</a>' }).then(c => c.run());</script>
+</body>
+</html>

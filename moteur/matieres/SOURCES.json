@@ -1,0 +1,311 @@
+{
+ "note": "Sources des matières hybrides (L4-13, E1). Fichiers bruts non versionnés (cache .cache/matieres/), vérifiés par leur SHA-256 ; seuls les fichiers dérivés de moteur/matieres/ sont servis. Toutes CC0-1.0.",
+ "sources": {
+  "oak_veneer_01": {
+   "fournisseur": "Poly Haven",
+   "page": "https://polyhaven.com/a/oak_veneer_01",
+   "licence": "CC0-1.0",
+   "licence_page": "https://polyhaven.com/license",
+   "auteur": "Jenelle van Heerden",
+   "dimensions_m": [
+    1.83,
+    1.83
+   ],
+   "dimensions_note": "API Poly Haven",
+   "titre": "Oak Veneer 01",
+   "fichiers": [
+    {
+     "role": "couleur",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/oak_veneer_01/oak_veneer_01_diff_2k.jpg",
+     "sha256": "0718c2e1a209afe6138ccb41d70e1a18cd825d1e73db33ad7cf80806fa9ce5a4",
+     "octets": 2831117
+    },
+    {
+     "role": "normale",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/oak_veneer_01/oak_veneer_01_nor_gl_2k.png",
+     "sha256": "c26f922a75022c11243f351d348d1b5615e713f3787c76657fdb06047879b960",
+     "octets": 20978522
+    },
+    {
+     "role": "rugosite",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/oak_veneer_01/oak_veneer_01_rough_2k.jpg",
+     "sha256": "5c81718ee172299c44e0754fadbe652758b6feed05a8fd88be6efff5aa70ca1e",
+     "octets": 3968436
+    }
+   ]
+  },
+  "Ground037": {
+   "fournisseur": "ambientCG",
+   "page": "https://ambientcg.com/view?id=Ground037",
+   "licence": "CC0-1.0",
+   "licence_page": "https://docs.ambientcg.com/license/",
+   "auteur": "ambientCG (Lennart Demes)",
+   "methode": "PBRPhotogrammetry",
+   "dimensions_m": [
+    2.1,
+    2.1
+   ],
+   "dimensions_note": "API ambientCG",
+   "titre": "Ground 037",
+   "fichiers": [
+    {
+     "role": "archive",
+     "url": "https://ambientcg.com/get?file=Ground037_2K-JPG.zip",
+     "sha256": "defa9f880ec692eb3ef5435fd7bc7b8721c0d577f7824ea18ac68537f01ab65b",
+     "octets": 37874033
+    }
+   ]
+  },
+  "Marble026": {
+   "fournisseur": "ambientCG",
+   "page": "https://ambientcg.com/view?id=Marble026",
+   "licence": "CC0-1.0",
+   "licence_page": "https://docs.ambientcg.com/license/",
+   "auteur": "ambientCG (Lennart Demes)",
+   "methode": "PBRMultiAngle",
+   "dimensions_m": [
+    1.0,
+    1.0
+   ],
+   "dimensions_note": "estimée (non publiée par ambientCG), à juger sur planche",
+   "titre": "Marble 026",
+   "fichiers": [
+    {
+     "role": "archive",
+     "url": "https://ambientcg.com/get?file=Marble026_2K-JPG.zip",
+     "sha256": "680ac5204eb10b3f01286db75370a6517bc69f62354ee65d40b601056d2aa7bb",
+     "octets": 15547725
+    }
+   ]
+  },
+  "concrete_floor_01": {
+   "fournisseur": "Poly Haven",
+   "page": "https://polyhaven.com/a/concrete_floor_01",
+   "licence": "CC0-1.0",
+   "licence_page": "https://polyhaven.com/license",
+   "auteur": "Rob Tuytel",
+   "dimensions_m": [
+    2.0,
+    2.0
+   ],
+   "dimensions_note": "API Poly Haven",
+   "titre": "Concrete Floor 01",
+   "fichiers": [
+    {
+     "role": "couleur",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/concrete_floor_01/concrete_floor_01_diff_2k.jpg",
+     "sha256": "ca24c52dabae67ef49093f91d8f9b9e5328a3b9fcb1327742ff6181ee542e017",
+     "octets": 2967720
+    },
+    {
+     "role": "normale",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_floor_01/concrete_floor_01_nor_gl_2k.png",
+     "sha256": "38fa64042bf57cd56cbaa92093d13fb09547d620c1ba5ce906512021c80d512e",
+     "octets": 7626542
+    },
+    {
+     "role": "rugosite",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/concrete_floor_01/concrete_floor_01_rough_2k.jpg",
+     "sha256": "e66fa941d6daa33ba334c853bf126c85f1d77e7b72778073237e4ef8c7c97774",
+     "octets": 1488360
+    }
+   ]
+  },
+  "granular_concrete": {
+   "fournisseur": "Poly Haven",
+   "page": "https://polyhaven.com/a/granular_concrete",
+   "licence": "CC0-1.0",
+   "licence_page": "https://polyhaven.com/license",
+   "auteur": "Dario Barresi, Michael Jenkins",
+   "dimensions_m": [
+    2.4,
+    2.4
+   ],
+   "dimensions_note": "API Poly Haven",
+   "titre": "Granular Concrete",
+   "fichiers": [
+    {
+     "role": "couleur",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/granular_concrete/granular_concrete_diff_2k.jpg",
+     "sha256": "37b70522207aff7a3ca7c70118b80ecc2d07a9fee983c2d544c5838e5fe8c8f5",
+     "octets": 3397045
+    },
+    {
+     "role": "normale",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/granular_concrete/granular_concrete_nor_gl_2k.png",
+     "sha256": "32a9fc4f5c5cb3f12f26c6cdb7d4712c34443669f299e7d3cf1f1e3f008cb962",
+     "octets": 23505534
+    },
+    {
+     "role": "rugosite",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/granular_concrete/granular_concrete_rough_2k.jpg",
+     "sha256": "a22a69325d033e2fb8751648c7b12918cc50ec3779877da6f2b080502b9e1887",
+     "octets": 1692431
+    }
+   ]
+  },
+  "painted_plaster_wall": {
+   "fournisseur": "Poly Haven",
+   "page": "https://polyhaven.com/a/painted_plaster_wall",
+   "licence": "CC0-1.0",
+   "licence_page": "https://polyhaven.com/license",
+   "auteur": "Amal Kumar",
+   "dimensions_m": [
+    2.0,
+    2.0
+   ],
+   "dimensions_note": "API Poly Haven",
+   "titre": "Painted Plaster Wall",
+   "fichiers": [
+    {
+     "role": "couleur",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/painted_plaster_wall/painted_plaster_wall_diff_2k.jpg",
+     "sha256": "6fd812ed8dd5be1873c29aeef38ce9bf1fb30a22c6d4b3a12db725e98c26a1be",
+     "octets": 3132937
+    },
+    {
+     "role": "normale",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/painted_plaster_wall/painted_plaster_wall_nor_gl_2k.png",
+     "sha256": "322041257ab0dad1a1a1c18d98bc28689136103f6a64d4849f7aa3ae5b8b090f",
+     "octets": 22789885
+    },
+    {
+     "role": "rugosite",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/painted_plaster_wall/painted_plaster_wall_rough_2k.jpg",
+     "sha256": "35aad595469533cc3b7cc209cc6c7e065d660211f02c867f4492d3b371b1fee1",
+     "octets": 1595466
+    }
+   ]
+  },
+  "plastered_wall": {
+   "fournisseur": "Poly Haven",
+   "page": "https://polyhaven.com/a/plastered_wall",
+   "licence": "CC0-1.0",
+   "licence_page": "https://polyhaven.com/license",
+   "auteur": "Amal Kumar",
+   "dimensions_m": [
+    2.0,
+    2.0
+   ],
+   "dimensions_note": "API Poly Haven",
+   "titre": "Plastered Wall",
+   "fichiers": [
+    {
+     "role": "couleur",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_wall/plastered_wall_diff_2k.jpg",
+     "sha256": "c9f3235d6b28b249dd3c7e6346483f1f6ae11e62b4a81d0397936ff756dfcb1f",
+     "octets": 2434531
+    },
+    {
+     "role": "normale",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/plastered_wall/plastered_wall_nor_gl_2k.png",
+     "sha256": "6ecf0d0d6afb1ecd0caeeb51625e9b4827a5d216afab07967b1b6c7b4c7ed4e5",
+     "octets": 26447974
+    },
+    {
+     "role": "rugosite",
+     "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_wall/plastered_wall_rough_2k.jpg",
+     "sha256": "be5c23b7d473bf1dea6d3a39b3e0537d5cf9eb990b4148566d20a35dc0902e54",
+     "octets": 1475662
+    }
+   ]
+  }
+ },
+ "matieres": {
+  "oak": {
+   "source": "oak_veneer_01",
+   "materiaux_moteur": [
+    "floor_dry"
+   ],
+   "dimensions_m": [
+    1.83,
+    1.83
+   ]
+  },
+  "gres": {
+   "source": "Marble026",
+   "materiaux_moteur": [
+    "floor_wet",
+    "palier_floor"
+   ],
+   "dimensions_m": [
+    1.0,
+    1.0
+   ]
+  },
+  "loggia": {
+   "source": "granular_concrete",
+   "materiaux_moteur": [
+    "loggia_floor"
+   ],
+   "dimensions_m": [
+    2.4,
+    2.4
+   ]
+  },
+  "paving": {
+   "source": "concrete_floor_01",
+   "materiaux_moteur": [
+    "paving"
+   ],
+   "dimensions_m": [
+    2.0,
+    2.0
+   ]
+  },
+  "paint": {
+   "source": "painted_plaster_wall",
+   "materiaux_moteur": [
+    "wall_b",
+    "wall_c",
+    "ceiling",
+    "ceiling_j"
+   ],
+   "dimensions_m": [
+    2.0,
+    2.0
+   ]
+  },
+  "ext": {
+   "source": "plastered_wall",
+   "materiaux_moteur": [
+    "ext"
+   ],
+   "dimensions_m": [
+    2.0,
+    2.0
+   ]
+  },
+  "beton": {
+   "source": "granular_concrete",
+   "materiaux_moteur": [
+    "slab",
+    "slab_j"
+   ],
+   "dimensions_m": [
+    2.4,
+    2.4
+   ]
+  },
+  "facade": {
+   "source": "plastered_wall",
+   "materiaux_moteur": [
+    "facade"
+   ],
+   "dimensions_m": [
+    2.0,
+    2.0
+   ]
+  },
+  "grass": {
+   "source": "Ground037",
+   "materiaux_moteur": [
+    "ground"
+   ],
+   "dimensions_m": [
+    2.1,
+    2.1
+   ]
+  }
+ }
+}

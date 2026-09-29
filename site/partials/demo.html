@@ -1,0 +1,29 @@
+<section class="dark" id="demo">
+  <div class="wrap sec-in">
+    <div class="head">
+      <h2>À vous : entrez dans ce logement.</h2>
+      <p class="lede">Un vrai T2 de 47,9 m², tel que vous le recevrez. Passez du plan d'origine au plan redessiné, à la maquette, puis marchez dedans.</p>
+    </div>
+    <div class="demo">
+      <div class="tabs" role="tablist" aria-label="Ce que vous recevez">
+        <button class="tab" role="tab" data-t="source" aria-selected="false">Plan importé<small>votre PDF ou image</small></button>
+        <button class="tab" role="tab" data-t="plan" aria-selected="false">Plan 2D<small>redessiné et coté</small></button>
+        <button class="tab" role="tab" data-t="maquette" aria-selected="true">Maquette 3D<small>vue d'ensemble</small></button>
+        <button class="tab" role="tab" data-t="visite" aria-selected="false">Visite 3D<small>à hauteur d'yeux</small></button>
+        <button class="tab" role="tab" data-t="360" aria-selected="false">Visite 360°<small>d'arrêt en arrêt</small></button>
+        <button class="tab" role="tab" data-t="ultra" aria-selected="false">Ultra réaliste<small>matières et lumière</small></button>
+      </div>
+      <div class="screen" id="screen">
+        <img class="still" id="still" src="demo/avant.jpg" alt="Plan de vente d'origine" hidden>
+        <div class="poster" id="poster" style="background-image:url(demo/maquette.jpg)">
+          <button class="btn primary big" type="button">Entrer dans le logement</button>
+          <p>Faites tourner la maquette, passez d'une pièce à l'autre, ouvrez les portes.</p>
+        </div>
+      </div>
+      <div class="demo-foot">
+        <p id="demo-txt"><b>Maquette 3D.</b> Faites tourner le logement, zoomez, double-cliquez dans une pièce pour y entrer.</p>
+        <a class="btn primary" href="#prix">Essayer avec mon plan</a>
+      </div>
+    </div>
+  </div>
+</section>

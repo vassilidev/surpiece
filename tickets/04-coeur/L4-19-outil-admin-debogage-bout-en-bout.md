@@ -22,7 +22,7 @@ Mode admin de la visite (bandeau, rayons X, eau, plan déposé à côté du plan
 4. **Test de bout en bout par le site** : dépôt d'un plan sur `http://localhost:8780`, suivi de l'avancement, visite ouverte, bouton 360° et retour, photos, sur les 5 plans de référence, par un script Chrome (puppeteer) qui clique comme l'utilisateur. Sans lecture payante : lecture gardée rejouée (`PLAN_PROVIDER=`, L1-02). Échec au moindre écran d'erreur, texte technique ou étape bloquée.
 
 ## Critères d'acceptation
-- [ ] Captures du mode admin allégé validées par l'utilisateur.
+- [x] Mode admin allégé validé par l'utilisateur : « j'aime totalement la partie admin et settings, pour moi c'est ok cette partie-là » (29/09/2026, soir).
 - [ ] Bandeau de débogage : valeurs justes (i/s comparées à une mesure externe), caché par défaut, rien d'autre ne change à l'écran.
 - [ ] Vues rayons X et eau sur les 5 plans ; bascule et retour sans reste (contrôle automatique, vérifié en remettant un reste).
 - [ ] Test de bout en bout vert sur les 5 plans, sans appel payant ; un défaut volontaire (étape cassée) le fait échouer.

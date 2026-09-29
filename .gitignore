@@ -8,3 +8,5 @@ __pycache__/
 *.pyc
 node_modules/
 .DS_Store
+# sources brutes des matières hybrides (outils/matieres_pbr.py), jamais versionnées
+.cache/

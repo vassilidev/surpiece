@@ -1,0 +1,25 @@
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="{{MARQUE}}, accueil"><b>{{MARQUE}}</b></a>
+    <nav class="nav" id="nav" aria-label="Principale">
+      <a href="index.html#demo" data-local="#demo">Démo</a>
+      <a href="index.html#preuves" data-local="#preuves">Contrôles</a>
+      <a href="index.html#prix" data-local="#prix">Prix</a>
+      <a href="index.html#questions" data-local="#questions">Questions</a>
+      <a href="conseillers.html">Conseillers</a>
+      <a class="btn primary nav-cta" href="index.html#demo" data-local="#demo">Essayer gratuitement</a>
+    </nav>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span><span></span></button>
+  </div>
+</header>
+<script>
+  (function () {
+    // liens vers une section : sur place si la page l'a, sinon sur l'accueil ; page en cours soulignée ; menu sur téléphone
+    document.querySelectorAll('.top [data-local]').forEach(a => { if (document.querySelector(a.dataset.local)) a.setAttribute('href', a.dataset.local); });
+    const ici = location.pathname.replace(/index\.html$/, '');
+    document.querySelectorAll('.nav a:not(.btn)').forEach(a => { const u = new URL(a.href, location.href); if (!u.hash && u.pathname.replace(/index\.html$/, '') === ici) a.setAttribute('aria-current', 'page'); });
+    const b = document.querySelector('.burger'), n = document.getElementById('nav');
+    b.addEventListener('click', () => { const o = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', o); n.classList.toggle('open', o); document.body.classList.toggle('menu-open', o); });
+    n.addEventListener('click', e => { if (e.target.closest('a')) { b.setAttribute('aria-expanded', 'false'); n.classList.remove('open'); document.body.classList.remove('menu-open'); } });
+  })();
+</script>

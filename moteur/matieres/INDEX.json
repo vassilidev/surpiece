@@ -1,0 +1,841 @@
+{
+ "note": "Matières hybrides de l'ultra réaliste (L4-13, E1), produites par outils/matieres_pbr.py. Remplissage de la pose procédurale de moteur/matieres.js : le moteur garde lames, joints, formats et teintes par élément, et prend grain, rugosité et relief de ces fichiers. Sources et empreintes : SOURCES.json.",
+ "format": {
+  "cr": "WebP avec perte (qualité 90, -sharp_yuv) : RGB = albédo sRGB, alpha = rugosité linéaire (alpha sans perte, rugosité lissée d'1 px à 2048 et quantifiée sur 64 niveaux)",
+  "n": "WebP sans perte : normale tangente, convention OpenGL (Y vers le haut, comme three.js) ; une seule par source (beton reprend celle de loggia, facade celle d'ext)",
+  "albedo": "variations lentes retirées (flou périodique de 10 % de l'échantillon), puis étalonné sur la cible",
+  "mipmaps": "générées par le GPU"
+ },
+ "cible": "moyenne linéaire de la texture procédurale actuelle (q = 1) sur ses surfaces (joints, coulis, fenêtres exclus), teinte de lame ou de carreau retirée ; sans la teinte du matériau (makeMaterials), qui reste",
+ "parametres_moteur": {
+  "loggia_carreau_m": 0.5,
+  "hauteur_etage_m": 2.8
+ },
+ "non_couvertes": {
+  "faience": "aucun scan CC0 d'émail blanc lisse : les « Porcelain001-003 » d'ambientCG sont procédurales ; les faïences scannées de Poly Haven ont des carreaux de 5 à 15 cm (joints dans l'échantillon) ; procédural gardé",
+  "steel, chrome (inox, chrome)": "aucun inox brossé scanné (ambientCG Metal009/010/012 : procédurales ; Poly Haven : métaux rouillés ou tôles) ; pièces de 1 à 5 cm, lisses dans le moteur",
+  "door_leaf, door_frame, entry_leaf (portes)": "portes laquées unies dans le moteur, aucun bois : rien à remplir",
+  "foliage (feuillage)": "arbres du contexte : étape E5 (imposteurs)",
+  "asphalte": "aucune matière asphalte dans le moteur (abords : pavés et gazon)"
+ },
+ "matieres": {
+  "beton": {
+   "source": "granular_concrete",
+   "fournisseur": "Poly Haven",
+   "licence": "CC0-1.0",
+   "page": "https://polyhaven.com/a/granular_concrete",
+   "materiaux_moteur": {
+    "slab": "c9c7c1",
+    "slab_j": "c9c7c1"
+   },
+   "pose_gardee": "aucune",
+   "repetition_m": [
+    2.4,
+    2.4
+   ],
+   "repetition_note": "API Poly Haven",
+   "fichiers": {
+    "2048": {
+     "cr": "beton-2048-cr.webp",
+     "n": "loggia-2048-n.webp",
+     "octets_cr": 921278,
+     "octets_n": 0,
+     "rugosite_mesuree": 0.881
+    },
+    "1024": {
+     "cr": "beton-1024-cr.webp",
+     "n": "loggia-1024-n.webp",
+     "octets_cr": 266534,
+     "octets_n": 0,
+     "rugosite_mesuree": 0.881
+    },
+    "512": {
+     "cr": "beton-512-cr.webp",
+     "n": "loggia-512-n.webp",
+     "octets_cr": 64238,
+     "octets_n": 0,
+     "rugosite_mesuree": 0.881
+    }
+   },
+   "raccord": {
+    "score_bord": 1.03,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    237,
+    233,
+    226
+   ],
+   "albedo_mesure_srgb": [
+    237,
+    233,
+    226
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     237,
+     233,
+     226
+    ],
+    "1024": [
+     238,
+     236,
+     227
+    ],
+    "512": [
+     238,
+     236,
+     227
+    ]
+   },
+   "dE": {
+    "2048": 0.25,
+    "1024": 1.08,
+    "512": 0.98
+   },
+   "dE_hybride_ensemble": 1.1,
+   "albedo_final_srgb": {
+    "slab": [
+     186,
+     182,
+     171
+    ],
+    "slab_j": [
+     186,
+     182,
+     171
+    ]
+   },
+   "rugosite_cible": 0.88,
+   "contraste_albedo": 0.206,
+   "contraste_rugosite": 1.0,
+   "ecart_lum_proc": 0.025,
+   "ecart_lum_scan": 0.0387
+  },
+  "ext": {
+   "source": "plastered_wall",
+   "fournisseur": "Poly Haven",
+   "licence": "CC0-1.0",
+   "page": "https://polyhaven.com/a/plastered_wall",
+   "materiaux_moteur": {
+    "ext": "e8e4dc"
+   },
+   "pose_gardee": "aucune",
+   "repetition_m": [
+    2.0,
+    2.0
+   ],
+   "repetition_note": "API Poly Haven",
+   "fichiers": {
+    "2048": {
+     "cr": "ext-2048-cr.webp",
+     "n": "ext-2048-n.webp",
+     "octets_cr": 1247810,
+     "octets_n": 8395426,
+     "rugosite_mesuree": 0.88
+    },
+    "1024": {
+     "cr": "ext-1024-cr.webp",
+     "n": "ext-1024-n.webp",
+     "octets_cr": 347536,
+     "octets_n": 1933200,
+     "rugosite_mesuree": 0.88
+    },
+    "512": {
+     "cr": "ext-512-cr.webp",
+     "n": "ext-512-n.webp",
+     "octets_cr": 85034,
+     "octets_n": 405354,
+     "rugosite_mesuree": 0.88
+    }
+   },
+   "raccord": {
+    "score_bord": 1.05,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    237,
+    233,
+    226
+   ],
+   "albedo_mesure_srgb": [
+    236,
+    233,
+    226
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     236,
+     233,
+     226
+    ],
+    "1024": [
+     236,
+     235,
+     228
+    ],
+    "512": [
+     236,
+     235,
+     228
+    ]
+   },
+   "dE": {
+    "2048": 0.56,
+    "1024": 1.04,
+    "512": 1.04
+   },
+   "dE_hybride_ensemble": 0.96,
+   "albedo_final_srgb": {
+    "ext": [
+     214,
+     208,
+     195
+    ]
+   },
+   "rugosite_cible": 0.88,
+   "contraste_albedo": 1.0,
+   "contraste_rugosite": 1.0,
+   "ecart_lum_proc": 0.025,
+   "ecart_lum_scan": 0.0647
+  },
+  "facade": {
+   "source": "plastered_wall",
+   "fournisseur": "Poly Haven",
+   "licence": "CC0-1.0",
+   "page": "https://polyhaven.com/a/plastered_wall",
+   "materiaux_moteur": {
+    "facade": "ffffff"
+   },
+   "pose_gardee": "modules de 3 m, fenêtres, stores, bandeau de nez de dalle (facade)",
+   "repetition_m": [
+    2.0,
+    2.0
+   ],
+   "repetition_note": "API Poly Haven",
+   "fichiers": {
+    "2048": {
+     "cr": "facade-2048-cr.webp",
+     "n": "ext-2048-n.webp",
+     "octets_cr": 1231362,
+     "octets_n": 0,
+     "rugosite_mesuree": 0.851
+    },
+    "1024": {
+     "cr": "facade-1024-cr.webp",
+     "n": "ext-1024-n.webp",
+     "octets_cr": 349000,
+     "octets_n": 0,
+     "rugosite_mesuree": 0.852
+    },
+    "512": {
+     "cr": "facade-512-cr.webp",
+     "n": "ext-512-n.webp",
+     "octets_cr": 82538,
+     "octets_n": 0,
+     "rugosite_mesuree": 0.852
+    }
+   },
+   "raccord": {
+    "score_bord": 1.05,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    217,
+    213,
+    207
+   ],
+   "albedo_mesure_srgb": [
+    217,
+    213,
+    207
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     217,
+     213,
+     207
+    ],
+    "1024": [
+     216,
+     212,
+     206
+    ],
+    "512": [
+     215,
+     212,
+     206
+    ]
+   },
+   "dE": {
+    "2048": 0.34,
+    "1024": 0.62,
+    "512": 0.65
+   },
+   "dE_hybride_ensemble": 0.64,
+   "albedo_final_srgb": {
+    "facade": [
+     217,
+     213,
+     207
+    ]
+   },
+   "rugosite_cible": 0.851,
+   "contraste_albedo": 1.0,
+   "contraste_rugosite": 1.0,
+   "ecart_lum_proc": 0.0305,
+   "ecart_lum_scan": 0.0517
+  },
+  "grass": {
+   "source": "Ground037",
+   "fournisseur": "ambientCG",
+   "licence": "CC0-1.0",
+   "page": "https://ambientcg.com/view?id=Ground037",
+   "materiaux_moteur": {
+    "ground": "ffffff"
+   },
+   "pose_gardee": "aucune",
+   "repetition_m": [
+    2.1,
+    2.1
+   ],
+   "repetition_note": "API ambientCG",
+   "fichiers": {
+    "2048": {
+     "cr": "grass-2048-cr.webp",
+     "n": "grass-2048-n.webp",
+     "octets_cr": 2487004,
+     "octets_n": 10667384,
+     "rugosite_mesuree": 0.961
+    },
+    "1024": {
+     "cr": "grass-1024-cr.webp",
+     "n": "grass-1024-n.webp",
+     "octets_cr": 627098,
+     "octets_n": 2486278,
+     "rugosite_mesuree": 0.961
+    },
+    "512": {
+     "cr": "grass-512-cr.webp",
+     "n": "grass-512-n.webp",
+     "octets_cr": 141138,
+     "octets_n": 537300,
+     "rugosite_mesuree": 0.962
+    }
+   },
+   "raccord": {
+    "score_bord": 1.04,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    62,
+    75,
+    41
+   ],
+   "albedo_mesure_srgb": [
+    62,
+    75,
+    41
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     62,
+     75,
+     41
+    ],
+    "1024": [
+     62,
+     75,
+     41
+    ],
+    "512": [
+     62,
+     75,
+     41
+    ]
+   },
+   "dE": {
+    "2048": 0.06,
+    "1024": 0.03,
+    "512": 0.02
+   },
+   "dE_hybride_ensemble": 0.12,
+   "albedo_final_srgb": {
+    "ground": [
+     62,
+     75,
+     41
+    ]
+   },
+   "rugosite_cible": 0.961,
+   "contraste_albedo": 1.0,
+   "contraste_rugosite": 0.206,
+   "ecart_lum_proc": 0.0141,
+   "ecart_lum_scan": 0.0308
+  },
+  "gres": {
+   "source": "Marble026",
+   "fournisseur": "ambientCG",
+   "licence": "CC0-1.0",
+   "page": "https://ambientcg.com/view?id=Marble026",
+   "materiaux_moteur": {
+    "floor_wet": "ffffff",
+    "palier_floor": "b9b6ae"
+   },
+   "pose_gardee": "carreaux 45 × 45 cm, joint 3 mm, teinte par carreau",
+   "repetition_m": [
+    1.0,
+    1.0
+   ],
+   "repetition_note": "estimée (non publiée par ambientCG), à juger sur planche",
+   "fichiers": {
+    "2048": {
+     "cr": "gres-2048-cr.webp",
+     "n": "gres-2048-n.webp",
+     "octets_cr": 1814506,
+     "octets_n": 2821042,
+     "rugosite_mesuree": 0.419
+    },
+    "1024": {
+     "cr": "gres-1024-cr.webp",
+     "n": "gres-1024-n.webp",
+     "octets_cr": 576774,
+     "octets_n": 710778,
+     "rugosite_mesuree": 0.419
+    },
+    "512": {
+     "cr": "gres-512-cr.webp",
+     "n": "gres-512-n.webp",
+     "octets_cr": 156034,
+     "octets_n": 150584,
+     "rugosite_mesuree": 0.419
+    }
+   },
+   "raccord": {
+    "score_bord": 1.03,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    205,
+    199,
+    189
+   ],
+   "albedo_mesure_srgb": [
+    204,
+    200,
+    189
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     204,
+     200,
+     189
+    ],
+    "1024": [
+     205,
+     200,
+     189
+    ],
+    "512": [
+     205,
+     200,
+     189
+    ]
+   },
+   "dE": {
+    "2048": 0.13,
+    "1024": 0.34,
+    "512": 0.36
+   },
+   "dE_hybride_ensemble": 0.53,
+   "albedo_final_srgb": {
+    "floor_wet": [
+     204,
+     200,
+     189
+    ],
+    "palier_floor": [
+     148,
+     142,
+     128
+    ]
+   },
+   "rugosite_cible": 0.42,
+   "contraste_albedo": 1.0,
+   "contraste_rugosite": 1.0,
+   "ecart_lum_proc": 0.0183,
+   "ecart_lum_scan": 0.068
+  },
+  "loggia": {
+   "source": "granular_concrete",
+   "fournisseur": "Poly Haven",
+   "licence": "CC0-1.0",
+   "page": "https://polyhaven.com/a/granular_concrete",
+   "materiaux_moteur": {
+    "loggia_floor": "ffffff"
+   },
+   "pose_gardee": "carreaux lg × lg (0,50 m par défaut), joint 6 mm",
+   "repetition_m": [
+    2.4,
+    2.4
+   ],
+   "repetition_note": "API Poly Haven",
+   "fichiers": {
+    "2048": {
+     "cr": "loggia-2048-cr.webp",
+     "n": "loggia-2048-n.webp",
+     "octets_cr": 2016706,
+     "octets_n": 8955506,
+     "rugosite_mesuree": 0.862
+    },
+    "1024": {
+     "cr": "loggia-1024-cr.webp",
+     "n": "loggia-1024-n.webp",
+     "octets_cr": 534460,
+     "octets_n": 2132148,
+     "rugosite_mesuree": 0.862
+    },
+    "512": {
+     "cr": "loggia-512-cr.webp",
+     "n": "loggia-512-n.webp",
+     "octets_cr": 131740,
+     "octets_n": 433386,
+     "rugosite_mesuree": 0.861
+    }
+   },
+   "raccord": {
+    "score_bord": 1.03,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    168,
+    165,
+    157
+   ],
+   "albedo_mesure_srgb": [
+    168,
+    165,
+    157
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     168,
+     165,
+     157
+    ],
+    "1024": [
+     168,
+     165,
+     157
+    ],
+    "512": [
+     168,
+     165,
+     157
+    ]
+   },
+   "dE": {
+    "2048": 0.14,
+    "1024": 0.2,
+    "512": 0.18
+   },
+   "dE_hybride_ensemble": 0.18,
+   "albedo_final_srgb": {
+    "loggia_floor": [
+     168,
+     165,
+     157
+    ]
+   },
+   "rugosite_cible": 0.86,
+   "contraste_albedo": 1.0,
+   "contraste_rugosite": 1.0,
+   "ecart_lum_proc": 0.0413,
+   "ecart_lum_scan": 0.085
+  },
+  "oak": {
+   "source": "oak_veneer_01",
+   "fournisseur": "Poly Haven",
+   "licence": "CC0-1.0",
+   "page": "https://polyhaven.com/a/oak_veneer_01",
+   "materiaux_moteur": {
+    "floor_dry": "ffffff"
+   },
+   "pose_gardee": "lames 1,20 × 0,20 m, joints, teinte par lame (oak)",
+   "repetition_m": [
+    1.83,
+    1.83
+   ],
+   "repetition_note": "API Poly Haven",
+   "fichiers": {
+    "2048": {
+     "cr": "oak-2048-cr.webp",
+     "n": "oak-2048-n.webp",
+     "octets_cr": 2166856,
+     "octets_n": 4665528,
+     "rugosite_mesuree": 0.565
+    },
+    "1024": {
+     "cr": "oak-1024-cr.webp",
+     "n": "oak-1024-n.webp",
+     "octets_cr": 551480,
+     "octets_n": 943958,
+     "rugosite_mesuree": 0.565
+    },
+    "512": {
+     "cr": "oak-512-cr.webp",
+     "n": "oak-512-n.webp",
+     "octets_cr": 165836,
+     "octets_n": 189626,
+     "rugosite_mesuree": 0.565
+    }
+   },
+   "raccord": {
+    "score_bord": 0.88,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    179,
+    149,
+    112
+   ],
+   "albedo_mesure_srgb": [
+    179,
+    149,
+    112
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     179,
+     149,
+     112
+    ],
+    "1024": [
+     179,
+     149,
+     112
+    ],
+    "512": [
+     179,
+     149,
+     112
+    ]
+   },
+   "dE": {
+    "2048": 0.09,
+    "1024": 0.09,
+    "512": 0.1
+   },
+   "dE_hybride_ensemble": 0.29,
+   "albedo_final_srgb": {
+    "floor_dry": [
+     179,
+     149,
+     112
+    ]
+   },
+   "rugosite_cible": 0.565,
+   "contraste_albedo": 1.0,
+   "contraste_rugosite": 1.0,
+   "ecart_lum_proc": 0.0431,
+   "ecart_lum_scan": 0.0611
+  },
+  "paint": {
+   "source": "painted_plaster_wall",
+   "fournisseur": "Poly Haven",
+   "licence": "CC0-1.0",
+   "page": "https://polyhaven.com/a/painted_plaster_wall",
+   "materiaux_moteur": {
+    "wall_b": "f2f2ef",
+    "wall_c": "f2f2ef",
+    "ceiling": "f8f7f3",
+    "ceiling_j": "f8f7f3"
+   },
+   "pose_gardee": "aucune",
+   "repetition_m": [
+    2.0,
+    2.0
+   ],
+   "repetition_note": "API Poly Haven",
+   "fichiers": {
+    "2048": {
+     "cr": "paint-2048-cr.webp",
+     "n": "paint-2048-n.webp",
+     "octets_cr": 369566,
+     "octets_n": 7357858,
+     "rugosite_mesuree": 0.86
+    },
+    "1024": {
+     "cr": "paint-1024-cr.webp",
+     "n": "paint-1024-n.webp",
+     "octets_cr": 70580,
+     "octets_n": 1628824,
+     "rugosite_mesuree": 0.86
+    },
+    "512": {
+     "cr": "paint-512-cr.webp",
+     "n": "paint-512-n.webp",
+     "octets_cr": 14444,
+     "octets_n": 322374,
+     "rugosite_mesuree": 0.86
+    }
+   },
+   "raccord": {
+    "score_bord": 1.12,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    251,
+    251,
+    251
+   ],
+   "albedo_mesure_srgb": [
+    252,
+    252,
+    251
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     252,
+     252,
+     251
+    ],
+    "1024": [
+     248,
+     248,
+     248
+    ],
+    "512": [
+     248,
+     248,
+     248
+    ]
+   },
+   "dE": {
+    "2048": 0.11,
+    "1024": 0.67,
+    "512": 0.69
+   },
+   "dE_hybride_ensemble": 0.68,
+   "albedo_final_srgb": {
+    "wall_b": [
+     239,
+     239,
+     236
+    ],
+    "wall_c": [
+     239,
+     239,
+     236
+    ],
+    "ceiling": [
+     245,
+     244,
+     240
+    ],
+    "ceiling_j": [
+     245,
+     244,
+     240
+    ]
+   },
+   "rugosite_cible": 0.86,
+   "contraste_albedo": 0.135,
+   "contraste_rugosite": 1.0,
+   "ecart_lum_proc": 0.0074,
+   "ecart_lum_scan": 0.0156
+  },
+  "paving": {
+   "source": "concrete_floor_01",
+   "fournisseur": "Poly Haven",
+   "licence": "CC0-1.0",
+   "page": "https://polyhaven.com/a/concrete_floor_01",
+   "materiaux_moteur": {
+    "paving": "ffffff"
+   },
+   "pose_gardee": "pavés 60 × 30 cm à joints décalés, joint 6 mm",
+   "repetition_m": [
+    2.0,
+    2.0
+   ],
+   "repetition_note": "API Poly Haven",
+   "fichiers": {
+    "2048": {
+     "cr": "paving-2048-cr.webp",
+     "n": "paving-2048-n.webp",
+     "octets_cr": 2284698,
+     "octets_n": 6795198,
+     "rugosite_mesuree": 0.901
+    },
+    "1024": {
+     "cr": "paving-1024-cr.webp",
+     "n": "paving-1024-n.webp",
+     "octets_cr": 624102,
+     "octets_n": 1729034,
+     "rugosite_mesuree": 0.901
+    },
+    "512": {
+     "cr": "paving-512-cr.webp",
+     "n": "paving-512-n.webp",
+     "octets_cr": 161916,
+     "octets_n": 375356,
+     "rugosite_mesuree": 0.901
+    }
+   },
+   "raccord": {
+    "score_bord": 1.07,
+    "traitement": "d'origine (raccordable)"
+   },
+   "albedo_cible_srgb": [
+    152,
+    150,
+    142
+   ],
+   "albedo_mesure_srgb": [
+    152,
+    150,
+    142
+   ],
+   "albedo_mesure_srgb_par_res": {
+    "2048": [
+     152,
+     150,
+     142
+    ],
+    "1024": [
+     152,
+     150,
+     142
+    ],
+    "512": [
+     152,
+     150,
+     142
+    ]
+   },
+   "dE": {
+    "2048": 0.17,
+    "1024": 0.17,
+    "512": 0.18
+   },
+   "dE_hybride_ensemble": 0.09,
+   "albedo_final_srgb": {
+    "paving": [
+     152,
+     150,
+     142
+    ]
+   },
+   "rugosite_cible": 0.9,
+   "contraste_albedo": 0.59,
+   "contraste_rugosite": 0.478,
+   "ecart_lum_proc": 0.0291,
+   "ecart_lum_scan": 0.1107
+  }
+ },
+ "poids_octets": {
+  "2048": 64197728,
+  "1024": 15511784,
+  "512": 3416898
+ }
+}

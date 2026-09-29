@@ -7,6 +7,14 @@
 ## Pourquoi
 Décision de l'utilisateur du 27/09/2026 (n° 14) : le précalcul côté serveur est validé. Il comprend une maquette compressée prête à l'emploi et les itinéraires. Aujourd'hui, le navigateur reconstruit toute la géométrie depuis `plan.json` à chaque ouverture (murs, baies, escaliers, équipements), puis ses itinéraires. Cela coûte du temps d'ouverture et de la mémoire sur un appareil modeste (décision 12). Le serveur produit une fois la maquette compressée et les itinéraires entre arrêts. Demande de l'utilisateur du 27/09/2026 (« ne pas charger ce qu'on ne voit pas », décision 13) : chargement progressif, la pièce d'entrée d'abord.
 
+## Étude du 29/09/2026 (soir), après l'accord de l'utilisateur (« L4-14 : carrément ok ! »)
+Lecture du code, sans mesure :
+- une maquette complète en fichier pèserait 10 à 14 Mo en GLB brut (géométrie non indexée, environ 96 octets par triangle), 5 à 8 Mo en binaire exact compressé : plus long à télécharger au téléphone que toute l'ouverture actuelle. meshopt et Draco demandent un décodeur WebAssembly (CSP) et perdent l'exactitude au mm dont le moteur dépend. **Écartés.**
+- Direction retenue : **précalculer les décisions, pas la géométrie** (`precalcul.json`, quelques dizaines de Ko) : cellules de culling de chaque triangle (`cellsOfTri`, probablement le plus gros poste), `cellsOfObject`, grilles de marche, `lampReach`, itinéraires entre arrêts ; la géométrie reste générée en direct, identique par construction ; empreinte du `plan.json` et du moteur, repli sur le calcul en direct.
+- Gains sans fichier à faire d'abord : matières générées pendant la construction (aujourd'hui avant, en série), three.js minifié et servi compressé.
+- Chargement progressif par pièce : gain presque nul sur un seul niveau (le voisinage de l'entrée couvre presque tout), grosse refonte : **à ne faire que si la mesure le justifie**.
+Découpage : E0 mesure de l'ouverture par étape (script sans modifier le moteur, profileur, 4 profils, règle de décision : si cellules, grilles, `lampReach` et contexte font moins de 0,3 s ou 15 % de la visite prête au téléphone, on s'arrête après E1) ; E1 gains sans fichier ; E2 `precalcul.json` + contrôle `precalcul` (seuil 0, test négatif) ; E3 itinéraires ; E4 et E5 conditionnels.
+
 ## À faire
 1. **Export de la maquette** construite par le moteur, depuis la visite chargée en palier « haut » (outil `moteur/precalcul.mjs` de L4-13, ou nouveau s'il n'existe pas encore). Format et compression à choisir sur mesures : poids, temps de décodage, prise en charge par les navigateurs de la matrice de L4-10. Décodeurs servis par nous (L4-06).
 2. **Itinéraires précalculés** entre chaque paire d'arrêts (logique d'`outils/trajets.mjs`, escaliers compris), dans un fichier à côté de `plan.json`.

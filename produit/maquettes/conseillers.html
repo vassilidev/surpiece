@@ -1,0 +1,697 @@
+<title>{{MARQUE}} Pro · Conseillers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Mise en page : feuille de plan d'architecte. Papier clair, traits Encre de 1,5 px, un seul bleu (Bleu plan), angles droits, cartouche en signature. Jetons repris de produit/MARQUE.md § 6. */
+:root{
+  --paper:#EDEFEA; --panel:#FAFBF8; --panel-2:#F2F4F0; --plan-bg:#F7F8F5;
+  --ink:#161918; --ink-2:#555B57; --line:#CDD2CB; --accent:#2C49B8; --accent-ink:#FFFFFF;
+  --ok:#2F7A4A; --warn:#A8471F; --poche:#1A1C1B; --grid:#A9AFA9; --dash:#6D746F;
+  --shadow:0 1px 2px rgba(22,25,24,.08),0 8px 24px rgba(22,25,24,.10);
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --w:1180px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#101312; --panel:#181C1A; --panel-2:#1F2421; --plan-bg:#141816;
+  --ink:#E6E9E4; --ink-2:#A1A8A2; --line:#2E3431; --accent:#93A8FF; --accent-ink:#0E1120;
+  --ok:#6FCB8F; --warn:#F08A5D; --poche:#DCE0DA; --grid:#48504B; --dash:#8B938D;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#101312; --panel:#181C1A; --panel-2:#1F2421; --plan-bg:#141816;
+  --ink:#E6E9E4; --ink-2:#A1A8A2; --line:#2E3431; --accent:#93A8FF; --accent-ink:#0E1120;
+  --ok:#6FCB8F; --warn:#F08A5D; --poche:#DCE0DA; --grid:#48504B; --dash:#8B938D;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--f-display);font-variation-settings:"wdth" 100;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:var(--w);margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:700 12px/1.2 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:800}
+h1{font-size:clamp(34px,5.2vw,60px);line-height:1.02;letter-spacing:-.015em;font-variation-settings:"wdth" 112}
+h2{font-size:clamp(26px,3.4vw,40px);line-height:1.06;letter-spacing:-.01em;font-variation-settings:"wdth" 110}
+h3{font-size:19px;line-height:1.2;font-variation-settings:"wdth" 108}
+p{margin:0}
+.lede{font-size:clamp(17px,1.6vw,19px);color:var(--ink-2);max-width:60ch}
+
+/* Bandeau de maquette */
+.draft{background:var(--ink);color:var(--paper);font:500 12px/1.4 var(--f-mono);text-align:center;padding:7px 16px}
+
+/* En-tête */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1.5px solid var(--ink)}
+.top .wrap{display:flex;align-items:center;gap:24px;min-height:64px}
+.brand{display:inline-flex;align-items:stretch;border:1.5px solid var(--ink);text-decoration:none;background:var(--panel)}
+.brand b{font:800 17px/1 var(--f-display);font-variation-settings:"wdth" 125;letter-spacing:.01em;text-transform:uppercase;padding:9px 11px}
+.brand i{font:500 10px/1 var(--f-mono);font-style:normal;color:var(--ink-2);border-left:1px solid var(--line);padding:0 9px;display:flex;align-items:center;letter-spacing:.06em}
+nav.links{display:flex;gap:22px;margin-left:auto;font-weight:600;font-size:15px}
+nav.links a{text-decoration:none;padding:6px 0;border-bottom:1.5px solid transparent}
+nav.links a:hover{border-color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:0 20px;border:1.5px solid var(--ink);background:var(--panel);color:var(--ink);font:600 15px/1 var(--f-display);font-variation-settings:"wdth" 100;text-decoration:none;cursor:pointer;transition:background .15s,color .15s}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn .arr{font-family:var(--f-mono)}
+@media (max-width:860px){nav.links{display:none}.top .btn{margin-left:auto;min-height:40px;padding:0 14px;font-size:14px;white-space:nowrap}}
+@media (max-width:520px){.brand i{display:none}.brand b{font-size:15px;padding:8px 9px}.top .wrap{gap:12px}}
+
+/* Héros */
+.hero{position:relative;border-bottom:1.5px solid var(--ink);
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:40px 40px,40px 40px,8px 8px,8px 8px;background-position:-1px -1px}
+.hero::before{content:"";position:absolute;inset:0;background:var(--paper);opacity:.72;pointer-events:none}
+@media (prefers-contrast:more){.hero{background-image:none}}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"txt viz" "drop viz";gap:28px 48px;padding-block:clamp(36px,6vw,72px)}
+.hero-txt{grid-area:txt;display:grid;gap:18px;align-content:start}
+.hero-drop{grid-area:drop;display:grid;gap:14px;align-content:start}
+.hero-viz{grid-area:viz;min-width:0}
+@media (max-width:980px){.hero .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"txt" "viz" "drop"}}
+
+.drop{position:relative;border:2px dashed var(--ink);background:var(--panel);padding:22px;display:grid;gap:12px;justify-items:start;cursor:pointer;transition:background .15s}
+.drop.over{background:var(--panel-2);border-color:var(--accent)}
+.drop strong{font-size:18px;font-variation-settings:"wdth" 108}
+.drop small{color:var(--ink-2);font-size:13.5px}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.assur{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14.5px}
+.assur li{display:flex;gap:10px;align-items:baseline}
+.assur li::before{content:"";flex:none;width:7px;height:7px;background:var(--ok);transform:translateY(-1px)}
+.limits{font-size:13px;color:var(--ink-2)}
+
+/* Visionneuse */
+.viewer{border:1.5px solid var(--ink);background:var(--plan-bg);box-shadow:var(--shadow);display:grid}
+.viewer-bar{display:flex;gap:0;border-bottom:1.5px solid var(--ink);overflow-x:auto}
+.mode{flex:1 0 auto;border:0;border-right:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 14px/1 var(--f-display);font-variation-settings:"wdth" 92;padding:12px 14px;cursor:pointer;min-height:44px}
+.mode:last-child{border-right:0}
+.mode[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.stage{position:relative;aspect-ratio:4/3.1;max-width:100%;overflow:hidden;touch-action:none}
+.stage canvas{display:block;width:100%;height:100%;transition:opacity .18s}
+.labels{position:absolute;inset:0;pointer-events:none}
+.lab{position:absolute;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;font:700 10.5px/1.25 var(--f-display);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);transition:opacity .2s}
+.lab span{display:block;font:500 11.5px/1.3 var(--f-mono);letter-spacing:0;text-transform:none;color:var(--ink-2)}
+.lab.cote{font:500 12px/1 var(--f-mono);letter-spacing:0;color:var(--accent);background:var(--plan-bg);padding:1px 3px}
+.hint{position:absolute;left:12px;bottom:12px;font:500 12px/1.3 var(--f-mono);background:var(--panel);border:1px solid var(--line);padding:5px 8px;color:var(--ink-2)}
+.nowebgl{display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2)}
+.cartouche{display:grid;grid-template-columns:auto 1fr;border-top:1.5px solid var(--ink);background:var(--panel)}
+.cartouche .id{font:800 26px/1 var(--f-display);font-variation-settings:"wdth" 125;padding:10px 14px;border-right:1.5px solid var(--ink);display:flex;align-items:center}
+.cartouche .body{display:grid;min-width:0}
+.cartouche .body>*{padding:4px 12px;border-bottom:1px solid var(--line)}
+.cartouche .body>*:last-child{border-bottom:0}
+.cartouche .t{font-weight:600;font-size:14.5px}
+.cartouche .m{font:500 12.5px/1.4 var(--f-mono);color:var(--ink)}
+.cartouche .n{font-size:12px;color:var(--ink-2)}
+
+/* Chantier (démonstration de l'attente) */
+.chantier{border:1.5px solid var(--ink);background:var(--panel);padding:18px;display:grid;gap:12px}
+.bar{height:10px;border:1.5px solid var(--ink);background:var(--panel-2);position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent);transition:width .5s}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px}
+.steps li{display:flex;gap:10px;align-items:center;color:var(--ink-2)}
+.steps li::before{content:"";width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-2);flex:none}
+.steps li.on{color:var(--ink)}
+.steps li.on::before{border-color:var(--accent);background:var(--accent);animation:pulse 1.2s ease-in-out infinite}
+.steps li.done{color:var(--ink)}
+.steps li.done::before{border-color:var(--ok);background:var(--ok);animation:none}
+@keyframes pulse{50%{opacity:.35}}
+.phrase{font-style:normal;color:var(--ink-2);font-size:14px;min-height:1.5em}
+
+/* Sections */
+section.block{border-bottom:1.5px solid var(--ink)}
+section.block>.wrap{padding-block:clamp(48px,7vw,88px);display:grid;gap:32px}
+.head{display:grid;gap:12px;max-width:760px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1.5px solid var(--ink);background:var(--panel)}
+.facts>div{padding:22px clamp(16px,2.4vw,28px);border-right:1.5px solid var(--ink);display:grid;gap:6px;min-width:0}
+.facts>div:last-child{border-right:0}
+.facts b{font-size:16px;font-variation-settings:"wdth" 108}
+.facts p{font-size:14.5px;color:var(--ink-2)}
+@media (max-width:760px){.facts{grid-template-columns:minmax(0,1fr)}.facts>div{border-right:0;border-bottom:1.5px solid var(--ink)}.facts>div:last-child{border-bottom:0}}
+
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1.5px solid var(--ink);background:var(--panel)}
+.how>li{list-style:none;padding:24px;border-right:1.5px solid var(--ink);display:grid;gap:10px;align-content:start;min-width:0}
+.how>li:last-child{border-right:0}
+.how .n{font:500 13px/1 var(--f-mono);color:var(--accent)}
+.how p{color:var(--ink-2);font-size:15px}
+ol.how{margin:0;padding:0}
+@media (max-width:860px){.how{grid-template-columns:minmax(0,1fr)}.how>li{border-right:0;border-bottom:1.5px solid var(--ink)}.how>li:last-child{border-bottom:0}}
+
+.gets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:18px}
+.get{border:1.5px solid var(--ink);background:var(--panel);display:grid;grid-template-rows:auto 1fr}
+.get svg{display:block;width:100%;height:auto;border-bottom:1.5px solid var(--ink);background:var(--plan-bg)}
+.get>div{padding:16px 18px;display:grid;gap:6px;align-content:start}
+.get p{font-size:14.5px;color:var(--ink-2)}
+.tag{justify-self:start;font:500 11.5px/1 var(--f-mono);padding:4px 6px;border:1px solid var(--ink-2);color:var(--ink-2)}
+.tag.free{border-color:var(--ok);color:var(--ok)}
+
+.moments{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:0;border:1.5px solid var(--ink);background:var(--panel)}
+.moment{padding:22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:8px;align-content:start}
+.moment .when{font:500 12px/1 var(--f-mono);color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.moment p{font-size:14.5px;color:var(--ink-2)}
+
+.tbl{overflow-x:auto;border:1.5px solid var(--ink);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14.5px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font:700 12px/1.3 var(--f-display);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1.5px solid var(--ink)}
+tbody th{font-weight:600;width:24%}
+td.us,th.us{background:var(--panel-2)}
+th.us{color:var(--ink)}
+td.us{font-weight:600}
+.yes{color:var(--ok);font-weight:600}
+.no{color:var(--ink-2)}
+.note{font-size:12.5px;color:var(--ink-2)}
+
+.prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+@media (max-width:900px){.prices{grid-template-columns:minmax(0,1fr)}}
+.price{border:1.5px solid var(--ink);background:var(--panel);padding:24px;display:grid;gap:14px;grid-template-rows:auto auto 1fr auto}
+.price.main{box-shadow:inset 0 0 0 1.5px var(--accent);border-color:var(--accent)}
+.price .amt{font:800 44px/1 var(--f-display);font-variation-settings:"wdth" 112;letter-spacing:-.02em}
+.price .amt small{font:500 14px/1 var(--f-mono);letter-spacing:0;color:var(--ink-2);margin-left:6px}
+.price ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:14.5px;align-content:start}
+.price li{display:grid;grid-template-columns:14px 1fr;gap:10px}
+.price li::before{content:"";width:9px;height:1.5px;background:var(--ink);margin-top:.72em}
+.price .plus li::before{background:var(--accent);height:2px}
+.after{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:14px;color:var(--ink-2)}
+
+.faq{display:grid;gap:0;border:1.5px solid var(--ink);background:var(--panel);max-width:880px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:last-child{border-bottom:0}
+.faq summary{list-style:none;cursor:pointer;padding:18px 20px;font-weight:600;font-size:16px;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--f-mono);color:var(--accent)}
+.faq details[open] summary::after{content:"–"}
+.faq details p{padding:0 20px 18px;color:var(--ink-2);font-size:15px;max-width:70ch}
+
+.final{background:var(--ink);color:var(--paper)}
+.final .wrap{padding-block:clamp(48px,7vw,80px);display:grid;gap:18px;justify-items:start}
+.final h2{color:var(--paper)}
+.final p{color:var(--paper);opacity:.8}
+.final .btn.primary{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.final .btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+footer .wrap{padding-block:28px 40px;display:grid;gap:10px;font-size:13px;color:var(--ink-2)}
+.proline{border:1.5px solid var(--ink);background:var(--panel);padding:18px 22px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+.proline p{font-size:15px}
+
+.sticky-cta{display:none}
+@media (max-width:760px){
+  .sticky-cta{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--paper);border-top:1.5px solid var(--ink)}
+  .sticky-cta .btn{flex:1}
+  body{padding-bottom:70px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<style>
+.pro-hero .wrap{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"txt viz" "drop viz"}
+@media (max-width:980px){.pro-hero .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"txt" "viz" "drop"}}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.dossier{border:1.5px solid var(--ink);background:var(--panel);box-shadow:var(--shadow);display:grid}
+.dossier-h{display:grid;grid-template-columns:auto 1fr;border-bottom:1.5px solid var(--ink)}
+.dossier-h .id{font:800 22px/1 var(--f-display);font-variation-settings:"wdth" 125;padding:12px 14px;border-right:1.5px solid var(--ink);display:flex;align-items:center}
+.dossier-h .body>*{padding:4px 12px;border-bottom:1px solid var(--line)}
+.dossier-h .body>*:last-child{border-bottom:0}
+.rows{display:grid}
+.row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);font-size:14px}
+.row:last-child{border-bottom:0}
+.row b{font-weight:600;display:block}
+.row small{font:500 12px/1.3 var(--f-mono);color:var(--ink-2)}
+.chip{font:500 11.5px/1 var(--f-mono);padding:5px 7px;border:1.5px solid currentColor;white-space:nowrap}
+.chip.hot{color:var(--accent);background:var(--panel-2)}
+.chip.ok{color:var(--ok)}
+.chip.idle{color:var(--ink-2)}
+.dossier-f{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:12px 14px;border-top:1.5px solid var(--ink);background:var(--panel-2);font-size:13px;color:var(--ink-2)}
+.link{font:500 12.5px/1 var(--f-mono);color:var(--ink);border:1px solid var(--ink-2);padding:7px 9px;background:var(--panel);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.notif{border:1.5px solid var(--accent);background:var(--panel);padding:12px 14px;display:grid;gap:4px;font-size:14px}
+.notif .eyebrow{color:var(--accent)}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));border:1.5px solid var(--ink);background:var(--panel)}
+.feat>div{padding:20px 22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:6px;align-content:start}
+.feat p{font-size:14.5px;color:var(--ink-2)}
+.fond{border:1.5px solid var(--ink);background:var(--panel);padding:24px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center}
+@media (max-width:760px){.fond{grid-template-columns:minmax(0,1fr)}}
+.constat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:860px){.constat{grid-template-columns:minmax(0,1fr)}}
+.constat>div{border-top:1.5px solid var(--ink);padding-top:14px;display:grid;gap:8px}
+.constat p{color:var(--ink-2);font-size:15px}
+.rdv{border:1.5px solid var(--ink);background:var(--ink);box-shadow:var(--shadow);display:grid}
+.rdv-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;color:var(--paper);font:500 12px/1.2 var(--f-mono)}
+.rdv-top .live{display:inline-flex;align-items:center;gap:8px}
+.rdv-top .live::before{content:"";width:8px;height:8px;border-radius:50%;background:#E5484D;animation:pulse 1.2s ease-in-out infinite}
+.rdv .stage{aspect-ratio:16/10.5;background:var(--plan-bg)}
+.who{position:absolute;right:10px;top:10px;display:grid;gap:6px;pointer-events:none}
+.who span{background:var(--ink);color:var(--paper);font:500 11.5px/1 var(--f-mono);padding:8px 10px;border:1px solid var(--paper);min-width:120px}
+.here{position:absolute;left:10px;top:10px;background:var(--panel);border:1.5px solid var(--ink);padding:6px 10px;font:700 12px/1.2 var(--f-display);letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+.here small{display:block;font:500 11.5px/1.3 var(--f-mono);letter-spacing:0;text-transform:none;color:var(--ink-2)}
+.tourbar{display:flex;gap:0;border-top:1.5px solid var(--ink);background:var(--panel);overflow-x:auto}
+.stop{flex:1 0 auto;border:0;border-right:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 13.5px/1 var(--f-display);font-variation-settings:"wdth" 92;padding:12px 12px;cursor:pointer;min-height:44px}
+.stop[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.stop.next{background:var(--accent);color:var(--accent-ink);border-right:0}
+</style>
+
+<div class="draft">Maquette de travail · nom, prix et fonctions à valider · appartement témoin fictif</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="{{MARQUE}} Pro, accueil"><b>{{MARQUE}}</b><i>PRO</i></a>
+    <nav class="links" aria-label="Principale">
+      <a href="#comment">Comment ça marche</a>
+      <a href="#fonctions">Fonctions</a>
+      <a href="#prix">Prix</a>
+      <a href="#faq">Questions</a>
+    </nav>
+    <a class="btn primary" href="#essai">Essayer 14 jours</a>
+  </div>
+</header>
+
+<main>
+<section class="hero pro-hero">
+  <div class="wrap">
+    <div class="hero-txt">
+      <div class="eyebrow">Pour les conseillers en gestion de patrimoine</div>
+      <h1>Faites visiter le lot avant la première pierre.</h1>
+      <p class="lede">Envoyez à votre client la visite du lot qu'il achète sur plan. Puis, en rendez-vous, faites-lui le tour du propriétaire en direct, pièce par pièce.</p>
+    </div>
+
+    <div class="hero-viz">
+      <div class="rdv">
+        <div class="rdv-top"><span class="live">Rendez-vous en visio · vous présentez</span><span>Lot B204 · T3</span></div>
+        <div class="stage" id="stage">
+          <canvas id="c" aria-label="Visite guidée de l'appartement témoin fictif"></canvas>
+          <div class="labels" id="labels"></div>
+          <div class="here" id="here">Séjour · cuisine<small>24,2 m²</small></div>
+          <div class="who" aria-hidden="true"><span>M. et Mme Arnaud</span></div>
+          <div class="hint" id="hint" hidden>Glissez pour regarder autour</div>
+        </div>
+        <div class="tourbar" role="group" aria-label="Visite guidée">
+          <button class="stop" type="button" data-i="0" aria-pressed="true">Séjour</button>
+          <button class="stop" type="button" data-i="1" aria-pressed="false">Cuisine</button>
+          <button class="stop" type="button" data-i="2" aria-pressed="false">Chambre 1</button>
+          <button class="stop" type="button" data-i="3" aria-pressed="false">Chambre 2</button>
+          <button class="stop" type="button" data-i="4" aria-pressed="false">Loggia</button>
+          <button class="stop next" type="button" id="next">Pièce suivante →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-drop" id="essai">
+      <div class="ctas">
+        <a class="btn primary" href="#prix">Essayer 14 jours, sans carte <span class="arr">→</span></a>
+        <a class="btn" href="#demo">Réserver une démonstration</a>
+      </div>
+      <ul class="assur">
+        <li>3 plans complets offerts pendant l'essai.</li>
+        <li>Votre client ouvre la visite sur son téléphone, sans compte.</li>
+        <li>Sans engagement : résiliable en ligne à tout moment.</li>
+      </ul>
+      <p class="limits">Démonstration en visio de 20 minutes : nous générons un de vos lots pendant l'appel.</p>
+    </div>
+  </div>
+</section>
+
+<div class="facts">
+  <div><b>Un lien, sans compte</b><p>Par e-mail, SMS ou WhatsApp. Votre client entre dans le lot en un geste, depuis son téléphone.</p></div>
+  <div><b>Présentez en direct</b><p>Plein écran en visio ou au bureau : vous guidez, pièce par pièce, et votre client pose ses questions sur place.</p></div>
+  <div><b>À vos couleurs</b><p>Votre logo, vos coordonnées et votre lien de rendez-vous sur chaque visite.</p></div>
+</div>
+
+<section class="block">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Le constat</div>
+      <h2>L'investisseur signe souvent sans avoir rien vu.</h2>
+    </div>
+    <div class="constat">
+      <div><h3>À distance</h3><p>Votre client habite loin du programme. Il n'a vu ni le quartier ni l'appartement témoin, seulement un PDF et une perspective.</p></div>
+      <div><h3>Un lot parmi d'autres</h3><p>Le promoteur modélise quelques lots types. Le lot que vous proposez n'a souvent qu'un plan de vente.</p></div>
+      <div><h3>Le doute coûte des ventes</h3><p>Rétractation, refus de prêt, hésitation du conjoint : un client qui s'est projeté dans son lot hésite moins.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="comment">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">En trois étapes</div>
+      <h2>Du plan du lot au rendez-vous qui convainc.</h2>
+    </div>
+    <ol class="how">
+      <li><span class="n">1</span><h3>Déposez le plan de vente</h3><p>Le PDF reçu du promoteur ou de votre plateforme. Plan coté, maquette et visite sont prêts en quelques minutes.</p></li>
+      <li><span class="n">2</span><h3>Envoyez la visite</h3><p>Avant le rendez-vous pour qu'il découvre le lot, ou après pour qu'il le montre à ses proches.</p></li>
+      <li><span class="n">3</span><h3>Présentez-la ensemble</h3><p>En visio ou au bureau, vous faites le tour du lot avec lui, plan coté à l'appui, et vous répondez à chaque question.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="fonctions">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Fonctions</div>
+      <h2>Tout ce qu'il faut pour vendre sur plan.</h2>
+    </div>
+    <div class="feat">
+      <div><h3>Mode présentation</h3><p>Visite guidée pièce par pièce, en plein écran, pensée pour le partage d'écran.</p></div>
+      <div><h3>Liens de visite illimités</h3><p>Privés, absents des moteurs de recherche, révocables, avec une durée réglable.</p></div>
+      <div><h3>Visite 360° sur téléphone</h3><p>Légère, fluide même sur un téléphone d'entrée de gamme.</p></div>
+      <div><h3>Comparer plusieurs lots</h3><p>Deux étages, deux orientations : présentez-les l'un après l'autre dans le même rendez-vous.</p></div>
+      <div><h3>Dossiers par client</h3><p>Chaque client et ses lots au même endroit, prêts pour le prochain rendez-vous.</p></div>
+      <div><h3>Fiche du lot à votre logo</h3><p>Plan coté et surfaces par pièce, comparées au tableau du promoteur, à laisser à votre client.</p></div>
+    </div>
+  </div>
+</section>
+<section class="block" id="prix">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Prix HT · sans engagement</div>
+      <h2>Un abonnement, des plans inclus chaque mois.</h2>
+    </div>
+    <div class="prices">
+      <article class="price">
+        <div class="eyebrow">Solo</div>
+        <div class="amt">49 €<small>HT / mois</small></div>
+        <ul>
+          <li>5 plans par mois</li>
+          <li>1 utilisateur</li>
+          <li>Liens de visite illimités</li>
+          <li>Votre logo et vos coordonnées</li>
+        </ul>
+        <a class="btn" href="#essai">Essayer 14 jours</a>
+      </article>
+      <article class="price main">
+        <div class="eyebrow">Cabinet</div>
+        <div class="amt">99 €<small>HT / mois</small></div>
+        <ul class="plus">
+          <li>12 plans par mois</li>
+          <li>3 utilisateurs</li>
+          <li>Dossiers par client et par programme</li>
+          <li>Vos couleurs et votre lien de rendez-vous</li>
+          <li>Fiche du lot en PDF</li>
+        </ul>
+        <a class="btn primary" href="#essai">Essayer 14 jours <span class="arr">→</span></a>
+      </article>
+      <article class="price">
+        <div class="eyebrow">Équipe</div>
+        <div class="amt">199 €<small>HT / mois</small></div>
+        <ul class="plus">
+          <li>30 plans par mois</li>
+          <li>10 utilisateurs et leurs rôles</li>
+          <li>Bibliothèque de lots partagée</li>
+          <li>Visites intégrées à votre site</li>
+        </ul>
+        <a class="btn" href="#essai">Essayer 14 jours</a>
+      </article>
+    </div>
+    <div class="after">
+      <span>Annuel : 10 mois payés sur 12</span>
+      <span>Plans non utilisés reportés au mois suivant</span>
+      <span>Recharge de 5 plans dès <b class="mono">35 €</b> HT</span>
+    </div>
+    <div class="fond">
+      <div><div class="eyebrow">Cabinets fondateurs</div><h3 style="margin-top:6px">3 mois offerts pour les 30 premiers cabinets</h3><p style="color:var(--ink-2);margin-top:6px">En échange, un entretien de 20 minutes par mois pour nous dire ce qui vous manque.</p></div>
+      <a class="btn primary" href="#demo" id="demo">Rejoindre les fondateurs</a>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="head"><h2>Vos questions</h2></div>
+    <div class="faq">
+      <details open><summary>Puis-je présenter la visite pendant un rendez-vous en visio ?</summary><p>Oui. Ouvrez le mode présentation et partagez votre écran : vous passez d'une pièce à l'autre, vous montrez le plan coté ou la maquette, et votre client suit avec vous. Au bureau, la visite passe aussi sur grand écran.</p></details>
+      <details><summary>Ai-je le droit d'envoyer la visite d'un plan de promoteur ?</summary><p>Le plan appartient au promoteur et à son architecte. Avant votre premier lien sur un programme, vous confirmez disposer de son autorisation ou d'une convention de commercialisation, ce qui est le cas de la plupart des distributeurs. Sans elle, votre client peut déposer lui-même son plan pour son usage privé.</p></details>
+      <details><summary>Que voit exactement mon client ?</summary><p>Une page à vos couleurs avec vos coordonnées, le plan coté, la maquette 3D, la visite à hauteur d'yeux et la visite 360°. Jamais le plan d'origine du promoteur, et aucun prix sauf si vous l'ajoutez.</p></details>
+      <details><summary>La visite est-elle fidèle au plan ?</summary><p>Elle reprend les cotes du plan de vente, lues dans le PDF, et compare chaque surface au tableau du promoteur. Chaque visite est vérifiée automatiquement avant d'être livrée. Elle reste une illustration non contractuelle.</p></details>
+      <details><summary>Et si un plan ne passe pas ?</summary><p>Un plan non pris en charge est refusé avant d'être lancé, et il n'est pas décompté. Si une visite ne peut pas être produite, le plan revient sur votre compte.</p></details>
+      <details><summary>Où sont les données de mes clients ?</summary><p>Hébergées dans l'Union européenne. Vous restez responsable du traitement de vos contacts ; nous agissons comme sous-traitant, avec un accord de traitement des données signé.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Présentez votre prochain lot en visite, dès cette semaine.</h2>
+    <p>14 jours d'essai, 3 plans offerts, sans carte bancaire.</p>
+    <a class="btn primary" href="#essai">Essayer 14 jours <span class="arr">→</span></a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · illustration non contractuelle : seuls les plans et la notice annexés au contrat de vente font foi.</p>
+  </div>
+</footer>
+
+<div class="sticky-cta"><a class="btn primary" href="#essai">Essayer 14 jours <span class="arr">→</span></a></div>
+
+<script>window.__START="yeux";</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+/* ---------- Appartement témoin fictif (mètres ; x vers l'est, z vers le sud) ---------- */
+const EXT=0.2, INT=0.08, GC=0.15, H=2.5;
+// [x1,z1,x2,z2, épaisseur, hauteur, ouvertures [début,fin,type]] ; les positions d'ouverture sont prises le long du mur
+const WALLS=[
+  [0,0,10,0,EXT,H,[[0.7,1.6,'porte'],[4.5,5.2,'haute'],[7.4,9.0,'fenetre']]],
+  [10,0,10,6.8,EXT,H,[[4.4,5.8,'fenetre']]],
+  [0,6.8,10,6.8,EXT,H,[[1.0,4.6,'baie'],[7.3,9.1,'fenetre']]],
+  [0,0,0,6.8,EXT,H,[[4.0,5.6,'fenetre']]],
+  [2.4,0,2.4,1.8,INT,H,[]],
+  [3.6,0,3.6,1.8,INT,H,[]],
+  [2.4,1.8,6.4,1.8,INT,H,[[0.2,0.9,'porte'],[2.4,3.2,'porte']]],
+  [6.4,0,6.4,6.8,INT,H,[[2.0,2.75,'porte'],[3.6,4.35,'porte']]],
+  [6.4,3.2,10,3.2,INT,H,[]],
+  [3.4,2.8,6.4,2.8,INT,H,[]],
+  [0.6,8.3,5.8,8.3,GC,1.0,[]],
+  [0.6,6.8,0.6,8.3,GC,1.0,[]],
+  [5.8,6.8,5.8,8.3,GC,1.0,[]],
+];
+const OPEN={porte:[0,2.1],fenetre:[1.0,2.15],baie:[0,2.2],haute:[1.5,2.15]};
+// pièces : rectangle d'axes et épaisseur de mur de chaque côté [gauche, haut, droite, bas]
+const ROOMS=[
+  ['Séjour · cuisine',0,2.8,6.4,6.8,[EXT,INT,INT,EXT]],
+  ['Chambre 1',6.4,3.2,10,6.8,[INT,INT,EXT,EXT]],
+  ['Chambre 2',6.4,0,10,3.2,[INT,EXT,EXT,INT]],
+  ['Entrée',0,0,2.4,2.8,[EXT,EXT,INT,0]],
+  ['Salle de bains',3.6,0,6.4,1.8,[INT,EXT,INT,INT]],
+  ['WC',2.4,0,3.6,1.8,[INT,EXT,INT,INT]],
+  ['Dégagement',2.4,1.8,6.4,2.8,[INT,INT,INT,INT]],
+];
+const LOGGIA=['Loggia',0.6,6.8,5.8,8.3,[GC,EXT,GC,GC]];
+const area=r=>{const t=r[5];return (r[3]-r[1]-t[0]/2-t[2]/2)*(r[4]-r[2]-t[1]/2-t[3]/2)};
+const fr=(v,d=1)=>v.toFixed(d).replace('.',',');
+// portes : [charnière x,z, extrémité fermée x,z, sens d'ouverture]
+const DOORS=[
+  {h:[0.7,0],e:[1.6,0],o:[0,1]},       // entrée, vers l'intérieur
+  {h:[2.6,1.8],e:[3.3,1.8],o:[0,-1]},  // WC
+  {h:[4.8,1.8],e:[5.6,1.8],o:[0,-1]},  // salle de bains
+  {h:[6.4,2.0],e:[6.4,2.75],o:[1,0]},  // chambre 2
+  {h:[6.4,3.6],e:[6.4,4.35],o:[1,0]},  // chambre 1
+];
+
+const stage=document.getElementById('stage'), canvas=document.getElementById('c'), labelsEl=document.getElementById('labels'), hint=document.getElementById('hint');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let renderer;
+try{ renderer=new THREE.WebGLRenderer({canvas,antialias:true}); }catch(e){ renderer=null; }
+if(!window.THREE||!renderer){ stage.innerHTML='<div class="nowebgl">L’aperçu 3D ne démarre pas sur cet appareil. Le plan 2D et les photos restent disponibles dans le service.</div>'; return; }
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.localClippingEnabled=true;
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const scene=new THREE.Scene();
+const cut=new THREE.Plane(new THREE.Vector3(0,-1,0),1.15);
+const clip=[cut];
+const M={
+  wall:new THREE.MeshLambertMaterial({clippingPlanes:clip}),
+  poche:new THREE.MeshBasicMaterial({side:THREE.BackSide,clippingPlanes:clip}),
+  edge:new THREE.LineBasicMaterial({clippingPlanes:clip}),
+  floor:new THREE.MeshLambertMaterial(),
+  floorOut:new THREE.MeshLambertMaterial(),
+  ceil:new THREE.MeshLambertMaterial({side:THREE.BackSide}),
+  thin:new THREE.LineBasicMaterial(),
+  dash:new THREE.LineDashedMaterial({dashSize:.12,gapSize:.08,clippingPlanes:clip}),
+  furn:new THREE.MeshLambertMaterial({clippingPlanes:clip}),
+  glass:new THREE.MeshBasicMaterial({transparent:true,opacity:.16,clippingPlanes:clip,depthWrite:false}),
+  blue:new THREE.LineDashedMaterial({dashSize:.22,gapSize:.14}),
+  blueSolid:new THREE.LineBasicMaterial(),
+  dot:new THREE.MeshBasicMaterial(),
+};
+const hemi=new THREE.HemisphereLight(0xffffff,0xe4e4e4,1.0); scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffffff,0.42); sun.position.set(-6,14,9); scene.add(sun);
+
+function applyTheme(){
+  const c=n=>new THREE.Color(css(n));
+  scene.background=c('--plan-bg');
+  M.wall.color=c('--panel'); M.poche.color=c('--poche'); M.edge.color=c('--ink');
+  M.floor.color=c('--panel-2'); M.floorOut.color=c('--plan-bg'); M.ceil.color=c('--panel');
+  M.thin.color=c('--ink-2'); M.dash.color=c('--dash'); M.furn.color=c('--panel');
+  M.glass.color=c('--accent'); M.blue.color=c('--accent'); M.blueSolid.color=c('--accent'); M.dot.color=c('--accent');
+  const dark=scene.background.getHSL({}).l<.3;
+  hemi.intensity=dark?.7:1.0; sun.intensity=dark?.28:.34;
+  render();
+}
+
+const root=new THREE.Group(); root.position.set(-5,0,-4.15); scene.add(root);
+const planOnly=new THREE.Group(), maquetteOnly=new THREE.Group(), eyeOnly=new THREE.Group();
+root.add(planOnly,maquetteOnly,eyeOnly);
+
+function box(x1,z1,x2,z2,y1,y2,mat,edges=true,group=root){
+  const w=Math.max(Math.abs(x2-x1),.001), d=Math.max(Math.abs(z2-z1),.001), h=y2-y1;
+  const g=new THREE.BoxGeometry(w,h,d);
+  const m=new THREE.Mesh(g,mat); m.position.set((x1+x2)/2,y1+h/2,(z1+z2)/2); group.add(m);
+  if(mat===M.wall){ const b=new THREE.Mesh(g,M.poche); b.position.copy(m.position); group.add(b); }
+  if(edges){ const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),mat===M.furn?M.dash:M.edge); e.position.copy(m.position); if(mat===M.furn)e.computeLineDistances(); group.add(e); }
+  return m;
+}
+// murs, découpés autour des ouvertures (allège et linteau conservés)
+for(const [x1,z1,x2,z2,t,h,ops] of WALLS){
+  const horiz=z1===z2, L=horiz?x2-x1:z2-z1;
+  const seg=(a,b,y1,y2)=>{ if(b-a<.005)return;
+    const ext=(a===0||b===L)?t/2:0; // prolonge aux angles
+    const A=a===0?a-ext:a, B=b===L?b+ext:b;
+    if(horiz) box(x1+A,z1-t/2,x1+B,z1+t/2,y1,y2,M.wall); else box(x1-t/2,z1+A,x1+t/2,z1+B,y1,y2,M.wall); };
+  let s=0; const o=[...ops].sort((p,q)=>p[0]-q[0]);
+  for(const [a,b,type] of o){ seg(s,a,0,h); const [lo,hi]=OPEN[type]; if(lo>0)seg(a,b,0,lo); seg(a,b,hi,h);
+    if(type!=='porte'){ if(horiz) box(x1+a,z1-.01,x1+b,z1+.01,lo,hi,M.glass,false); else box(x1-.01,z1+a,x1+.01,z1+b,lo,hi,M.glass,false); }
+    s=b; }
+  seg(s,L,0,h);
+}
+// sols et plafond
+for(const r of [...ROOMS,LOGGIA]){ const f=new THREE.Mesh(new THREE.PlaneGeometry(r[3]-r[1],r[4]-r[2]),r===LOGGIA?M.floorOut:M.floor); f.rotation.x=-Math.PI/2; f.position.set((r[1]+r[3])/2,0,(r[2]+r[4])/2); root.add(f); }
+const ceil=new THREE.Mesh(new THREE.PlaneGeometry(10.2,7),M.ceil); ceil.rotation.x=-Math.PI/2; ceil.position.set(5,H,3.4); eyeOnly.add(ceil);
+// équipements dessinés sur le plan (cuisine indicative en tireté)
+box(3.5,2.86,6.32,3.46,0,.9,M.furn); box(3.7,.14,5.4,.84,0,.55,M.furn); box(5.75,.14,6.3,.62,0,.85,M.furn); box(2.8,.14,3.2,.72,0,.42,M.furn);
+// portes : battant et arc de débattement (plan et maquette)
+for(const d of DOORS){
+  const [hx,hz]=d.h,[ex,ez]=d.e, r=Math.hypot(ex-hx,ez-hz);
+  const tip=[hx+d.o[0]*r,hz+d.o[1]*r];
+  const pts=[]; const a0=Math.atan2(ez-hz,ex-hx), a1=Math.atan2(tip[1]-hz,tip[0]-hx); let da=a1-a0; if(da>Math.PI)da-=2*Math.PI; if(da<-Math.PI)da+=2*Math.PI;
+  for(let i=0;i<=24;i++){const a=a0+da*i/24; pts.push(new THREE.Vector3(hx+Math.cos(a)*r,.012,hz+Math.sin(a)*r));}
+  planOnly.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),M.thin));
+  planOnly.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(hx,.012,hz),new THREE.Vector3(tip[0],.012,tip[1])]),M.edge));
+}
+// parcours de visite (le seul élément bleu)
+const path=[[1.15,.45],[1.2,3.4],[3.0,4.7],[5.9,3.97],[7.9,4.9]].map(p=>new THREE.Vector3(p[0],.03,p[1]));
+const pl=new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(path).getPoints(60)),M.blue); pl.computeLineDistances(); maquetteOnly.add(pl);
+const dot=new THREE.Mesh(new THREE.CircleGeometry(.16,24),M.dot); dot.rotation.x=-Math.PI/2; dot.position.copy(path[0]).setY(.04); maquetteOnly.add(dot);
+// deux cotes justes (plan)
+const sejW=6.4-EXT/2-INT/2, ch1D=6.8-3.2-INT/2-EXT/2;
+function cote(a,b,off){ const g=new THREE.Group(); const v=new THREE.Vector3().subVectors(b,a).normalize(); const n=new THREE.Vector3(-v.z,0,v.x).multiplyScalar(off);
+  const A=a.clone().add(n), B=b.clone().add(n);
+  g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([A,B]),M.blueSolid));
+  for(const P of [A,B]){ const t=new THREE.Vector3().addVectors(v,new THREE.Vector3(-v.z,0,v.x)).normalize().multiplyScalar(.12);
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([P.clone().sub(t),P.clone().add(t)]),M.blueSolid)); }
+  planOnly.add(g); return A.clone().add(B).multiplyScalar(.5); }
+const c1=cote(new THREE.Vector3(EXT/2,.02,6.2),new THREE.Vector3(6.4-INT/2,.02,6.2),0);
+const c2=cote(new THREE.Vector3(8.9,.02,3.2+INT/2),new THREE.Vector3(8.9,.02,6.8-EXT/2),0);
+
+/* étiquettes */
+const labs=[];
+function addLab(html,pos,cls,modes){ const el=document.createElement('div'); el.className='lab'+(cls?' '+cls:''); el.innerHTML=html; labelsEl.appendChild(el); labs.push({el,pos,modes}); }
+for(const r of ROOMS){ const cx=(r[1]+r[3])/2+(r[0]==='Chambre 1'?-.45:0), cz=(r[2]+r[4])/2+({'Séjour · cuisine':.55,'Salle de bains':.35,'WC':.45,'Entrée':-.2}[r[0]]||0);
+  const short=r[0]==='WC'||r[0]==='Dégagement'||r[0]==='Salle de bains';
+  addLab((r[0]==='WC'?'WC':r[0]==='Dégagement'?'':r[0])+'<span>'+(r[0]==='Dégagement'?'Dégagement ':'')+fr(area(r))+(r[0]==='WC'?'':' m²')+'</span>',new THREE.Vector3(cx,.05,cz),'',(r[0]==='WC'||r[0]==='Dégagement')?['plan']:['plan','maquette']); }
+addLab('Loggia<span>'+fr(area(LOGGIA))+' m²</span>',new THREE.Vector3(3.2,.05,7.6),'',['plan','maquette']);
+addLab(fr(sejW,2),c1,'cote',['plan']); addLab(fr(ch1D,2),c2,'cote',['plan']);
+const total=ROOMS.reduce((s,r)=>s+area(r),0);
+const cm=document.getElementById('carto-m'); if(cm)cm.textContent='T3 · '+Math.round(total)+' m² · loggia '+fr(area(LOGGIA))+' m² · 2e étage';
+
+/* caméras */
+const ortho=new THREE.OrthographicCamera(-1,1,1,-1,.1,200);
+const persp=new THREE.PerspectiveCamera(72,1,.05,100);
+const S={az:-0.62,el:0.72,zoom:1,cutH:1.15,mode:'maquette'}; // état courant
+const T={}; // cibles
+let camera=ortho, eye={yaw:-0.42,pitch:-0.06}, anim=null, idle=0;
+const EYE_POS=new THREE.Vector3(1.3,1.6,5.9).add(root.position);
+
+function size(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); persp.aspect=w/h; persp.updateProjectionMatrix(); frame(); }
+function frame(){ const w=stage.clientWidth,h=stage.clientHeight,a=w/h; const span=S.mode==='plan'||S.el>1.2?10.8:13.6; let hh=span/2/Math.min(a,1.25); if(S.mode==='plan') hh=Math.max(hh,4.8);
+  ortho.left=-hh*a; ortho.right=hh*a; ortho.top=hh; ortho.bottom=-hh; ortho.updateProjectionMatrix(); }
+function placeOrtho(){ const d=40; const el=Math.min(S.el,1.5701);
+  ortho.position.set(Math.sin(S.az)*Math.cos(el)*d, Math.sin(el)*d, Math.cos(S.az)*Math.cos(el)*d);
+  ortho.up.set(0,1,0); if(el>1.55) ortho.up.set(-Math.sin(S.az),0,-Math.cos(S.az));
+  ortho.lookAt(0,S.mode==='plan'?0:.4,0); frame(); }
+function placeEye(){ persp.position.copy(EYE_POS); const d=new THREE.Vector3(Math.cos(eye.pitch)*Math.cos(eye.yaw),Math.sin(eye.pitch),Math.cos(eye.pitch)*Math.sin(eye.yaw)); persp.lookAt(EYE_POS.clone().add(d)); }
+
+function vis(){ planOnly.visible=S.mode==='plan'||(S.el>1.3&&S.mode!=='yeux'); maquetteOnly.visible=S.mode==='maquette'; eyeOnly.visible=S.mode==='yeux'; }
+const v3=new THREE.Vector3();
+function render(){
+  cut.constant=S.cutH; vis();
+  if(camera===ortho) placeOrtho(); else placeEye();
+  renderer.render(scene,camera);
+  const w=stage.clientWidth,h=stage.clientHeight;
+  for(const l of labs){ const on=l.modes.includes(S.mode)&&camera===ortho; l.el.style.opacity=on?1:0; if(!on)continue;
+    v3.copy(l.pos).add(root.position).project(camera); l.el.style.left=((v3.x+1)/2*w)+'px'; l.el.style.top=((1-v3.y)/2*h)+'px'; }
+}
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+function tween(to,ms){ const from={az:S.az,el:S.el,cutH:S.cutH}; const t0=performance.now();
+  anim=now=>{ let k=Math.min((now-t0)/ms,1); if(reduce)k=1; const e=ease(k); for(const key in to)S[key]=from[key]+(to[key]-from[key])*e; if(k>=1)anim=null; }; }
+
+const PRESET={plan:{az:0,el:1.5701,cutH:1.15},maquette:{az:-0.62,el:0.72,cutH:1.15}};
+function setMode(m){
+  document.querySelectorAll('.mode').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
+  hint.hidden=m!=='yeux';
+  M.glass.opacity=m==='yeux'?.06:.16;
+  const swap=(m==='yeux')!==(camera===persp);
+  const go=()=>{ S.mode=m; if(m==='yeux'){ camera=persp; S.cutH=H+.2; } else { camera=ortho; tween(PRESET[m],swap?1:1100); } };
+  if(swap&&!reduce){ canvas.style.opacity=0; setTimeout(()=>{ go(); render(); canvas.style.opacity=1; },180); } else go();
+  idle=performance.now();
+}
+document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+
+// regard à la souris ou au doigt (hauteur d'yeux), rotation douce (maquette)
+let drag=null;
+stage.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:eye.yaw,pitch:eye.pitch,az:S.az}; stage.setPointerCapture(e.pointerId); idle=performance.now();});
+stage.addEventListener('pointermove',e=>{ if(!drag)return; const dx=(e.clientX-drag.x)/stage.clientWidth, dy=(e.clientY-drag.y)/stage.clientHeight;
+  if(camera===persp){ eye.yaw=drag.yaw-dx*2.4; eye.pitch=Math.max(-.9,Math.min(.9,drag.pitch+dy*1.6)); } else if(S.mode==='maquette'){ S.az=drag.az-dx*3; }
+  idle=performance.now(); });
+stage.addEventListener('pointerup',()=>drag=null); stage.addEventListener('pointercancel',()=>drag=null);
+
+let last=performance.now();
+function loop(now){ const dt=Math.min((now-last)/1000,.05); last=now;
+  if(anim)anim(now);
+  else if(!reduce&&!drag&&now-idle>2500){ if(S.mode==='maquette') S.az+=dt*.12; else if(S.mode==='yeux') eye.yaw+=dt*.08; }
+  render(); requestAnimationFrame(loop); }
+
+new ResizeObserver(size).observe(stage);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+applyTheme(); size();
+// ouverture : le plan se lève en maquette (ou visite directe si la page le demande)
+if(window.__START){ setMode(window.__START); }
+else if(!reduce){ S.az=0; S.el=1.5701; S.cutH=.02; S.mode='maquette'; tween({az:-0.62,el:0.72,cutH:1.15},1900); }
+requestAnimationFrame(loop);
+window.__setMode=setMode;
+// visite guidée : déplacement à hauteur d'yeux le long d'un trajet qui passe par les portes
+window.__tour=function(via,yaw,ms){
+  const pts=[EYE_POS.clone(),...via.map(p=>new THREE.Vector3(p[0],1.6,p[1]).add(root.position))];
+  const seg=[]; let L=0; for(let i=1;i<pts.length;i++){const d=pts[i].distanceTo(pts[i-1]); seg.push(d); L+=d;}
+  const y0=eye.yaw, p0=eye.pitch; let dy=yaw-y0; while(dy>Math.PI)dy-=2*Math.PI; while(dy<-Math.PI)dy+=2*Math.PI;
+  const dur=ms||Math.max(900,L*520), t0=performance.now();
+  anim=now=>{ let k=Math.min((now-t0)/dur,1); if(reduce)k=1; const e=ease(k); let r=e*L, i=0; while(i<seg.length-1&&r>seg[i]){r-=seg[i];i++;}
+    EYE_POS.lerpVectors(pts[i],pts[i+1],seg[i]?Math.min(r/seg[i],1):1); eye.yaw=y0+dy*e; eye.pitch=p0+(-0.06-p0)*e; if(k>=1)anim=null; };
+  idle=performance.now();
+};
+})();
+
+</script>
+<script>
+(function(){
+  const STOPS=[
+    {n:'Séjour · cuisine',a:'24,2 m²',via:[[2.8,6.2],[1.3,5.9]],yaw:-0.42},
+    {n:'Cuisine',a:'dans le séjour',via:[[4.2,4.0]],yaw:1.98},
+    {n:'Chambre 1',a:'12,0 m²',via:[[5.6,3.97],[7.1,3.97]],yaw:1.1},
+    {n:'Chambre 2',a:'10,6 m²',via:[[5.6,3.97],[3.0,3.4],[2.9,2.3],[6.0,2.37],[7.0,2.5]],yaw:-1.05},
+    {n:'Loggia',a:'6,7 m²',via:[[6.0,2.37],[2.9,2.3],[3.0,3.4],[2.8,6.2],[2.8,7.7]],yaw:-1.9},
+  ];
+  let cur=0; const here=document.getElementById('here'), btns=[...document.querySelectorAll('.stop[data-i]')];
+  function go(i){ if(!window.__tour)return; const s=STOPS[i]; let via=s.via;
+    if(i===0&&cur===4) via=[[2.8,6.2],[1.3,5.9]]; else if(i===0) via=[[1.3,5.9]];
+    else if(i!==cur+1){ via=[[3.0,3.4],...s.via.slice(-2)]; if(i===3) via=[[3.0,3.4],[2.9,2.3],[6.0,2.37],[7.0,2.5]]; if(i===2) via=[[5.6,3.97],[7.1,3.97]]; if(i===4) via=[[3.0,3.4],[2.8,6.2],[2.8,7.6]]; if(i===1) via=[[4.2,4.0]]; }
+    window.__tour(via,s.yaw); cur=i; here.innerHTML=s.n+'<small>'+s.a+'</small>'; btns.forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===i)); }
+  btns.forEach(b=>b.addEventListener('click',()=>go(+b.dataset.i)));
+  document.getElementById('next').addEventListener('click',()=>go((cur+1)%STOPS.length));
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches){ let auto=setInterval(()=>go((cur+1)%STOPS.length),6000);
+    document.querySelector('.tourbar').addEventListener('click',()=>clearInterval(auto),{once:true}); }
+})();
+</script>

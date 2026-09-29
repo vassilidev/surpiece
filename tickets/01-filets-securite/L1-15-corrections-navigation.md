@@ -2,7 +2,7 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 1 · Filets de sécurité et correctifs immédiats | P0 | L (3 à 5 j) | L1-02, L1-14 | `moteur/` [M] | En cours |
+| 1 · Filets de sécurité et correctifs immédiats | P0 | L (3 à 5 j) | L1-02, L1-14 | `moteur/` [M] | Fait |
 
 ## Pourquoi
 L'utilisateur juge la visite pas assez fluide : clic difficile, déplacement pénible, regard qui a du mal, point de vue étrange, trop peu d'i/s (décision n° 12 du 27/09/2026). L1-14 mesure et classe les défauts. Ce ticket corrige dans le moteur actuel ce qui gêne le plus, avant la démonstration publique (L2-09) et les testeurs (L3-06, L6-10). Tout défaut trouvé devient un contrôle automatique.
@@ -59,7 +59,7 @@ Non commité. Fichiers : `moteur/engine.js`, `moteur/controle.mjs`, `moteur/ui.j
 - [x] Visite de contrôle réussie sur les 5 références ; photos au niveau du bruit : nouveau contre ancien moteur ≤ 4,22 % des pixels au-delà de 2/255 (max 77), ancien contre ancien 4,31 % (max 73). Aucune photo n'est identique à l'octet, pas plus d'une exécution de l'ancien moteur à l'autre. `finalise.sh` sur copies de d201 et de la duplex : contrôle ok au 2e tour, après une réparation de la chaîne sans lien avec la navigation.
 - [ ] Plans à plusieurs niveaux : montée et descente au clavier réussies (réception : saut vertical ≤ 3 cm par image ; contrôle `escalier` ok sur la duplex). Déport de 3 m/s vers la salle de bain en montée corrigé (aide des portes coupée sur une volée), sans nouvelle mesure chiffrée au clavier après correction. Au doigt : aucun résultat chiffré, et pas de cas de banc (banc de L1-14 non écrit).
 - [ ] Chaque défaut corrigé a son cas de banc ou son contrôle, vérifié en remettant le défaut : fait pour le clic, le regard, les portes, le régulateur à 30 i/s et le clic sur une marche (moteur de HEAD ou copies mutées : clic 0 à 48 %, 138 à 531 arrivées dans un placard, 16 signalements d'aspiration, 5 paliers perdus à 30 i/s, « 2 clics hors des pièces ») ; manquant pour les défauts listés au point 3 de l'À faire.
-- [ ] Validation écrite et datée de l'utilisateur.
+- [x] Validation écrite et datée de l'utilisateur : « L1-15 : validé » (29/09/2026, soir). Les restes du point 1 de l'À faire sont acceptés en l'état ; les cas de banc manquants passent dans L1-14.
 - [ ] Critère de fusion de PLAN.md § 10 (L1-02, L1-11, L1-04 et banc de L1-14 pas encore disponibles). Aucune lecture payante : tenu.
 
 ## Points d'attention

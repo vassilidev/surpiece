@@ -1,0 +1,674 @@
+<title>{{MARQUE}} · Accueil particuliers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Mise en page : feuille de plan d'architecte. Papier clair, traits Encre de 1,5 px, un seul bleu (Bleu plan), angles droits, cartouche en signature. Jetons repris de produit/MARQUE.md § 6. */
+:root{
+  --paper:#EDEFEA; --panel:#FAFBF8; --panel-2:#F2F4F0; --plan-bg:#F7F8F5;
+  --ink:#161918; --ink-2:#555B57; --line:#CDD2CB; --accent:#2C49B8; --accent-ink:#FFFFFF;
+  --ok:#2F7A4A; --warn:#A8471F; --poche:#1A1C1B; --grid:#A9AFA9; --dash:#6D746F;
+  --shadow:0 1px 2px rgba(22,25,24,.08),0 8px 24px rgba(22,25,24,.10);
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --w:1180px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#101312; --panel:#181C1A; --panel-2:#1F2421; --plan-bg:#141816;
+  --ink:#E6E9E4; --ink-2:#A1A8A2; --line:#2E3431; --accent:#93A8FF; --accent-ink:#0E1120;
+  --ok:#6FCB8F; --warn:#F08A5D; --poche:#DCE0DA; --grid:#48504B; --dash:#8B938D;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#101312; --panel:#181C1A; --panel-2:#1F2421; --plan-bg:#141816;
+  --ink:#E6E9E4; --ink-2:#A1A8A2; --line:#2E3431; --accent:#93A8FF; --accent-ink:#0E1120;
+  --ok:#6FCB8F; --warn:#F08A5D; --poche:#DCE0DA; --grid:#48504B; --dash:#8B938D;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--f-display);font-variation-settings:"wdth" 100;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:var(--w);margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:700 12px/1.2 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:800}
+h1{font-size:clamp(34px,5.2vw,60px);line-height:1.02;letter-spacing:-.015em;font-variation-settings:"wdth" 112}
+h2{font-size:clamp(26px,3.4vw,40px);line-height:1.06;letter-spacing:-.01em;font-variation-settings:"wdth" 110}
+h3{font-size:19px;line-height:1.2;font-variation-settings:"wdth" 108}
+p{margin:0}
+.lede{font-size:clamp(17px,1.6vw,19px);color:var(--ink-2);max-width:60ch}
+
+/* Bandeau de maquette */
+.draft{background:var(--ink);color:var(--paper);font:500 12px/1.4 var(--f-mono);text-align:center;padding:7px 16px}
+
+/* En-tête */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1.5px solid var(--ink)}
+.top .wrap{display:flex;align-items:center;gap:24px;min-height:64px}
+.brand{display:inline-flex;align-items:stretch;border:1.5px solid var(--ink);text-decoration:none;background:var(--panel)}
+.brand b{font:800 17px/1 var(--f-display);font-variation-settings:"wdth" 125;letter-spacing:.01em;text-transform:uppercase;padding:9px 11px}
+.brand i{font:500 10px/1 var(--f-mono);font-style:normal;color:var(--ink-2);border-left:1px solid var(--line);padding:0 9px;display:flex;align-items:center;letter-spacing:.06em}
+nav.links{display:flex;gap:22px;margin-left:auto;font-weight:600;font-size:15px}
+nav.links a{text-decoration:none;padding:6px 0;border-bottom:1.5px solid transparent}
+nav.links a:hover{border-color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:0 20px;border:1.5px solid var(--ink);background:var(--panel);color:var(--ink);font:600 15px/1 var(--f-display);font-variation-settings:"wdth" 100;text-decoration:none;cursor:pointer;transition:background .15s,color .15s}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn .arr{font-family:var(--f-mono)}
+@media (max-width:860px){nav.links{display:none}.top .btn{margin-left:auto;min-height:40px;padding:0 14px;font-size:14px;white-space:nowrap}}
+@media (max-width:520px){.brand i{display:none}.brand b{font-size:15px;padding:8px 9px}.top .wrap{gap:12px}}
+
+/* Héros */
+.hero{position:relative;border-bottom:1.5px solid var(--ink);
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:40px 40px,40px 40px,8px 8px,8px 8px;background-position:-1px -1px}
+.hero::before{content:"";position:absolute;inset:0;background:var(--paper);opacity:.72;pointer-events:none}
+@media (prefers-contrast:more){.hero{background-image:none}}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"txt viz" "drop viz";gap:28px 48px;padding-block:clamp(36px,6vw,72px)}
+.hero-txt{grid-area:txt;display:grid;gap:18px;align-content:start}
+.hero-drop{grid-area:drop;display:grid;gap:14px;align-content:start}
+.hero-viz{grid-area:viz;min-width:0}
+@media (max-width:980px){.hero .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"txt" "viz" "drop"}}
+
+.drop{position:relative;border:2px dashed var(--ink);background:var(--panel);padding:22px;display:grid;gap:12px;justify-items:start;cursor:pointer;transition:background .15s}
+.drop.over{background:var(--panel-2);border-color:var(--accent)}
+.drop strong{font-size:18px;font-variation-settings:"wdth" 108}
+.drop small{color:var(--ink-2);font-size:13.5px}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.assur{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14.5px}
+.assur li{display:flex;gap:10px;align-items:baseline}
+.assur li::before{content:"";flex:none;width:7px;height:7px;background:var(--ok);transform:translateY(-1px)}
+.limits{font-size:13px;color:var(--ink-2)}
+
+/* Visionneuse */
+.viewer{border:1.5px solid var(--ink);background:var(--plan-bg);box-shadow:var(--shadow);display:grid}
+.viewer-bar{display:flex;gap:0;border-bottom:1.5px solid var(--ink);overflow-x:auto}
+.mode{flex:1 0 auto;border:0;border-right:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 14px/1 var(--f-display);font-variation-settings:"wdth" 92;padding:12px 14px;cursor:pointer;min-height:44px}
+.mode:last-child{border-right:0}
+.mode[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.stage{position:relative;aspect-ratio:4/3.1;max-width:100%;overflow:hidden;touch-action:none}
+.stage canvas{display:block;width:100%;height:100%;transition:opacity .18s}
+.labels{position:absolute;inset:0;pointer-events:none}
+.lab{position:absolute;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;font:700 10.5px/1.25 var(--f-display);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);transition:opacity .2s}
+.lab span{display:block;font:500 11.5px/1.3 var(--f-mono);letter-spacing:0;text-transform:none;color:var(--ink-2)}
+.lab.cote{font:500 12px/1 var(--f-mono);letter-spacing:0;color:var(--accent);background:var(--plan-bg);padding:1px 3px}
+.hint{position:absolute;left:12px;bottom:12px;font:500 12px/1.3 var(--f-mono);background:var(--panel);border:1px solid var(--line);padding:5px 8px;color:var(--ink-2)}
+.nowebgl{display:grid;place-items:center;padding:24px;text-align:center;color:var(--ink-2)}
+.cartouche{display:grid;grid-template-columns:auto 1fr;border-top:1.5px solid var(--ink);background:var(--panel)}
+.cartouche .id{font:800 26px/1 var(--f-display);font-variation-settings:"wdth" 125;padding:10px 14px;border-right:1.5px solid var(--ink);display:flex;align-items:center}
+.cartouche .body{display:grid;min-width:0}
+.cartouche .body>*{padding:4px 12px;border-bottom:1px solid var(--line)}
+.cartouche .body>*:last-child{border-bottom:0}
+.cartouche .t{font-weight:600;font-size:14.5px}
+.cartouche .m{font:500 12.5px/1.4 var(--f-mono);color:var(--ink)}
+.cartouche .n{font-size:12px;color:var(--ink-2)}
+
+/* Chantier (démonstration de l'attente) */
+.chantier{border:1.5px solid var(--ink);background:var(--panel);padding:18px;display:grid;gap:12px}
+.bar{height:10px;border:1.5px solid var(--ink);background:var(--panel-2);position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent);transition:width .5s}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px}
+.steps li{display:flex;gap:10px;align-items:center;color:var(--ink-2)}
+.steps li::before{content:"";width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-2);flex:none}
+.steps li.on{color:var(--ink)}
+.steps li.on::before{border-color:var(--accent);background:var(--accent);animation:pulse 1.2s ease-in-out infinite}
+.steps li.done{color:var(--ink)}
+.steps li.done::before{border-color:var(--ok);background:var(--ok);animation:none}
+@keyframes pulse{50%{opacity:.35}}
+.phrase{font-style:normal;color:var(--ink-2);font-size:14px;min-height:1.5em}
+
+/* Sections */
+section.block{border-bottom:1.5px solid var(--ink)}
+section.block>.wrap{padding-block:clamp(48px,7vw,88px);display:grid;gap:32px}
+.head{display:grid;gap:12px;max-width:760px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1.5px solid var(--ink);background:var(--panel)}
+.facts>div{padding:22px clamp(16px,2.4vw,28px);border-right:1.5px solid var(--ink);display:grid;gap:6px;min-width:0}
+.facts>div:last-child{border-right:0}
+.facts b{font-size:16px;font-variation-settings:"wdth" 108}
+.facts p{font-size:14.5px;color:var(--ink-2)}
+@media (max-width:760px){.facts{grid-template-columns:minmax(0,1fr)}.facts>div{border-right:0;border-bottom:1.5px solid var(--ink)}.facts>div:last-child{border-bottom:0}}
+
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1.5px solid var(--ink);background:var(--panel)}
+.how>li{list-style:none;padding:24px;border-right:1.5px solid var(--ink);display:grid;gap:10px;align-content:start;min-width:0}
+.how>li:last-child{border-right:0}
+.how .n{font:500 13px/1 var(--f-mono);color:var(--accent)}
+.how p{color:var(--ink-2);font-size:15px}
+ol.how{margin:0;padding:0}
+@media (max-width:860px){.how{grid-template-columns:minmax(0,1fr)}.how>li{border-right:0;border-bottom:1.5px solid var(--ink)}.how>li:last-child{border-bottom:0}}
+
+.gets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:18px}
+.get{border:1.5px solid var(--ink);background:var(--panel);display:grid;grid-template-rows:auto 1fr}
+.get svg{display:block;width:100%;height:auto;border-bottom:1.5px solid var(--ink);background:var(--plan-bg)}
+.get>div{padding:16px 18px;display:grid;gap:6px;align-content:start}
+.get p{font-size:14.5px;color:var(--ink-2)}
+.tag{justify-self:start;font:500 11.5px/1 var(--f-mono);padding:4px 6px;border:1px solid var(--ink-2);color:var(--ink-2)}
+.tag.free{border-color:var(--ok);color:var(--ok)}
+
+.moments{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:0;border:1.5px solid var(--ink);background:var(--panel)}
+.moment{padding:22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:8px;align-content:start}
+.moment .when{font:500 12px/1 var(--f-mono);color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.moment p{font-size:14.5px;color:var(--ink-2)}
+
+.tbl{overflow-x:auto;border:1.5px solid var(--ink);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14.5px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font:700 12px/1.3 var(--f-display);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1.5px solid var(--ink)}
+tbody th{font-weight:600;width:24%}
+td.us,th.us{background:var(--panel-2)}
+th.us{color:var(--ink)}
+td.us{font-weight:600}
+.yes{color:var(--ok);font-weight:600}
+.no{color:var(--ink-2)}
+.note{font-size:12.5px;color:var(--ink-2)}
+
+.prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+@media (max-width:900px){.prices{grid-template-columns:minmax(0,1fr)}}
+.price{border:1.5px solid var(--ink);background:var(--panel);padding:24px;display:grid;gap:14px;grid-template-rows:auto auto 1fr auto}
+.price.main{box-shadow:inset 0 0 0 1.5px var(--accent);border-color:var(--accent)}
+.price .amt{font:800 44px/1 var(--f-display);font-variation-settings:"wdth" 112;letter-spacing:-.02em}
+.price .amt small{font:500 14px/1 var(--f-mono);letter-spacing:0;color:var(--ink-2);margin-left:6px}
+.price ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:14.5px;align-content:start}
+.price li{display:grid;grid-template-columns:14px 1fr;gap:10px}
+.price li::before{content:"";width:9px;height:1.5px;background:var(--ink);margin-top:.72em}
+.price .plus li::before{background:var(--accent);height:2px}
+.after{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:14px;color:var(--ink-2)}
+
+.faq{display:grid;gap:0;border:1.5px solid var(--ink);background:var(--panel);max-width:880px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:last-child{border-bottom:0}
+.faq summary{list-style:none;cursor:pointer;padding:18px 20px;font-weight:600;font-size:16px;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--f-mono);color:var(--accent)}
+.faq details[open] summary::after{content:"–"}
+.faq details p{padding:0 20px 18px;color:var(--ink-2);font-size:15px;max-width:70ch}
+
+.final{background:var(--ink);color:var(--paper)}
+.final .wrap{padding-block:clamp(48px,7vw,80px);display:grid;gap:18px;justify-items:start}
+.final h2{color:var(--paper)}
+.final p{color:var(--paper);opacity:.8}
+.final .btn.primary{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.final .btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+footer .wrap{padding-block:28px 40px;display:grid;gap:10px;font-size:13px;color:var(--ink-2)}
+.proline{border:1.5px solid var(--ink);background:var(--panel);padding:18px 22px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+.proline p{font-size:15px}
+
+.sticky-cta{display:none}
+@media (max-width:760px){
+  .sticky-cta{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--paper);border-top:1.5px solid var(--ink)}
+  .sticky-cta .btn{flex:1}
+  body{padding-bottom:70px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+html{scroll-behavior:smooth}
+[id]{scroll-margin-top:84px}
+.hero .wrap{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-template-areas:"txt viz";align-items:center}
+@media (max-width:980px){.hero .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"txt" "viz"}}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn.big{min-height:56px;padding:0 26px;font-size:17px}
+.trust{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--ink-2);list-style:none;margin:0;padding:0}
+.trust li{display:flex;gap:8px;align-items:center}
+.trust li::before{content:"";width:7px;height:7px;background:var(--ok)}
+/* avant / après */
+.ba{position:relative;border:1.5px solid var(--ink);background:#fff;box-shadow:var(--shadow);aspect-ratio:1600/1065;max-width:100%;overflow:hidden;user-select:none;touch-action:pan-y;cursor:ew-resize}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.ba .after{clip-path:inset(0 0 0 var(--pos,50%))}
+.ba .handle{position:absolute;top:0;bottom:0;left:var(--pos,50%);width:0;border-left:2px solid var(--accent)}
+.ba .knob{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:500 16px/1 var(--f-mono);box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.ba .tagl,.ba .tagr{position:absolute;top:12px;font:700 11px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;padding:7px 9px;border:1.5px solid var(--ink);background:var(--panel);color:var(--ink)}
+.ba .tagl{left:12px}.ba .tagr{right:12px;background:var(--ink);color:var(--paper)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.ba-cap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font:500 12.5px/1.4 var(--f-mono);color:var(--ink-2);margin-top:10px}
+/* bande des livrables */
+.strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1.5px solid var(--ink);background:var(--panel)}
+.strip figure{margin:0;border-right:1.5px solid var(--ink);display:grid;min-width:0}
+.strip figure:last-child{border-right:0}
+.strip img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;border-bottom:1px solid var(--line);background:var(--plan-bg)}
+.strip figcaption{padding:12px 16px;display:grid;gap:2px}
+.strip b{font-size:15px}
+.strip span{font-size:13.5px;color:var(--ink-2)}
+@media (max-width:860px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}.strip figure:nth-child(2){border-right:0}.strip figure:nth-child(-n+2){border-bottom:1.5px solid var(--ink)}}
+/* démo */
+.demo{display:grid;gap:0;border:1.5px solid var(--ink);background:var(--panel);box-shadow:var(--shadow)}
+.tabs{display:flex;overflow-x:auto;border-bottom:1.5px solid var(--ink);scrollbar-width:thin}
+.tab{flex:1 0 auto;border:0;border-right:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 14.5px/1.1 var(--f-display);font-variation-settings:"wdth" 94;padding:14px 16px;cursor:pointer;min-height:52px;text-align:left;display:grid;gap:3px}
+.tab small{font:500 11px/1 var(--f-mono);color:var(--ink-2)}
+.tab:last-child{border-right:0}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.tab[aria-selected="true"] small{color:var(--paper);opacity:.75}
+.screen{position:relative;aspect-ratio:16/9.4;max-width:100%;background:var(--plan-bg);overflow:hidden}
+@media (max-width:760px){.screen{aspect-ratio:3/4}}
+.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--plan-bg)}
+.screen iframe.hide{visibility:hidden}
+.loading{position:absolute;inset:0;z-index:2;display:grid;place-items:center;align-content:center;gap:12px;background:var(--plan-bg);font:500 13px/1 var(--f-mono);color:var(--ink-2)}
+.loading .spin{width:28px;height:28px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:rot 0.9s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.screen .still{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;z-index:3}
+.poster{position:absolute;inset:0;display:grid;place-items:center;background:center/cover no-repeat;cursor:pointer}
+.poster::before{content:"";position:absolute;inset:0;background:rgba(16,19,18,.35)}
+.poster .btn{position:relative}
+.demo-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 20px;border-top:1.5px solid var(--ink)}
+.demo-foot p{font-size:15px;color:var(--ink-2)}
+.demo-foot p b{color:var(--ink)}
+@media (max-width:760px){.demo-foot{grid-template-columns:minmax(0,1fr)}}
+.howimg{width:100%;aspect-ratio:16/10;object-fit:cover;border:1px solid var(--line);background:var(--plan-bg);display:block}
+/* écran chantier (démonstration) */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(16,19,18,.55);display:grid;place-items:center;padding:16px}
+.modal .chantier{width:min(520px,100%)}
+
+/* ---------- Animation : du plan à la visite ---------- */
+.cine{position:relative;border:1.5px solid var(--ink);background:#fff;box-shadow:var(--shadow);aspect-ratio:1394/928;max-width:100%;overflow:hidden;perspective:1400px;isolation:isolate}
+.cine .lay{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .7s ease,transform 1.4s cubic-bezier(.2,.7,.2,1),clip-path 1.2s cubic-bezier(.6,0,.2,1)}
+.cine img.lay{object-fit:cover}
+.cine .on{opacity:1}
+.cine .world{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1.6s cubic-bezier(.2,.7,.2,1)}
+.cine .world.tilt{transform:rotateX(38deg) rotateZ(-10deg) scale(.86)}
+.cine .blank{background:#fff}
+.cine svg.lay text{font-family:var(--f-mono)}
+.cine .wall{fill:transparent;stroke:#2C49B8;stroke-width:.035;stroke-dasharray:3;stroke-dashoffset:3;transition:stroke-dashoffset 1.9s ease,fill .6s ease .1s,stroke .6s}
+.cine .traced .wall{stroke-dashoffset:0}
+.cine .filled .wall{fill:#161918;stroke:#161918}
+.cine .room text{opacity:0;transition:opacity .4s}
+.cine .rooms-on .room text{opacity:1}
+.cine .dim{opacity:0;transition:opacity .4s}
+.cine .dims-on .dim{opacity:1}
+.cine .scan{position:absolute;top:0;bottom:0;width:18%;left:-20%;background:linear-gradient(90deg,transparent,rgba(44,73,184,.18),transparent);border-right:2px solid #2C49B8;opacity:0}
+.cine .scan.go{opacity:1;left:102%;transition:left 2.1s linear,opacity .3s}
+.cine .wipe{clip-path:inset(0 100% 0 0)}
+.cine .wipe.on{clip-path:inset(0 0 0 0)}
+.cine .kb{transform:scale(1.02)}
+.cine .kb.on{transform:scale(1.12);transition:opacity .8s ease,transform 5s linear}
+.cine .zone{position:absolute;inset:7%;border:2px dashed var(--ink);background:var(--panel);display:grid;place-items:center;text-align:center;align-content:center;gap:8px;opacity:0;transition:opacity .4s,background .2s,border-color .2s;color:var(--ink)}
+.cine .zone.on{opacity:1}
+.cine .zone.hot{background:var(--panel-2);border-color:var(--accent)}
+.cine .zone b{font:600 clamp(14px,1.8vw,19px)/1.2 var(--f-display)}
+.cine .zone small{font:500 12px/1.3 var(--f-mono);color:var(--ink-2)}
+.cine .file{position:absolute;right:6%;bottom:9%;width:18%;background:#fff;border:1.5px solid var(--ink);box-shadow:var(--shadow);padding:6px;display:grid;gap:5px;transition:left 1.1s cubic-bezier(.5,0,.2,1),top 1.1s cubic-bezier(.5,0,.2,1),transform .5s,opacity .4s;opacity:0}
+.cine .file.on{opacity:1}
+.cine .file img{width:100%;aspect-ratio:1.5;object-fit:cover;border:1px solid var(--line)}
+.cine .file span{font:500 10px/1.2 var(--f-mono);color:#161918;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cine .cursor{position:absolute;width:26px;height:26px;opacity:0;transition:left 1.1s cubic-bezier(.5,0,.2,1),top 1.1s cubic-bezier(.5,0,.2,1),opacity .3s;z-index:6;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.cine .cursor.on{opacity:1}
+.cine .hud{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:6px;flex-wrap:wrap;z-index:5}
+.cine .hud span{font:600 11.5px/1 var(--f-display);font-variation-settings:"wdth" 92;padding:7px 9px;background:rgba(250,251,248,.92);border:1px solid #CDD2CB;color:#555B57;transition:all .3s}
+.cine .hud span.now{background:#2C49B8;border-color:#2C49B8;color:#fff}
+.cine .hud span.done{color:#161918;border-color:#161918}
+.cine .clock{position:absolute;right:12px;top:12px;z-index:5;font:500 12px/1 var(--f-mono);background:#161918;color:#fff;padding:7px 9px}
+.cine .chip{position:absolute;left:12px;top:12px;z-index:5;background:#FAFBF8;border:1.5px solid #161918;padding:7px 10px;font:700 12px/1.2 var(--f-display);letter-spacing:.06em;text-transform:uppercase;color:#161918;opacity:0;transition:opacity .4s}
+.cine .chip small{display:block;font:500 11.5px/1.3 var(--f-mono);letter-spacing:0;text-transform:none;color:#555B57}
+.cine .chip.on{opacity:1}
+.cine .end{position:absolute;inset:0;z-index:7;display:grid;place-items:center;align-content:center;gap:14px;background:rgba(16,19,18,.55);opacity:0;pointer-events:none;transition:opacity .5s;text-align:center;padding:16px}
+.cine .end.on{opacity:1;pointer-events:auto}
+.cine .end b{font:800 clamp(20px,3vw,32px)/1.1 var(--f-display);font-variation-settings:"wdth" 110;color:#fff}
+.cine .replay{position:absolute;right:12px;bottom:52px;z-index:6;border:1px solid #CDD2CB;background:rgba(250,251,248,.92);font:500 11.5px/1 var(--f-mono);padding:7px 9px;cursor:pointer;color:#161918}
+@media (max-width:560px){.cine .hud span{font-size:10.5px;padding:5px 6px}.cine .file{width:26%}}
+</style>
+
+<div class="draft">Maquette de travail · nom, prix et délai à valider · démonstration : aucun fichier n'est envoyé</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="{{MARQUE}}, accueil"><b>{{MARQUE}}</b><i>PLAN → VISITE</i></a>
+    <nav class="links" aria-label="Principale">
+      <a href="#comment">Comment ça marche</a>
+      <a href="#demo">Démo</a>
+      <a href="#prix">Prix</a>
+      <a href="#faq">Questions</a>
+      <a href="conseillers.html">Conseillers</a>
+    </nav>
+    <a class="btn primary" href="#" data-upload>Importer mon plan</a>
+  </div>
+</header>
+<input id="file" type="file" accept=".pdf,image/*" hidden>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-txt">
+      <div class="eyebrow">Plan de vente → visite 3D</div>
+      <h1>Transformez votre plan de vente en visite 3D.</h1>
+      <p class="lede">Déposez le PDF de votre appartement neuf. En quelques minutes, visitez chaque pièce à hauteur d'yeux et en 360°, d'après les cotes du plan.</p>
+      <div class="cta-row">
+        <a class="btn primary big" href="#" data-upload>Essayer gratuitement avec mon plan <span class="arr">→</span></a>
+        <a class="btn big" href="#demo">Voir la démo</a>
+      </div>
+      <ul class="trust">
+        <li>Premier plan offert</li>
+        <li>Sans carte bancaire</li>
+        <li>Prêt en quelques minutes</li>
+      </ul>
+    </div>
+    <div class="hero-viz">
+      <div class="cine" id="cine-hero" aria-label="Animation : un plan de vente devient une visite 3D"></div>
+      <div class="ba-cap"><span>T2 · 43,6 m² · loggia 5,7 m² · plan réel</span><span>Animation accélérée · résultat non retouché</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <figure><img src="img/plan2d.png" alt="Plan 2D redessiné"><figcaption><b>Plan 2D coté</b><span>Redessiné, surfaces par pièce</span></figcaption></figure>
+  <figure><img src="img/maquette.jpg" alt="Maquette 3D"><figcaption><b>Maquette 3D</b><span>Tout le logement d'un coup d'œil</span></figcaption></figure>
+  <figure><img src="img/salon.jpg" alt="Salon et cuisine à hauteur d'yeux"><figcaption><b>Visite à hauteur d'yeux</b><span>Marchez, ouvrez les portes</span></figcaption></figure>
+  <figure><img src="img/pano.jpg" alt="Visite 360°"><figcaption><b>Visite 360°</b><span>Chaque pièce, sur téléphone</span></figcaption></figure>
+</div>
+
+<section class="block" id="comment">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">En trois étapes</div>
+      <h2>Du plan de vente à la visite, sans rien redessiner.</h2>
+    </div>
+    <ol class="how">
+      <li><span class="n">1</span><img class="howimg" src="img/avant.jpg" alt=""><h3>Déposez votre plan de vente</h3><p>Le PDF envoyé par le promoteur, ou une capture nette. On vous dit tout de suite s'il est pris en charge.</p></li>
+      <li><span class="n">2</span><img class="howimg" src="img/plan2d.png" alt=""><h3>Nous le lisons et le vérifions</h3><p>Murs, cotes, portes et fenêtres sont repris du plan, et chaque surface est comparée au tableau du promoteur.</p></li>
+      <li><span class="n">3</span><img class="howimg" src="img/salon.jpg" alt=""><h3>Entrez chez vous</h3><p>Visitez chaque pièce en 360°, puis promenez-vous librement. Partagez le lien avec vos proches.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="demo">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Démo</div>
+      <h2>Essayez sur un vrai logement.</h2>
+      <p class="lede">Un T2 de 43,6 m² avec loggia, traité automatiquement à partir du plan de vente du promoteur. C'est exactement ce que vous recevez.</p>
+    </div>
+    <div class="demo">
+      <div class="tabs" role="tablist" aria-label="Ce que vous recevez">
+        <button class="tab" role="tab" data-t="source" aria-selected="false">Plan importé<small>le PDF du promoteur</small></button>
+        <button class="tab" role="tab" data-t="plan" aria-selected="false">Plan 2D<small>redessiné et coté</small></button>
+        <button class="tab" role="tab" data-t="maquette" aria-selected="true">Maquette 3D<small>vue d'ensemble</small></button>
+        <button class="tab" role="tab" data-t="visite" aria-selected="false">Visite 3D<small>à hauteur d'yeux</small></button>
+        <button class="tab" role="tab" data-t="360" aria-selected="false">Visite 360°<small>d'arrêt en arrêt</small></button>
+        <button class="tab" role="tab" data-t="ultra" aria-selected="false">Ultra réaliste<small>matières et lumière</small></button>
+      </div>
+      <div class="screen" id="screen">
+        <img class="still" id="still" src="img/avant.jpg" alt="Plan de vente d'origine" hidden>
+        <div class="poster" id="poster" style="background-image:url(img/avant.jpg)"><button class="btn primary big" type="button">Lancer la démo <span class="arr">→</span></button></div>
+        <div class="cine" id="cine-demo" hidden style="position:absolute;inset:0;aspect-ratio:auto;border:0;box-shadow:none;z-index:4"></div>
+      </div>
+      <div class="demo-foot">
+        <p id="demo-txt"><b>Maquette 3D.</b> Faites tourner le logement, zoomez, double-cliquez dans une pièce pour y entrer.</p>
+        <a class="btn primary" href="#" data-upload>Essayer avec mon plan <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="block">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">À chaque étape de votre achat</div>
+      <h2>Pour décider sur plan en connaissance de cause.</h2>
+    </div>
+    <div class="moments">
+      <div class="moment"><span class="when">Réservation · 10 jours</span><h3>Le doute après la signature</h3><p>La chambre est-elle assez grande, le séjour assez lumineux ? Voyez chaque pièce avec ses cotes, pendant votre délai de rétractation.</p></div>
+      <div class="moment"><span class="when">Choix des lots</span><h3>Comparer plusieurs lots</h3><p>Deux T3 au même prix, deux étages, deux orientations : visitez-les l'un après l'autre avant de réserver.</p></div>
+      <div class="moment"><span class="when">Travaux modificatifs</span><h3>Avant de choisir vos TMA</h3><p>Regardez le logement tel qu'il est dessiné avant de déplacer une cloison. Le plan modificatif se visite aussi.</p></div>
+      <div class="moment"><span class="when">En famille</span><h3>Décider à plusieurs</h3><p>Envoyez un lien privé à vos proches : ils ouvrent la visite sur leur téléphone, sans créer de compte.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Les autres façons de faire</div>
+      <h2>Votre lot, d'après votre plan, en quelques minutes.</h2>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th></th><th class="us">{{MARQUE}}</th><th>Logiciel 3D à redessiner</th><th>Service de modélisation</th><th>Appartement témoin</th></tr></thead>
+        <tbody>
+          <tr><th>Point de départ</th><td class="us">Votre plan de vente, tel quel</td><td>Vous redessinez chaque mur</td><td>Votre plan, envoyé à une équipe</td><td>Un lot type, pas le vôtre</td></tr>
+          <tr><th>Délai</th><td class="us">Quelques minutes</td><td>Plusieurs heures de saisie</td><td>24 h à plusieurs jours</td><td>Aux heures du bureau de vente</td></tr>
+          <tr><th>Cotes et surfaces</th><td class="us"><span class="yes">Reprises du plan, vérifiées</span></td><td class="no">Selon votre saisie</td><td>Contrôle humain</td><td class="no">—</td></tr>
+          <tr><th>Visite à hauteur d'yeux</th><td class="us"><span class="yes">Oui, et 360°</span></td><td>Selon le logiciel</td><td>Souvent des images fixes ou du 360°</td><td>Sur place seulement</td></tr>
+          <tr><th>À partager</th><td class="us">Lien privé, sans compte</td><td>Export à préparer</td><td>Fichiers livrés</td><td class="no">—</td></tr>
+          <tr><th>Prix</th><td class="us">Premier plan offert, puis 19 €</td><td>Gratuit à environ 60 € par an</td><td>Environ 20 à 130 € par plan</td><td>Gratuit, sur rendez-vous</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Repères de prix publics relevés en septembre 2026, à titre indicatif.</p>
+  </div>
+</section>
+
+<section class="block" id="prix">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Prix</div>
+      <h2>Payez au plan, sans abonnement.</h2>
+    </div>
+    <div class="prices">
+      <article class="price">
+        <div class="eyebrow">Premier plan</div>
+        <div class="amt">Offert</div>
+        <ul>
+          <li>Visite 360° de chaque pièce</li>
+          <li>Plan 2D coté et surfaces par pièce</li>
+          <li>Maquette 3D vue du dessus</li>
+          <li>Écarts avec le tableau du promoteur</li>
+          <li>Lien de partage, 30 jours</li>
+        </ul>
+        <a class="btn" href="#" data-upload>Essayer avec mon plan</a>
+      </article>
+      <article class="price main">
+        <div class="eyebrow">Visite complète</div>
+        <div class="amt">19 €<small>TTC · par plan</small></div>
+        <ul class="plus">
+          <li>Tout le plan offert</li>
+          <li>Promenade libre à hauteur d'yeux</li>
+          <li>Maquette et plan 2D interactifs</li>
+          <li>Photos et fiche en PDF à télécharger</li>
+          <li>Liens privés pour vos proches, 24 mois en ligne</li>
+        </ul>
+        <a class="btn primary" href="#" data-upload>Importer mon plan <span class="arr">→</span></a>
+      </article>
+      <article class="price">
+        <div class="eyebrow">Ultra réaliste</div>
+        <div class="amt">39 €<small>TTC · par plan</small></div>
+        <ul class="plus">
+          <li>Toute la visite complète</li>
+          <li>Matières, lumière du jour, ciel et paysage</li>
+          <li>Photos haute définition de chaque pièce</li>
+        </ul>
+        <a class="btn" href="#" data-upload>Importer mon plan</a>
+      </article>
+    </div>
+    <div class="after">
+      <span>Autre lot ou plan modificatif : <b class="mono">15 €</b> le plan suivant, pendant 12 mois</span>
+      <span>Si la visite ne peut pas être produite, rien n'est décompté</span>
+      <span>Appartements sur un ou deux niveaux · logement présenté vide · illustration non contractuelle</span>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="head"><h2>Vos questions avant de déposer votre plan</h2></div>
+    <div class="faq">
+      <details open><summary>La visite est-elle fidèle à mon plan ?</summary><p>Elle reprend les cotes de votre plan de vente. Sur le PDF du promoteur, murs, cotes et échelle sont lus dans le fichier, et les surfaces sont comparées au tableau du promoteur. Ce que le plan ne dit pas (hauteurs, matériaux, couleurs) est supposé, et marqué comme tel.</p></details>
+      <details><summary>Je n'ai qu'une capture ou une photo du plan. Ça marche ?</summary><p>Oui, si l'image est nette. Vous cliquez les deux extrémités d'une cote connue et indiquez sa longueur : cela cale l'échelle, à 5 à 10 cm près. Le PDF du promoteur reste le meilleur point de départ : demandez-le à votre conseiller commercial.</p></details>
+      <details><summary>Qui voit mon plan ?</summary><p>Vous, et les personnes à qui vous envoyez un lien. Votre plan sert seulement à produire votre visite : il n'est ni publié, ni transmis à votre promoteur, ni utilisé pour nos démonstrations. Vous pouvez le supprimer à tout moment.</p></details>
+      <details><summary>Mon logement est un duplex. Est-ce pris en charge ?</summary><p>Oui : les appartements sur un ou deux niveaux sont pris en charge, escalier compris. Une maison ou un plan d'étage avec plusieurs logements est refusé avant d'être lancé, et rien n'est décompté.</p></details>
+      <details><summary>La visite a-t-elle une valeur contractuelle ?</summary><p>Non. C'est une illustration générée automatiquement à partir du plan de vente. Seuls les plans et la notice descriptive annexés à votre contrat font foi.</p></details>
+      <details><summary>Combien de temps faut-il ?</summary><p>Quelques minutes. Vous voyez votre plan redessiné, puis la maquette, apparaître au fil de la lecture. Vous pouvez aussi fermer la page : on vous écrit dès que c'est prêt.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="pro">
+  <div class="wrap">
+    <div class="proline">
+      <p><b>Vous êtes conseiller en gestion de patrimoine ?</b> Envoyez à vos clients investisseurs la visite du lot qu'ils achètent à distance.</p>
+      <a class="btn" href="conseillers.html">{{MARQUE}} Pro <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Votre plan de vente est dans vos e-mails. Déposez-le.</h2>
+    <p>Premier plan offert, sans carte bancaire.</p>
+    <a class="btn primary" href="#" data-upload>Importer mon plan <span class="arr">→</span></a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · illustration non contractuelle : seuls les plans et la notice annexés à votre contrat de vente font foi.</p>
+    <p>{{MARQUE}} ne vous conseille ni d'acheter ni de vous rétracter. Pour une question sur votre contrat : votre notaire ou l'ADIL de votre département.</p>
+  </div>
+</footer>
+
+<div class="sticky-cta"><a class="btn primary" href="#" data-upload>Importer mon plan <span class="arr">→</span></a></div>
+
+<div class="modal" id="modal" hidden>
+  <div class="chantier" aria-live="polite">
+    <div class="eyebrow" id="ch-title">Plan reconnu</div>
+    <div class="bar"><i id="ch-bar"></i></div>
+    <ol class="steps" id="ch-steps">
+      <li>Lecture des murs, des cotes et de l'échelle</li>
+      <li>Surfaces comparées au tableau du promoteur</li>
+      <li>Maquette 3D, visite et 360°</li>
+      <li>Vérification avant livraison</li>
+    </ol>
+    <p class="phrase" id="ch-phrase"></p>
+  </div>
+</div>
+
+<script>
+/* ---------- Animation : du plan à la visite (géométrie réelle du plan.json, repère en mètres) ---------- */
+const GEO={"vb":[-1.3,-1.3,13.94,9.28],"walls":[[[-0.0,0.22],[0.2,0.22],[0.3,0.013],[0.3,0.0],[-0.0,0.0]],[[0.2,0.27],[0.77,0.27],[0.92,0.2],[0.32,0.0],[0.3,0.013],[0.2,0.22]],[[0.22,0.67],[0.27,0.67],[0.27,0.27],[0.22,0.27]],[[0.2,0.67],[0.2,0.82],[0.9,0.82],[0.9,0.8],[0.77,0.67]],[[0.0,2.14],[0.2,2.14],[0.2,0.72],[0.0,0.72]],[[10.837,0.2],[10.454,0.872],[10.594,0.948]],[[10.837,0.2],[10.594,0.948],[10.753,1.035],[11.342,0.0]],[[10.837,0.2],[11.342,0.0],[0.32,0.0],[0.92,0.2]],[[0.9,0.8],[0.92,0.8],[0.92,0.2],[0.77,0.27],[0.77,0.67]],[[7.45,4.309],[7.45,4.31],[8.875,4.31],[8.866,4.29]],[[8.866,4.29],[8.896,4.29],[8.908,4.27]],[[9.011,4.09],[10.056,2.257],[9.972,2.209],[9.898,2.169]],[[8.71,3.93],[9.011,4.09],[9.898,2.169],[9.757,2.093]],[[4.46,6.33],[4.82,6.644],[4.84,6.661],[4.84,4.31],[4.48,3.95],[4.46,3.95]],[[4.46,6.33],[3.13,6.33],[3.13,6.67],[4.82,6.67],[4.82,6.644]],[[8.866,4.29],[8.908,4.27],[9.011,4.09],[8.71,3.93],[7.45,3.93],[7.45,4.309]],[[5.45,4.31],[5.45,3.93],[4.48,3.93],[4.48,3.95],[4.84,4.31]],[[0.0,3.17],[0.0,6.67],[0.34,6.33],[0.2,3.44]],[[1.725,6.33],[0.34,6.33],[0.0,6.67],[1.725,6.67]],[[0.34,6.33],[0.34,3.44],[0.2,3.44]],[[0.0,3.17],[0.2,3.44],[0.2,3.17]],[[0.34,3.44],[0.34,3.39],[0.2,3.39],[0.2,3.44]],[[4.46,3.39],[1.27,3.39],[1.27,3.44],[4.46,3.44]],[[4.46,3.44],[4.46,3.93],[4.51,3.93],[4.51,3.44]],[[0.2,2.09],[1.49,2.09],[1.49,2.075],[0.2,2.075]],[[0.2,2.02],[0.2,2.035],[1.49,2.035],[1.49,2.02]],[[0.2,2.075],[1.49,2.075],[1.49,2.035],[0.2,2.035]],[[4.46,2.12],[4.51,2.02],[3.86,2.02],[3.86,2.12]],[[2.47,1.77],[3.84,1.77],[3.84,1.72],[2.47,1.72]],[[2.42,1.77],[2.42,2.42],[2.47,2.42],[2.47,1.77]],[[4.46,2.12],[4.46,2.37],[4.51,2.37],[4.51,2.12]],[[3.81,2.12],[3.81,2.37],[3.86,2.37],[3.86,2.12]],[[3.86,2.02],[3.86,0.9],[3.81,0.9],[3.81,2.02]],[[0.3,0.0],[0.3,0.013],[0.32,0.0]],[[3.81,2.12],[3.86,2.12],[3.86,2.02],[3.81,2.02]],[[8.875,4.31],[8.884,4.31],[8.896,4.29],[8.866,4.29]],[[4.84,6.67],[4.84,6.661],[4.82,6.644],[4.82,6.67]],[[4.46,3.95],[4.48,3.95],[4.48,3.93],[4.46,3.93]],[[3.81,2.37],[3.81,2.42],[3.86,2.42],[3.86,2.37]],[[4.46,2.37],[4.46,2.42],[4.51,2.42],[4.51,2.37]],[[2.42,1.77],[2.47,1.77],[2.47,1.72],[2.42,1.72]]],"rooms":[{"n":"Salon / Cuisine","a":"26,6","poly":[[3.861,2.019],[4.51,2.019],[4.48,2.08],[4.48,2.12],[4.511,2.12],[4.511,2.421],[2.419,2.421],[2.419,2.091],[0.201,2.091],[0.201,3.389],[4.46,3.389],[4.46,3.44],[4.511,3.44],[4.511,3.929],[8.709,3.929],[10.858,0.201],[3.861,0.201]]},{"n":"Chambre 1","a":"11,9","poly":[[0.34,3.44],[4.46,3.44],[4.46,6.33],[0.34,6.33]]},{"n":"Salle de bains / WC","a":"5,1","poly":[[1.2,0.2],[3.21,0.2],[3.21,0.9],[3.81,0.9],[3.81,1.72],[2.42,1.72],[2.42,2.02],[0.2,2.02],[0.2,0.82],[1.2,0.82]]},{"n":"Placard","a":"0,87","poly":[[2.47,1.77],[3.81,1.77],[3.81,2.42],[2.47,2.42]]},{"n":"Loggia","a":"5,7","poly":[[4.85,4.32],[8.65,4.32],[8.45,4.67],[6.19,6.47],[4.85,6.47]]}],"dims":[[0.34,5.617,4.46,5.617,"412"],[3.697,6.33,3.697,3.44,"289"],[4.51,3.39,9.022,3.39,"451"],[4.85,6.265,6.449,6.265,"160"],[5.289,6.47,5.289,4.32,"215"],[4.85,4.59,8.495,4.59,"365"],[3.86,0.477,10.679,0.477,"682"],[7.146,3.93,7.146,0.2,"373"],[3.697,2.42,3.697,1.77,"65"]],"loggia":{"slab":[[4.835,4.305],[4.835,6.685],[6.265,6.685],[6.519,6.482],[8.622,4.81],[8.906,4.305]],"rail":[[4.86,6.57],[6.23,6.57],[8.53,4.73],[8.73,4.38]]}};
+const LABELS=[['Salon / Cuisine','26,6 m²',7.0,1.9],['Chambre 1','11,9 m²',2.4,4.9],['Salle de bains / WC','5,1 m²',1.9,1.05],['Loggia','5,7 m²',6.3,5.45]];
+function Cinema(el,opt){
+  opt=opt||{}; const R=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const vb=GEO.vb.join(' '), P=pts=>pts.map(p=>p.join(',')).join(' ');
+  const walls=GEO.walls.map(w=>'<polygon class="wall" pathLength="3" points="'+P(w)+'"/>').join('');
+  const rail='<polyline points="'+P(GEO.loggia.rail)+'" fill="none" stroke="#161918" stroke-width=".03"/>';
+  const labels=LABELS.map(l=>'<g class="room"><text x="'+l[2]+'" y="'+l[3]+'" text-anchor="middle" font-size=".3" font-weight="600" fill="#161918" style="font-family:Archivo,sans-serif">'+l[0]+'</text><text x="'+l[2]+'" y="'+(l[3]+.36)+'" text-anchor="middle" font-size=".26" fill="#555B57">'+l[1]+'</text></g>').join('');
+  const dims=GEO.dims.filter(d=>['412','682','373','451','289'].includes(d[4])).map(d=>{const mx=(d[0]+d[2])/2,my=(d[1]+d[3])/2,v=Math.abs(d[0]-d[2])<.01;
+    return '<g class="dim"><line x1="'+d[0]+'" y1="'+d[1]+'" x2="'+d[2]+'" y2="'+d[3]+'" stroke="#2C49B8" stroke-width=".022"/><text x="'+mx+'" y="'+my+'" dy="-.06" text-anchor="middle" font-size=".24" fill="#2C49B8"'+(v?' transform="rotate(-90 '+mx+' '+my+')"':'')+'>'+(d[4]/100).toFixed(2).replace('.',',')+'</text></g>'}).join('');
+  el.innerHTML='<div class="world"><img class="lay" data-l="plan" src="img/avant.jpg" alt=""><div class="lay blank" data-l="blank"></div>'+
+    '<svg class="lay" data-l="svg" viewBox="'+vb+'" preserveAspectRatio="xMidYMid slice"><g class="walls">'+walls+'</g>'+rail+'<g class="rooms">'+labels+'</g><g class="dims">'+dims+'</g></svg>'+
+    '<img class="lay wipe" data-l="top" src="img/apres.jpg" alt=""></div>'+
+    '<img class="lay" data-l="axo" src="img/maquette.jpg" alt=""><img class="lay kb" data-l="salon" src="img/salon.jpg" alt="">'+
+    '<div class="scan"></div><div class="zone"><b>Glissez votre plan de vente ici</b><small>PDF du promoteur</small></div>'+
+    '<div class="file"><img src="img/avant.jpg" alt=""><span>plan-de-vente-T2.pdf</span></div>'+
+    '<svg class="cursor" viewBox="0 0 24 24"><path d="M3 2 L3 19 L8 14.5 L11.5 22 L14.5 20.6 L11 13.3 L17.5 13.3 Z" fill="#fff" stroke="#161918" stroke-width="1.4" stroke-linejoin="round"/></svg>'+
+    '<div class="chip"></div><div class="clock">0:00</div>'+
+    '<div class="hud"><span>Dépôt</span><span>Lecture</span><span>Plan 2D</span><span>Maquette 3D</span><span>Visite</span></div>'+
+    '<button class="replay" type="button">Rejouer</button>'+
+    '<div class="end"><b>Votre visite est prête.</b><a class="btn primary" href="#" data-upload>Essayer avec mon plan <span class="arr">→</span></a></div>';
+  const q=s=>el.querySelector(s), L=n=>el.querySelector('[data-l="'+n+'"]');
+  const svg=L('svg'), world=q('.world'), zone=q('.zone'), file=q('.file'), cur=q('.cursor'), scan=q('.scan'), chip=q('.chip'), clock=q('.clock'), end=q('.end'), hud=[...el.querySelectorAll('.hud span')];
+  let T=[], clockT=null;
+  const at=(ms,f)=>T.push(setTimeout(f,R?0:ms));
+  const step=i=>hud.forEach((h,k)=>h.className=k<i?'done':k===i?'now':'');
+  const pos=(n,x,y)=>{n.style.left=x+'%'; n.style.top=y+'%';};
+  function reset(){ T.forEach(clearTimeout); T=[]; clearInterval(clockT);
+    el.querySelectorAll('.lay').forEach(n=>n.classList.remove('on')); svg.classList.remove('traced','filled','rooms-on','dims-on');
+    world.classList.remove('tilt'); zone.className='zone'; file.className='file'; file.style.cssText=''; cur.classList.remove('on'); scan.className='scan'; chip.className='chip'; end.classList.remove('on'); step(-1); clock.textContent='0:00'; }
+  function run(){
+    reset(); let sec=0; const t0=performance.now();
+    clockT=setInterval(()=>{ const k=Math.min((performance.now()-t0)/13000,1); sec=Math.round(k*272); clock.textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'); },120);
+    // 1. glisser-déposer
+    zone.classList.add('on'); step(0);
+    if(opt.dnd!==false){ file.classList.add('on'); pos(cur,97,99);
+      at(300,()=>{cur.classList.add('on'); pos(cur,86,74);});
+      at(1300,()=>{ file.style.left='41%'; file.style.top='36%'; file.style.right='auto'; file.style.bottom='auto'; pos(cur,55,52); zone.classList.add('hot'); });
+      at(2500,()=>{ file.style.transform='scale(.4)'; file.style.opacity='0'; cur.classList.remove('on'); });
+    }
+    const o=opt.dnd===false?-1600:0;
+    at(2700+o,()=>{ zone.classList.remove('on'); L('plan').classList.add('on'); chip.innerHTML='Plan reconnu<small>T2 · échelle 1/50</small>'; chip.classList.add('on'); });
+    // 2. lecture : balayage, murs tracés, pièces et cotes
+    at(3300+o,()=>{ step(1); L('svg').classList.add('on'); scan.classList.add('go'); svg.classList.add('traced'); chip.innerHTML='Lecture du plan<small>murs, portes, cotes</small>'; });
+    at(5200+o,()=>{ svg.classList.add('filled','rooms-on'); });
+    at(5800+o,()=>{ svg.classList.add('dims-on'); chip.innerHTML='Surfaces vérifiées<small>43,6 m² · comme le tableau du promoteur</small>'; });
+    // 3. plan 2D redessiné
+    at(6900+o,()=>{ step(2); L('blank').classList.add('on'); chip.innerHTML='Plan 2D redessiné<small>coté, surfaces par pièce</small>'; });
+    // 4. maquette 3D
+    at(8500+o,()=>{ step(3); svg.classList.remove('dims-on'); L('top').classList.add('on'); chip.innerHTML='Maquette 3D<small>générée d\u2019après les cotes</small>'; });
+    at(9500+o,()=>{ world.classList.add('tilt'); });
+    at(10900+o,()=>{ L('axo').classList.add('on'); });
+    // 5. visite
+    at(12400+o,()=>{ step(4); L('salon').classList.add('on'); chip.innerHTML='Salon / Cuisine<small>26,6 m² · à hauteur d\u2019yeux</small>'; });
+    at(13000+o,()=>{ clearInterval(clockT); });
+    at(15400+o,()=>{ step(5); if(opt.onEnd) opt.onEnd(); else end.classList.add('on'); });
+    if(opt.loop) at(19500+o,run);
+  }
+  q('.replay').addEventListener('click',run);
+  return {run,reset};
+}
+const heroCine=Cinema(document.getElementById('cine-hero'),{loop:true});
+// démarre quand le héros est visible (et une seule fois l'image au repos avant)
+heroCine.run();
+
+/* ---------- Démo : le vrai moteur ---------- */
+(function(){
+  const SRC='plans/t2-432-21258e6e/index.html', PANO='plans/t2-432-21258e6e/pano/index.html';
+  const screen=document.getElementById('screen'), poster=document.getElementById('poster'), still=document.getElementById('still'), txt=document.getElementById('demo-txt');
+  const TXT={
+    source:'<b>Plan importé.</b> Le plan de vente tel que le promoteur l\u2019envoie : c\u2019est tout ce qu\u2019il vous faut.',
+    plan:'<b>Plan 2D.</b> Redessiné au propre, avec les cotes et la surface de chaque pièce. Cliquez dans une pièce pour y entrer.',
+    maquette:'<b>Maquette 3D.</b> Faites tourner le logement, zoomez, double-cliquez dans une pièce pour y entrer.',
+    visite:'<b>Visite 3D.</b> Glissez pour regarder, cliquez pour avancer, cliquez sur une porte pour l\u2019ouvrir.',
+    '360':'<b>Visite 360°.</b> Chaque pièce en panorama, d\u2019arrêt en arrêt. Léger et fluide, même sur téléphone.',
+    ultra:'<b>Ultra réaliste.</b> Matières, lumière du jour, ciel et paysage : le rendu le plus fidèle à l\u2019ambiance réelle.'
+  };
+  let frame=null, pano=null, cur='maquette', ready=null, shown=false;
+  const loader=document.createElement('div'); loader.className='loading'; loader.innerHTML='<span class="spin"></span>Chargement de la visite…'; loader.hidden=true; screen.appendChild(loader);
+  // le moteur se charge invisible ; il n'est montré qu'une fois sorti de sa galerie et placé dans le bon mode
+  function engine(){
+    if(frame) return ready;
+    frame=document.createElement('iframe'); frame.title='Démo de la visite'; frame.src=SRC; frame.setAttribute('allow','fullscreen'); frame.className='hide'; screen.appendChild(frame);
+    ready=new Promise(res=>{ frame.addEventListener('load',()=>{ const w=frame.contentWindow; let n=0;
+      (function wait(){ if(w.App&&w.App.leaveGallery&&w.__v){ try{ w.App.leaveGallery(); w.App.set('mode','orbit'); }catch(e){} setTimeout(()=>res(w),1200); } else if(n++<200) setTimeout(wait,100); })(); }); });
+    return ready;
+  }
+  new IntersectionObserver((es,o)=>{ if(es[0].isIntersecting){ engine(); o.disconnect(); } },{rootMargin:'900px'}).observe(document.getElementById('demo'));
+  async function show(t){
+    cur=t; document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t)); txt.innerHTML=TXT[t];
+    still.hidden=t!=='source'; if(t==='source'){ poster.hidden=true; return; }
+    poster.hidden=true; if(typeof cd!=='undefined'&&cd){ cd.hidden=true; if(demoCine) demoCine.reset(); }
+    if(t==='360'){ loader.hidden=true; if(frame) frame.hidden=true; if(!pano){ pano=document.createElement('iframe'); pano.title='Visite 360°'; pano.src=PANO; screen.appendChild(pano); } pano.hidden=false; return; }
+    if(pano) pano.hidden=true;
+    if(!shown) loader.hidden=false;
+    const w=await engine(); if(cur!==t) return;
+    try{
+      w.App.set('rendu', t==='ultra'?'ultra':'simple');
+      if(t==='plan') w.App.set('mode','plan');
+      if(t==='maquette') w.App.set('mode','orbit');
+      if(t==='visite'||t==='ultra') w.App.set('mode','walk');
+    }catch(e){}
+    setTimeout(()=>{ if(cur!==t) return; frame.className=''; frame.hidden=false; loader.hidden=true; shown=true; }, shown?0:500);
+  }
+  const cd=document.getElementById('cine-demo'); let demoCine=null;
+  poster.addEventListener('click',()=>{ poster.hidden=true; cd.hidden=false; demoCine=demoCine||Cinema(cd,{onEnd:()=>{ cd.hidden=true; show('maquette'); }}); demoCine.run(); });
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>show(b.dataset.t)));
+  window.__demo=show;
+})();
+
+/* ---------- Import : sélecteur de fichier puis démonstration de l'attente ---------- */
+(function(){
+  const file=document.getElementById('file'), modal=document.getElementById('modal');
+  document.addEventListener('click',e=>{ const a=e.target.closest('[data-upload]'); if(!a)return; e.preventDefault(); file.click(); });
+  const bar=document.getElementById('ch-bar'), steps=[...document.querySelectorAll('#ch-steps li')], phrase=document.getElementById('ch-phrase'), title=document.getElementById('ch-title');
+  const PH=['On relève les cotes, pièce par pièce…','On monte les cloisons…','On pose les huisseries des portes…','On coule la dalle, le béton prend son temps…','On vérifie qu\u2019aucune porte ne s\u2019ouvre à l\u2019envers…'];
+  function start(name){
+    modal.hidden=false; title.textContent='Plan reconnu · '+(name||'plan-de-vente.pdf'); bar.style.width='0';
+    let i=0,p=0; steps.forEach(s=>s.className=''); phrase.textContent=PH[p++];
+    const tick=setInterval(()=>{ phrase.textContent=PH[p++%PH.length]; },1300);
+    (function next(){ if(i>0)steps[i-1].className='done';
+      if(i===steps.length){ clearInterval(tick); bar.style.width='100%'; title.textContent='Votre visite est prête'; phrase.textContent='Démonstration : voici un logement traité par le service.';
+        setTimeout(()=>{ modal.hidden=true; document.getElementById('demo').scrollIntoView({behavior:'smooth'}); window.__demo&&window.__demo('visite'); },1400); return; }
+      steps[i].className='on'; bar.style.width=(i+1)/steps.length*92+'%'; i++; setTimeout(next,1500); })();
+  }
+  file.addEventListener('change',()=>{ start(file.files[0]&&file.files[0].name); file.value=''; });
+  document.addEventListener('dragover',e=>e.preventDefault());
+  document.addEventListener('drop',e=>{ e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) start(f.name); });
+})();
+</script>

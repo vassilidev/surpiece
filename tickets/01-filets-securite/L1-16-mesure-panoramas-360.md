@@ -30,6 +30,9 @@ Chiffres **indicatifs** (machine partagée avec d'autres agents).
 - **Sans carte graphique (SwiftShader)** : environ 3,5 min par panorama en 4096, soit 20 à 40 min par plan, d'après le rapport de construction, **avant** l'occlusion (faces rendues deux fois) et le 8192. Ordre de grandeur dépassé, **pas mesuré** sur les 5 plans ni sur la VM visée ; c'est le vrai coût à prévoir si le 360° devient l'offre gratuite.
 - Cœurs occupés et mémoire de pointe : non mesurés.
 
+## Avis de l'utilisateur (29/09/2026, soir)
+Validation de l'utilisateur du 29/09/2026 (soir), mot pour mot : « L1-16 je te laisse faire la vérification alors, je pense que l'offre gratuite peut proposer ça oui, ou le plan découpé 3D. » Direction : l'offre gratuite propose le 360° ou la maquette découpée (plan découpé en 3D) ; choix final au vu des mesures en SwiftShader, à présenter.
+
 ## À faire
 1. **Mesurer en SwiftShader** (`node moteur/pano.mjs plans/<id> --logiciel`) sur les 5 références, sur une machine non partagée, avec et sans le 8192 et en `--standard` : durée par panorama et par plan (médiane, 9e décile), part de l'occlusion, cœurs occupés, mémoire de pointe.
 2. **Extrapoler** à la VM visée (L0-03, 4 vCPU) : durée ajoutée à l'offre gratuite, plans par heure, provision de rendu par plan (OFFRES.md § 8.1, § 8.8), comparées aux 4 images actuelles.
