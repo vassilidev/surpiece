@@ -405,7 +405,7 @@ function pageHTML(D) {
           ${(D.moments || []).length > 1 ? `<h2>Lumière</h2>
           <div class="g-filter"><span>Moment de la journée</span><div class="seg" data-key="moment">${D.moments.map(m => `<button data-v="${esc(m.id)}">${esc(m.t)}</button>`).join('')}</div></div>` : `<h2>Le logement</h2><ul class="g-note" style="margin:0;padding-left:16px;display:grid;gap:3px">${D.levels.map((l, k) => (D.multi ? `<li class="g-lv">${esc(App.levelName(k))}</li>` : '') + (D.rooms || []).filter(r => r.area && !r.hidden && !r.of && r.level === k).map(r => `<li>${esc(r.name)} · ${esc(r.area)} m²</li>`).join('')).join('')}</ul>`}
           <button class="g-cta" id="gStart" disabled>Lancer la visite 3D<small id="gLoad">Chargement de la 3D…</small></button>
-          <div class="g-links"><button class="btn" id="gOrbit">Maquette 3D</button><button class="btn" id="gPlan">Plan 2D</button></div>
+          <div class="g-links"><button class="btn" id="gOrbit">Maquette 3D</button><button class="btn" id="gPlan">Plan 2D</button><button class="btn" id="g360" hidden>360°</button></div>
           <p class="g-note">${esc(D.note || '')}</p>
         </aside>
       </div>
@@ -442,7 +442,8 @@ function ficheHTML(D) {
 }
 
 /* ---------- État ---------- */
-const DEF = { v: 1, mode: 'orbit', season: 'automne', hour: 14.5, bsoDrop: 0, bsoTilt: 0, exposure: 1, lights: 'auto', ao: !App.coarse, cut: false, underlay: false, dims: true, moment: 'jour', furniture: false, level: 0, rendu: 'simple' };
+const DEF = { v: 1, mode: 'orbit', season: 'automne', hour: 14.5, bsoDrop: 0, bsoTilt: 0, exposure: 1, lights: 'auto', ao: !App.coarse, cut: false, underlay: false, dims: true, moment: 'jour', furniture: false, level: 0, rendu: 'simple', debug: false, xray: false, eau: false, orig: false };
+// mode admin (moteur/admin.js) : bandeau de débogage et plan déposé à côté du plan 2D gardés ; rayons X et eau jamais repris au chargement
 // rendu : 'simple' (lumière fixe, par défaut) ou 'ultra' (rendu complet : soleil, ombres, sondes, lampes ; moteur/engine.js)
 const ENUM = { mode: ['plan', 'orbit', 'walk'], season: ['hiver', 'printemps', 'ete', 'automne'], lights: ['auto', 'on', 'off'], rendu: ['simple', 'ultra'] };
 const RANGE = { hour: [5, 22], bsoDrop: [0, 100], bsoTilt: [0, 80], exposure: [0.4, 2.5] };
@@ -457,7 +458,7 @@ async function boot() {
   let D;
   try { D = App.D = prepare(P); document.body.insertAdjacentHTML('afterbegin', pageHTML(D)); }
   catch (e) { console.error(e); document.body.innerHTML = `<p id="err" style="padding:24px;font:15px system-ui">Ce plan.json est hors format (${esc(e.message)}) : la visite ne peut pas être construite.</p>`; return; }
-  document.title = `Visite 3D · ${D.titre || (D.cartouche || {}).l1 || 'logement'}`;
+  document.title = `${D.titre || (D.cartouche || {}).l1 || 'Logement'} · Sur Pièce`; // nom provisoire (produit/MARQUE.md)
   armLoader();
   try { // une erreur ici s'affiche (App.fail) au lieu d'un chargement sans fin
     const KEY = `visite-${D.id}`;
@@ -467,7 +468,7 @@ async function boot() {
     if (!ENUM.moment.includes(S.moment)) S.moment = ENUM.moment[0];
     DEF.level = S.level = D.entry; RANGE.level = [0, D.levels.length - 1]; // niveau affiché : celui de l'entrée par défaut
     for (const [k, v] of Object.entries(saved)) {
-      if (!(k in DEF) || k === 'furniture') continue;
+      if (!(k in DEF) || ['furniture', 'xray', 'eau'].includes(k)) continue;
       if (ENUM[k]) { if (ENUM[k].includes(v)) S[k] = v; }
       else if (RANGE[k]) { const n = +v; if (Number.isFinite(n)) S[k] = Math.min(RANGE[k][1], Math.max(RANGE[k][0], n)); }
       else if (typeof v === typeof DEF[k]) S[k] = v;
@@ -860,13 +861,16 @@ function initUI(D) {
     $('#tour').hidden = plan && innerWidth < 900;
     $('#compassRot').setAttribute('transform', `rotate(${-(D.geo && D.geo.nord) || 0})`);
     $('#hint').textContent = S.mode === 'walk'
-      ? (App.coarse ? 'Glisser pour regarder · toucher un endroit pour y aller, une porte pour passer' : 'Glisser pour regarder · cliquer un endroit pour y aller, une porte pour passer · ZQSD ou flèches · E pour ouvrir une porte')
+      ? (App.coarse ? 'Glisser pour regarder · toucher un endroit pour y aller, une porte pour l’ouvrir ou la fermer' : 'Glisser pour regarder · cliquer un endroit pour y aller, une porte pour l’ouvrir ou la fermer · ZQSD ou flèches · E : porte en face')
       : S.mode === 'orbit' ? (App.coarse ? 'Un doigt pour tourner, deux pour zoomer · double-toucher le sol pour entrer' : 'Glisser pour tourner · clic droit pour déplacer · molette pour zoomer · double-clic au sol pour entrer')
       : 'Glisser pour déplacer · molette ou pincer pour zoomer · cliquer dans une pièce pour y entrer';
   };
   App.on(k => { if (['dims', 'underlay', 'level'].includes(k)) drawPlan(); if (k === 'mode' && S.mode === 'plan') requestAnimationFrame(() => { fitPlan(); updateMarker(); }); });
   addEventListener('resize', () => { renderRails(); if (S.mode === 'plan') fitPlan(); syncUI(); });
   renderRails(); syncUI(); drawPlan();
+  // mode admin (décision du 29/09/2026 : visible aussi sur la copie partagée tant que le produit n'est pas en SaaS ; à réserver à
+  // l'administrateur avant l'ouverture) ; absent si moteur/admin.js n'est pas servi
+  import('./admin.js').then(m => m.initAdmin(App, D)).catch(e => console.warn('admin', e));
   if (S.mode === 'plan') requestAnimationFrame(fitPlan);
 
   /* ---------- Galerie ---------- */
@@ -899,6 +903,7 @@ function initUI(D) {
     if (mode === 'walk') { if (S.mode !== 'walk') App.set('mode', 'walk'); else if (D.stops[0]) App.goStop(D.stops[0].id); } else App.set('mode', mode);
     syncUI();
   };
+  App.leaveGallery = leaveGallery; // lien « Admin » de la liste des plans (moteur/admin.js)
   $('#gStart').addEventListener('click', () => leaveGallery('walk'));
   $('#gOrbit').addEventListener('click', () => leaveGallery('orbit'));
   $('#gPlan').addEventListener('click', () => leaveGallery('plan'));
@@ -915,7 +920,7 @@ function initUI(D) {
 function init360(D) {
   const b = $('#btn360'); let V = null;
   fetch('pano/visite.json', { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null))
-    .then(v => { if (v && Array.isArray(v.arrets) && v.arrets.length) { V = App.pano = v; b.hidden = false; } }).catch(() => {});
+    .then(v => { if (v && Array.isArray(v.arrets) && v.arrets.length) { V = App.pano = v; b.hidden = false; const g = $('#g360'); if (g) g.hidden = false; } }).catch(() => {});
   const pos = a => (Array.isArray(a.pos) ? a.pos : (D.stops.find(s => s.id === a.id) || {}).p);
   const piece = (x, z, lv) => { const r = App.roomAt(x, z, lv); return r ? (r.of || r.id) : null; };
   App.cible360 = () => {
@@ -931,6 +936,8 @@ function init360(D) {
     return { id: a.id, url: `pano/?depuis=visite${enVisite && Number.isFinite(v.yaw) ? `&cap=${v.yaw.toFixed(3)}` : ''}#${encodeURIComponent(a.id)}` };
   };
   b.addEventListener('click', () => { const c = App.cible360(); if (c) location.href = c.url; });
+  // galerie (page d'arrivée du plan) : 360° depuis son point de départ, sans attendre la 3D
+  $('#g360')?.addEventListener('click', () => { const c = App.cible360(); if (c) location.href = c.url; });
 }
 function retour360() {
   const q = new URLSearchParams(location.search), v = q.get('vue'), arret = q.get('arret'), D = App.D;

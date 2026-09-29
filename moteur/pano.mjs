@@ -27,7 +27,7 @@
        vu à travers la pièce d'un autre arrêt), porte-sans-arret (porte d'un placard ouverte), exposition (borne basse d'exposition à 0,5),
        sans-occlusion (panoramas sans occlusion ambiante : contremarches et angles), noms (nom en capitales), separateur (« Séjour Cuisine »)
    Une ligne « PANO {json} » par panorama terminé (progression du serveur). */
-import http from 'node:http';
+import { serveurStatique, envSansSecret } from './chrome.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
@@ -36,7 +36,7 @@ import { verifierVisionneuse } from './pano-visionneuse.mjs';
 import * as RG from './pano-regard.mjs';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const args = process.argv.slice(2), dir = args.find(a => !a.startsWith('--')) || 'plans/432';
+const args = process.argv.slice(2), dir = args.find(a => !a.startsWith('--')) || 'plans/t2-432-21258e6e';
 const opt = k => { const a = args.find(x => x === `--${k}` || x.startsWith(`--${k}=`)); return a == null ? null : a.includes('=') ? a.split('=')[1] : true; };
 const STANDARD = !!opt('standard'), LOGICIEL = !!opt('logiciel'), ONLY = opt('arrets') ? String(opt('arrets')).split(',') : null;
 const ESSAI = opt('essai-couture') ? 'couture' : (opt('essai') || null);
@@ -61,17 +61,9 @@ let puppeteer;
 try { puppeteer = (await import('puppeteer')).default; }
 catch { const req = createRequire(path.join(execSync('npm root -g').toString().trim(), 'noop.js')); puppeteer = (await import(req.resolve('puppeteer'))).default; }
 
-// serveur statique minimal sur la racine du dépôt ; le 360° est servi comme en ligne : politique de contenu stricte (rien hors de son dossier)
+// serveur local limité à ce que charge la visite (moteur/chrome.mjs, L1-01) ; le 360° est servi comme en ligne : politique de contenu stricte (rien hors de son dossier)
 const CSP = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg' };
-const server = http.createServer((q, r) => {
-  let p; try { p = decodeURIComponent(new URL(q.url, 'http://x').pathname); } catch { r.writeHead(400); r.end(); return; }
-  if (p.endsWith('/')) p += 'index.html';
-  const f = path.join(root, p); if (!f.startsWith(root) || !fs.existsSync(f) || !fs.statSync(f).isFile()) { r.writeHead(404); r.end(); return; }
-  const h = { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' };
-  if (p.includes('/pano/')) Object.assign(h, { 'content-security-policy': CSP, 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer', 'cache-control': 'no-store' });
-  r.writeHead(200, h); fs.createReadStream(f).pipe(r);
-}).listen(0);
+const server = await serveurStatique(root, dir, { entetes: p => p.includes('/pano/') ? { 'content-security-policy': CSP, 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer', 'cache-control': 'no-store' } : {} });
 const port = server.address().port;
 
 const plan = JSON.parse(fs.readFileSync(path.join(root, dir, 'plan.json'), 'utf8'));
@@ -85,7 +77,7 @@ const DEG = Math.PI / 180;
 const angD = a => Math.atan2(Math.sin(a), Math.cos(a));
 
 const flags = LOGICIEL ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'];
-const browser = await puppeteer.launch({ headless: 'new', args: flags, protocolTimeout: 3600000 });
+const browser = await puppeteer.launch({ headless: 'new', args: flags, protocolTimeout: 3600000, env: envSansSecret() });
 const page = await browser.newPage(); await page.setViewport({ width: FACE, height: FACE, deviceScaleFactor: 1 });
 page.on('pageerror', e => console.log('[erreur page]', e.message));
 await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);

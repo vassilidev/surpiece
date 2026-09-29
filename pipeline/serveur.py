@@ -43,6 +43,20 @@ def load_env():
 load_env()
 
 
+def plan_du_fichier(body, ext):
+    """plan déjà déposé avec exactement le même fichier (même taille, même empreinte SHA-256), sinon None"""
+    import hashlib
+    h = None
+    for o in sorted(PLANS.iterdir()) if PLANS.exists() else []:
+        f = o / ('source' + ext)
+        if o.name.startswith(('_', '.')) or not f.is_file() or f.stat().st_size != len(body):
+            continue
+        h = h or hashlib.sha256(body).hexdigest()
+        if hashlib.sha256(f.read_bytes()).hexdigest() == h:
+            return o.name
+    return None
+
+
 def slug(name):
     s = unicodedata.normalize('NFKD', Path(name).stem).encode('ascii', 'ignore').decode().lower()
     s = re.sub(r'[^a-z0-9]+', '-', s).strip('-')[:28] or 'plan'
@@ -349,13 +363,37 @@ def qualifier(pid):
     return True  # nombre de niveaux : recoupé avec l'extraction avant la lecture (niveaux_refus)
 
 
+def rejouer_lecture(d):
+    """tests sans appel payant (PLAN_REJEU=1, test de bout en bout outils/bout_en_bout.mjs) : si un autre plan a été déposé avec exactement
+    le même fichier et que sa lecture est gardée, elle est recopiée ici (reponse-ia.json, relecture-ia.json) et la lecture la reprend
+    (lire.read_plan : « réponse IA réutilisée »). Rien n'est recopié si ce dossier a déjà sa lecture. Jamais activé en service"""
+    import hashlib
+    if (d / 'reponse-ia.json').exists():
+        return True
+    src = next(iter(sorted(d.glob('source.*'))), None)
+    if not src:
+        return False
+    h = hashlib.sha256(src.read_bytes()).hexdigest()
+    for o in sorted(PLANS.iterdir()):
+        if o == d or not o.is_dir() or o.name.startswith(('_', '.')) or not (o / 'reponse-ia.json').exists():
+            continue
+        s2 = next(iter(sorted(o.glob('source.*'))), None)
+        if s2 and s2.suffix == src.suffix and hashlib.sha256(s2.read_bytes()).hexdigest() == h:
+            for f in ('reponse-ia.json', 'relecture-ia.json'):
+                if (o / f).exists():
+                    shutil.copy(o / f, d / f)
+            return True
+    return False
+
+
 def lecture(pid):
     d = PLANS / pid
     if niveaux_refus(pid):
         return None
     load_env()
     from lire import provider
-    if not provider() and not os.environ.get('PLAN_MOCK'):
+    rejeu = os.environ.get('PLAN_REJEU') == '1' and rejouer_lecture(d)
+    if not provider() and not os.environ.get('PLAN_MOCK') and not rejeu:
         state(pid, statut='erreur', etape='lecture', message="Clé API absente : ajoutez-la dans le fichier .env à la racine du projet (voir pipeline/README.md), puis relancez.")
         return None
     state(pid, etape='lecture', statut='en_cours', message='Lecture du plan en cours…', pct=10)
@@ -597,6 +635,11 @@ VISITE = re.compile(r'index\.html|plan\.json|calibration\.png')
 PANO = re.compile(r'index\.html|visite\.json|visionneuse\.js|[a-z0-9_-]+-(?:512|2048|4096|8192)\.jpg|niveau-\d{1,2}\.png')
 
 
+# mode admin de l'outil local : fichiers d'un plan montrés dans la visite (jamais les fichiers commençant par un point)
+ADMIN_FICHIER = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]{0,100}\.(?:json|txt|png|jpg|jpeg|webp|pdf)')
+ADMIN_TYPES = {'.json': 'application/json; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.pdf': 'application/pdf'}
+
+
 CSP_PANO = ("default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; "
             "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
 
@@ -693,7 +736,9 @@ class H(SimpleHTTPRequestHandler):
             return self.send_json(st, 200) if isinstance(st, dict) else self.send_json({'statut': 'illisible'}, 503)
         if p == '/api/plans':
             out = []
-            for d in sorted((x for x in PLANS.iterdir() if x.is_dir() and not x.name.startswith(('_', '.'))), key=lambda d: -d.stat().st_mtime) if PLANS.exists() else []:
+            # copies temporaires du test de bout en bout (outils/bout_en_bout.mjs) : hors de la liste de l'outil
+            caches = ('_', '.') if os.environ.get('PLAN_DOUBLONS') == '1' else ('_', '.', 'bout-en-bout-')
+            for d in sorted((x for x in PLANS.iterdir() if x.is_dir() and not x.name.startswith(caches)), key=lambda d: -d.stat().st_mtime) if PLANS.exists() else []:
                 try:
                     st = lire_etat(d / 'etat.json') if (d / 'etat.json').exists() else {'statut': 'fini' if (d / 'plan.json').exists() else 'inconnu'}
                     st = st if isinstance(st, dict) else {'statut': 'inconnu'}
@@ -703,13 +748,88 @@ class H(SimpleHTTPRequestHandler):
                     ordre = [p_['id'] for p_ in json.loads((d / 'plan.json').read_text()).get('photos', []) if not p_.get('orbit')] if (d / 'plan.json').exists() else []
                     jpgs = sorted((d / 'photos').glob('*.jpg'), key=lambda f: next((i for i, n in enumerate(ordre) if f.stem.rsplit('-', 1)[0] == n), 99)) if (d / 'photos').exists() else []
                     photo = f'/plans/{quote(d.name)}/photos/{quote(jpgs[0].name)}' if jpgs else None
-                    out.append({'id': d.name, 'titre': str(titre), 'statut': st.get('statut'), 'photo': photo})
+                    out.append({'id': d.name, 'titre': str(titre), 'statut': st.get('statut'), 'photo': photo, 'date': int(d.stat().st_mtime), 'pano': (d / 'pano' / 'visite.json').exists(),
+                                'sources': [f.name for f in sorted(d.glob('source.*')) if ADMIN_FICHIER.fullmatch(f.name)] + (['page.png'] if (d / 'page.png').exists() else [])})
                 except Exception:
                     out.append({'id': d.name, 'titre': 'Plan', 'statut': 'inconnu', 'photo': None})
             return self.send_json(out)
+        if p == '/api/sante':  # la page des plans n'active le dépôt que si le moteur et l'IA sont là
+            load_env()
+            from lire import provider
+            return self.send_json({'depot': True, 'ia': bool(provider() or os.environ.get('PLAN_MOCK') or os.environ.get('PLAN_REJEU') == '1')})
+        if p.startswith('/api/admin/'):
+            return self.admin(p)
+        if p == '/api/export':
+            return self.exporter()
         if p.startswith('/api/'):
             return self.send_json({'erreur': 'inconnu'}, 404)
         return super().do_GET()
+
+    def exporter(self):
+        """export complet (outils/exporter.mjs) : tous les plans, ou ?ids=a,b ; archive .tar.gz téléchargée"""
+        from urllib.parse import parse_qs
+        ids = [x for x in (parse_qs(urlparse(self.path).query).get('ids') or [''])[0].split(',') if x]
+        if any(not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', x) or not (PLANS / x / 'plan.json').exists() for x in ids):
+            return self.send_json({'erreur': 'plan inconnu'}, 404)
+        import tempfile
+        with tempfile.TemporaryDirectory() as t:
+            f = Path(t) / 'export.tar.gz'
+            r = subprocess.run(['node', str(ROOT / 'outils' / 'exporter.mjs'), str(f), *ids], cwd=ROOT, capture_output=True, text=True, timeout=900)
+            if r.returncode or not f.exists():
+                return self.send_json({'erreur': 'Export impossible.', 'detail': (r.stderr or r.stdout)[-600:]}, 500)
+            import datetime
+            nom = f"surpiece-{ids[0] if len(ids) == 1 else 'plans'}-{datetime.datetime.now():%Y%m%d-%H%M}.tar.gz"
+            self.send_response(200); self.send_header('content-type', 'application/gzip'); self.send_header('content-length', f.stat().st_size)
+            self.send_header('content-disposition', f'attachment; filename="{nom}"'); self.send_header('cache-control', 'no-store'); self.end_headers()
+            with open(f, 'rb') as fh:
+                shutil.copyfileobj(fh, self.wfile)
+
+    def importer(self, p, body):
+        """import (outils/importer.mjs) : archive envoyée (corps) ou adresse d'une copie partagée ({"url": …}) ; en-tête x-remplacer: 1 pour
+        remplacer un plan de même identifiant. Rend le compte rendu de l'outil, ligne par ligne"""
+        import tempfile
+        remplacer = ['--remplacer'] if self.headers.get('x-remplacer') == '1' else []
+        with tempfile.TemporaryDirectory() as t:
+            if p == '/api/import':
+                if not body:
+                    return self.send_json({'erreur': 'Archive vide.'}, 400)
+                src = Path(t) / 'import.tar.gz'; src.write_bytes(body); src = str(src)
+            else:
+                try:
+                    src = json.loads(body or b'{}').get('url', '')
+                except ValueError:
+                    src = ''
+                if not re.fullmatch(r'https?://[^\s"\'<>]{3,500}', src or ''):
+                    return self.send_json({'erreur': 'Adresse invalide (https://…).'}, 400)
+            r = subprocess.run(['node', str(ROOT / 'outils' / 'importer.mjs'), src, *remplacer], cwd=ROOT, capture_output=True, text=True, timeout=1800)
+        lignes = [x for x in (r.stdout + r.stderr).splitlines() if x.strip()]
+        return self.send_json({'ok': r.returncode == 0, 'lignes': lignes[-60:]}, 200 if r.returncode == 0 else 400)
+
+    def admin(self, p):
+        """mode admin de l'outil local (L4-19) : fichiers d'un plan (plan déposé, images de lecture, réponses de l'IA, plan.json, contrôles).
+        /api/admin/<id> : liste ; /api/admin/<id>/<fichier> : le fichier (racine du dossier, et pano/controle.json). Local seulement
+        (127.0.0.1, hôte vérifié) : à retirer ou à réserver à l'administrateur avant toute mise en ligne (lot 5)"""
+        parts = [unquote(x) for x in p[len('/api/admin/'):].split('/') if x]
+        if not parts or not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', parts[0]) or not (PLANS / parts[0]).is_dir():
+            return self.send_json({'erreur': 'plan inconnu'}, 404)
+        d = (PLANS / parts[0]).resolve()
+        if len(parts) == 1:
+            out = []
+            for f in sorted([*d.iterdir(), d / 'pano' / 'controle.json']):
+                if f.is_file() and ADMIN_FICHIER.fullmatch(f.name):
+                    st = f.stat(); out.append({'nom': f.relative_to(d).as_posix(), 'taille': st.st_size, 'date': int(st.st_mtime)})
+            return self.send_json(out)
+        rel = '/'.join(parts[1:])
+        if not (ADMIN_FICHIER.fullmatch(parts[-1]) and (len(parts) == 2 or rel == 'pano/controle.json')):
+            return self.send_json({'erreur': 'fichier refusé'}, 404)
+        f = (d / rel).resolve()
+        if d not in f.parents or not f.is_file():
+            return self.send_json({'erreur': 'fichier introuvable'}, 404)
+        b = f.read_bytes(); ext = f.suffix.lower()
+        self.send_response(200)
+        self.send_header('content-type', ADMIN_TYPES.get(ext, 'application/octet-stream')); self.send_header('content-length', len(b))
+        self.send_header('cache-control', 'no-store'); self.send_header('content-disposition', 'inline')
+        self.end_headers(); self.wfile.write(b)
 
     def do_POST(self):
         if not self.hote_ok() or not self.origine_ok():
@@ -721,7 +841,7 @@ class H(SimpleHTTPRequestHandler):
             n = -1
         if n < 0:
             return self.send_json({'erreur': 'Requête invalide.'}, 400)
-        if n > (40_000_000 if p == '/api/depot' else 100_000):
+        if n > {'/api/depot': 40_000_000, '/api/import': 4_000_000_000}.get(p, 100_000):
             self.close_connection = True
             left = n if n < 300_000_000 else 0  # on lit le corps pour que le navigateur reçoive la réponse
             while left > 0:
@@ -729,10 +849,12 @@ class H(SimpleHTTPRequestHandler):
                 if not c:
                     break
                 left -= len(c)
-            return self.send_json({'erreur': 'Fichier trop lourd (40 Mo maximum).'}, 413)
+            return self.send_json({'erreur': 'Fichier trop lourd (40 Mo maximum).' if p == '/api/depot' else 'Requête trop lourde.'}, 413)
         body = self.rfile.read(n)
         if p == '/api/depot':
             return self.depot(body)
+        if p in ('/api/import', '/api/import-url'):
+            return self.importer(p, body)
         pid = unquote(p.split('/')[-1])
         if not (re.fullmatch(r'[a-z0-9-]{1,40}', pid) and (PLANS / pid).is_dir()) or not p.startswith(('/api/relancer/', '/api/calibration/')):
             return self.send_json({'erreur': 'inconnu'}, 404)
@@ -759,6 +881,12 @@ class H(SimpleHTTPRequestHandler):
             return self.send_json({'erreur': 'Photo HEIC (iPhone) non prise en charge : exportez-la en JPG ou faites une capture d’écran du plan.'}, 415)
         if not ext:
             return self.send_json({'erreur': 'Format non reconnu : déposez le PDF du plan ou une image PNG, JPG ou WebP.'}, 415)
+        # un plan par fichier : le même fichier déjà déposé ramène à son plan, rien n'est refait (demande du 29/09/2026 ; le test de bout
+        # en bout, qui redépose les plans de référence, crée ses copies avec PLAN_DOUBLONS=1 et les supprime ensuite)
+        if os.environ.get('PLAN_DOUBLONS') != '1':
+            deja = plan_du_fichier(body, ext)
+            if deja:
+                return self.send_json({'id': deja, 'existant': True})
         with LOCK:
             plein = len(RUNNING) >= 6
         if plein:

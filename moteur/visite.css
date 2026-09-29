@@ -220,7 +220,7 @@ tr.tot td{font-weight:700;border-top:1.5px solid var(--ink)}
 .g-cta small{font:500 12px var(--mono);opacity:.85}
 .g-cta:disabled{opacity:.6;cursor:progress}
 .g-cta:not(:disabled):hover{filter:brightness(1.08)}
-.g-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g-links{display:flex;gap:8px}.g-links .btn{flex:1}
 .g-links .btn{box-shadow:none;text-align:center}
 .g-note{margin:0;font-size:11.5px;color:var(--ink-2);line-height:1.4}
 .g-thumbs{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
@@ -247,3 +247,35 @@ tr.tot td{font-weight:700;border-top:1.5px solid var(--ink)}
 .tbl tr.sec td{font-weight:700;font-variation-settings:"wdth" 110;padding-top:10px;border-bottom:1px solid var(--ink)}
 .g-lv{list-style:none;margin-left:-16px;font-weight:700;color:var(--ink);padding-top:4px}
 @media (max-width:900px){ #levels{top:auto;bottom:calc(116px + env(safe-area-inset-bottom,0px))} body[data-mode="plan"] #levels{bottom:calc(64px + env(safe-area-inset-bottom,0px))} }
+
+/* ---------- Mode admin (moteur/admin.js, outil local) ---------- */
+#admin{z-index:9}
+.adm-row{display:flex;flex-wrap:wrap;gap:6px}
+.adm-row .btn{padding:6px 10px;font-size:13px}
+.adm-files{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.adm-files button{all:unset;box-sizing:border-box;width:100%;display:grid;gap:1px;padding:5px 6px;cursor:pointer;border:1px solid transparent}
+.adm-files button:hover,.adm-files button:focus-visible{border-color:var(--line);background:var(--panel-2)}
+.adm-files span{font-size:13px;font-weight:600}
+.adm-files small{font-size:11px;color:var(--ink-2);overflow-wrap:anywhere}
+.adm-ctl{font-size:13px;display:grid;gap:4px}
+.adm-ctl p{margin:0}
+.adm-ctl ul{margin:0;padding-left:16px;display:grid;gap:3px;font-size:12px;color:var(--ink-2)}
+.adm-ok{color:var(--ok,#2F7A4A);font-weight:700}
+.adm-ko{color:var(--warn,#A8471F);font-weight:700}
+#dbg{position:absolute;z-index:12;left:0;right:0;bottom:0;padding:4px 10px calc(4px + env(safe-area-inset-bottom,0px));background:rgba(12,14,13,.82);color:#E8ECE6;font-size:11.5px;line-height:1.35;pointer-events:none;white-space:normal}
+#origWrap{position:absolute;z-index:4;top:0;bottom:0;right:0;left:50%;background:var(--panel-2);border-left:1.5px solid var(--ink);display:grid;place-items:center;overflow:hidden}
+#origWrap img{max-width:calc(100% - 24px);max-height:calc(100% - 150px);object-fit:contain;cursor:zoom-in;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.orig-cap{position:absolute;bottom:92px;left:0;right:0;text-align:center;font-size:12px;color:var(--ink-2)}
+body.orig #planWrap{right:50%}
+#admView{width:min(1200px,calc(100vw - 24px));height:calc(100vh - 48px);max-height:none;padding:0;border:1.5px solid var(--ink);background:var(--panel);color:var(--ink)}
+#admView[open]{display:grid;grid-template-rows:auto 1fr}
+#admView::backdrop{background:rgba(0,0,0,.45)}
+.adm-vhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.adm-vhead b{font-size:15px}.adm-vhead span{font-size:12px;color:var(--ink-2);flex:1}
+.adm-vhead .btn{padding:6px 10px;font-size:13px}
+.adm-vbody{overflow:auto;padding:10px 12px}
+.adm-vbody pre{margin:0;font:12px/1.45 var(--mono,"DM Mono",monospace);white-space:pre-wrap;overflow-wrap:anywhere}
+.adm-vbody img{display:block;max-width:100%;margin:0 auto;background:#fff}
+.adm-vbody iframe{width:100%;height:100%;min-height:70vh;border:0;background:#fff}
+@media (max-width:899px){ #origWrap{left:0;top:50%;border-left:0;border-top:1.5px solid var(--ink)} body.orig #planWrap{right:0;bottom:50%} .orig-cap{bottom:8px} #origWrap img{max-height:calc(100% - 40px)} }
+#admView a.btn{text-decoration:none;color:inherit}

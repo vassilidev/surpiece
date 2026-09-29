@@ -2,7 +2,7 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 4 · Cœur réutilisable | P2 | L (3 à 5 j) | L1-09, L1-11, L4-12 | `moteur/` [M] | À faire |
+| 4 · Cœur réutilisable | P2 | L (3 à 5 j) | L1-09, L1-11, L4-12 | `moteur/` [M] | En cours |
 
 ## Pourquoi
 Décision de l'utilisateur du 27/09/2026 (n° 14) : le précalcul côté serveur est validé. Il comprend l'éclairage précalculé et « peint » sur les murs, et l'éclairage par pièce. Aujourd'hui, le navigateur calcule lui-même les sondes de lumière de chaque pièce (caméra cube, plusieurs passes), les ombres et l'occlusion ambiante. C'est coûteux sur un appareil modeste (décision 12). Le serveur les calcule une fois, en SwiftShader (décision n° 4), et le navigateur les affiche. Le rendu en direct sur le serveur (streaming vidéo) est écarté pour son coût.
@@ -15,6 +15,9 @@ Précision de l'utilisateur du 28/09/2026, mot pour mot : « Les lumières peuve
 Demande de l'utilisateur, mot pour mot : « je vois pas mal de bugs de lumière lors des visites 3D actuellement, il faut que ça soit fixé, une lumière simple, efficace, qui montre bien les murs et basta, pas besoin de calcul ou quoi que ce soit de trop complexe, peu voire pas de calcul je pense.. on doit bien voir et basta ! » Suite : « pouvoir activer on demand le mode ultra réaliste avec tout ce qu'on veut okay mais sur un bouton dans les settings avec tout le reste ».
 - Fait le 29/09/2026 (non commité, `moteur/engine.js`) : rendu simple par défaut, sans aucun calcul qui dépende de la scène (ciel figé, environnement neutre, deux directionnelles fixes sans ombre ni reflet direct, tons Neutral) : chaque orientation de mur a sa valeur (161 à 207 sur 255 au D201), aucune fuite, aucun saut aux portes, aucune lampe qui s'allume en vue, la nuit ne change rien. L'ancien rendu est la case « Ultra réaliste ». Contrôles : bascule sans reste, nuit sans effet, pièces ni sombres ni brûlées, matières peintes lisibles et sans tache de reflet (`controle.mjs`).
 - Conséquence pour ce ticket : la lumière par défaut n'a plus besoin de précalcul. Il ne vise plus que l'**ultra réaliste** (rendre l'option plus légère et plus belle) ou une version « simple mais peinte » (ombrage d'ambiance dans les angles) si l'utilisateur la demande. Priorité abaissée à P2 en attendant son avis : à confirmer.
+
+## Fait le 29/09/2026 : occlusion ambiante précalculée (ultra réaliste)
+Retour de l'acquéreur : en ultra réaliste, « les lumières sur les murs clignotent ». Champ de distance aux surfaces (`moteur/ao.js`, dans le navigateur, en worker) lu dans les matières : même ombrage à l'arrêt et en mouvement, GTAO retiré de la visite (gardé pour les photos et les 360°). Halo gardé et identique à tous les paliers. Contrôle `sautMouvement`. Détails : HISTORIQUE.md (29/09/2026, après-midi). Reste : calcul côté serveur (fichier livré avec `plan.json`), lumière peinte, sondes précalculées.
 
 ## À faire
 1. **Prototype sur le témoin.** Deux voies à comparer, puis choix écrit avec l'utilisateur. Elles peuvent se cumuler :

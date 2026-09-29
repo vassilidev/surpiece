@@ -2,12 +2,15 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 4 · Cœur réutilisable | P1 | M (1 à 3 j) | L4-11, L4-16 | `moteur/`, `pipeline/` [M] | À faire |
+| 4 · Cœur réutilisable | P1 | M (1 à 3 j) | L4-11, L4-16 | `moteur/`, `pipeline/` [M] | En cours |
 
 ## Pourquoi
 Retour R4 de l'utilisateur, 29/09/2026, mot pour mot : « le site n'est pas encore en mode SaaS mais en mode admin, il faut alléger et rendre ça simple, straight to the point […] afficher en bas quelque part le debug avec les FPS etc […] d'autres modes qui permettraient de faire un xray ou l'eau […] le site avant de le transformer en SaaS doit être 100000 % fonctionnel du dépôt du plan jusqu'au mode de visite, on s'occupera de la sécurité et des quotas de modes et du style et du wording plus tard ».
 
 Crédits limités : l'utilisateur a choisi « seulement l'essentiel » pour la nuit du 29/09/2026 (lumière simple par défaut, ultra réaliste dans les réglages, bouton 360° : faits, voir L4-13 et L4-16). Les quatre points ci-dessous sont **reportés** et regroupés ici.
+
+## Fait le 29/09/2026
+Mode admin de la visite (bandeau, rayons X, eau, plan déposé à côté du plan 2D, contrôles, fichiers), page des plans allégée (tableau, Documents, export et import, dépôt désactivé sans serveur ou sans IA), un plan par fichier, test de bout en bout `outils/bout_en_bout.mjs` (sans appel payant). Détails : HISTORIQUE.md (29/09/2026, fin d'après-midi). Reste : captures validées par l'utilisateur ; comparaison des i/s du bandeau à une mesure externe ; défaut volontaire qui fait échouer le test de bout en bout.
 
 ## À faire
 1. **Mode admin, allégé** : l'outil local (`pipeline/accueil.html`, `pipeline/serveur.py`, visite `moteur/ui.js`) va droit au but : dépôt, avancement, visite, sans écran ni texte superflu. Pas de sécurité, de quotas, de style ni de textes définitifs (plus tard, lots 5 à 8). Liste de ce qui est retiré ou regroupé : à proposer à l'utilisateur sur captures.

@@ -1,34 +1,29 @@
 /* Photos de galerie sans IA : pour chaque vue de plan.json et chaque moment, place la caméra,
    attend la lumière d'ambiance, règle l'exposition sur l'histogramme, capture en suréchantillonné.
    Plan sur plusieurs niveaux : caméra au sol du niveau de la vue, une maquette par niveau (niveaux du dessus retirés).
-   Usage : node moteur/photos.mjs plans/432 [ids séparés par des virgules] */
-import http from 'node:http';
+   Usage : node moteur/photos.mjs plans/t2-432-21258e6e [ids séparés par des virgules] */
+import { serveurStatique, envSansSecret } from './chrome.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const dir = process.argv[2] || 'plans/432', only = process.argv[3] ? process.argv[3].split(',') : null;
+const dir = process.argv[2] || 'plans/t2-432-21258e6e', only = process.argv[3] ? process.argv[3].split(',') : null;
 const W = 1600, Hh = 1000, SS = 2;
 let puppeteer;
 try { puppeteer = (await import('puppeteer')).default; }
 catch { const req = createRequire(path.join(execSync('npm root -g').toString().trim(), 'noop.js')); puppeteer = (await import(req.resolve('puppeteer'))).default; }
 
-// serveur statique minimal sur la racine du dépôt
-const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg' };
-const server = http.createServer((q, r) => {
-  let p = decodeURIComponent(new URL(q.url, 'http://x').pathname); if (p.endsWith('/')) p += 'index.html';
-  const f = path.join(root, p); if (!f.startsWith(root) || !fs.existsSync(f)) { r.writeHead(404); r.end(); return; }
-  r.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r);
-}).listen(0);
+// serveur local limité à ce que charge la visite, Chrome sans secret (moteur/chrome.mjs, L1-01)
+const server = await serveurStatique(root, dir);
 const port = server.address().port;
 
 const plan = JSON.parse(fs.readFileSync(path.join(root, dir, 'plan.json'), 'utf8'));
 const MULTI = Array.isArray(plan.levels) && plan.levels.length > 1;
 { const vus = new Set(); for (const p of plan.photos) { if (vus.has(p.id)) console.log('[erreur photo]', p.id, ': identifiant en double, une photo en écrase une autre'); vus.add(p.id); } }
 const outDir = path.join(root, dir, 'photos'); fs.mkdirSync(outDir, { recursive: true });
-const browser = await puppeteer.launch({ headless: 'new', args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'], protocolTimeout: 900000 });
+const browser = await puppeteer.launch({ headless: 'new', args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'], protocolTimeout: 900000, env: envSansSecret() });
 const page = await browser.newPage(); await page.setViewport({ width: W, height: Hh, deviceScaleFactor: 1 });
 page.on('pageerror', e => console.log('[erreur page]', e.message));
 await page.evaluateOnNewDocument(() => { try { localStorage.clear(); } catch (e) {} });

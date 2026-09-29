@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Plan en visite 3D</title>
+<title>Sur Pièce</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=DM+Mono:wght@400;500&display=swap">
@@ -19,6 +19,7 @@ header{display:grid;gap:8px}
 h1{margin:0;font-weight:800;font-variation-settings:"wdth" 112;font-size:clamp(30px,4.6vw,54px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
 .lead{margin:0;max-width:62ch;color:var(--ink-2);font-size:17px}
 .drop{border:2px dashed var(--ink);background:var(--panel);min-height:230px;display:grid;place-items:center;text-align:center;padding:28px;cursor:pointer;transition:background .15s,border-color .15s}
+.drop.off{cursor:not-allowed;opacity:.6;border-style:solid}.drop.off.over{background:var(--panel);border-color:var(--ink)}
 .drop.over{background:color-mix(in srgb,var(--accent) 10%,var(--panel));border-color:var(--accent)}
 .drop b{display:block;font-size:24px;font-weight:800;font-variation-settings:"wdth" 110}
 .drop span{color:var(--ink-2)}
@@ -65,27 +66,36 @@ a.btn{text-decoration:none;display:inline-block}
 .card{background:var(--panel);border:1.5px solid var(--ink);text-decoration:none;color:inherit;display:grid}
 .card img,.card .ph{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:var(--panel-2)}
 .card div{padding:8px 10px;font-weight:600;font-size:14px}
+.plans{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border:1.5px solid var(--ink)}
+.plans th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:8px 10px;border-bottom:1.5px solid var(--ink)}
+.plans td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.plans td img,.plans td .ph{width:72px;height:45px;object-fit:cover;display:block;background:var(--panel-2)}
+.plans td small{display:block;font:500 11.5px var(--mono);color:var(--ink-2)}
+.plans .st.fini{color:var(--ok)}.plans .st.erreur,.plans .st.refus{color:var(--warn)}.plans .st.en_cours,.plans .st.attente{color:var(--accent)}
+.plans .liens{display:flex;gap:6px;justify-content:flex-end}.plans .liens .btn{padding:5px 9px;font-size:13px}
+.docs{position:relative}.docs summary{list-style:none;cursor:pointer;padding:5px 9px;font-size:13px}.docs summary::-webkit-details-marker{display:none}
+.docs ul{position:absolute;right:0;top:calc(100% + 4px);z-index:20;margin:0;padding:6px;list-style:none;width:340px;max-height:60vh;overflow:auto;background:var(--panel);border:1.5px solid var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.docs li a{display:grid;gap:1px;padding:6px 8px;text-decoration:none;color:var(--ink)}.docs li a:hover{background:var(--panel-2)}
+.docs li span{font-size:13px;font-weight:600}.docs li small{font:500 11px var(--mono);color:var(--ink-2)}
+.app{display:flex;align-items:baseline;gap:10px;margin-bottom:-8px}.app b{font-size:22px;font-weight:800;font-variation-settings:"wdth" 110;letter-spacing:-.01em}.app span{font:500 12px var(--mono);color:var(--ink-2)}
+.lhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.lhead h2{margin:0!important}
+.outils{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.outils .btn{padding:6px 10px;font-size:13px}.outils .tog{font-size:12px;color:var(--ink-2);display:flex;gap:5px;align-items:center}
+.implog{margin:0 0 10px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);font:12px/1.45 var(--mono);white-space:pre-wrap;max-height:220px;overflow:auto}
+.mono{font-family:var(--mono)}.sub{color:var(--ink-2)}
+h1{font-size:clamp(24px,3vw,34px)!important}
+.drop{min-height:120px!important;padding:16px!important}.drop b{font-size:19px!important}
 .card small{display:block;color:var(--ink-2);font-weight:400;font-family:var(--mono);font-size:11.5px}
 </style>
 </head>
 <body>
 <main class="wrap">
-  <header>
-    <div class="kicker">Plan de vente → visite 3D</div>
-    <h1>Déposez le plan de votre appartement, visitez-le en 3D</h1>
-    <p class="lead">Le PDF du promoteur donne le meilleur résultat. En quelques minutes : plan 2D coté, maquette 3D, visite à la première personne et galerie photo, à partir des cotes du plan.</p>
-  </header>
+  <header class="app"><b>Sur Pièce</b><span>nom provisoire</span></header>
 
   <label class="drop" id="drop">
     <input type="file" id="file" accept=".pdf,.png,.jpg,.jpeg,.webp" hidden>
     <div class="dz"><b>Glissez le plan ici</b><span>PDF vectoriel du promoteur de préférence · PNG ou JPG accepté</span><span class="btn">Choisir un fichier</span></div>
   </label>
 
-  <section class="facts">
-    <div><b>PDF du promoteur</b>Murs, cotes et échelle lus directement dans le fichier. Précision au centimètre.</div>
-    <div><b>Capture ou photo</b>Lecture sur image. On vous demande une cote connue pour caler l'échelle. Précision de 5 à 10 cm.</div>
-    <div><b>Contrôle</b>Les surfaces lues sont comparées au tableau du promoteur. Chaque écart est signalé.</div>
-  </section>
 
   <section class="job" id="job" hidden>
     <h2 id="jobTitle">Traitement</h2>
@@ -112,14 +122,20 @@ a.btn{text-decoration:none;display:inline-block}
     </div>
   </section>
 
-  <section class="list"><h2>Plans traités</h2><div class="grid" id="list"></div></section>
+  <section class="list"><div class="lhead"><h2>Plans traités</h2><div class="outils" id="outils" hidden>
+    <a class="btn" id="expAll" href="api/export">Exporter tout</a>
+    <label class="btn">Importer une archive<input type="file" id="impFile" accept=".gz,.tgz,application/gzip" hidden></label>
+    <button class="btn" type="button" id="impUrl">Importer depuis une adresse</button>
+    <label class="tog"><input type="checkbox" id="impRempl"> remplacer un plan de même identifiant</label></div></div>
+    <pre class="implog" id="impLog" hidden></pre><div id="list"></div></section>
 </main>
 <script>
 const $ = s => document.querySelector(s);
 const STEPS = [['analyse', 'Analyse du fichier'], ['calibration', 'Échelle'], ['lecture', 'Lecture du plan'], ['controle', 'Visite de contrôle'], ['photos', '3D et photos'], ['pano', 'Visite à 360°'], ['fini', 'Visite prête']];
 let cur = null, timer = null, pts = [], shown = 0, lastPct = 0, busy = false, sendTok = 0;
-// détail technique (erreur brute, avertissements destinés à l'IA) : jamais montré à l'acquéreur, seulement avec ?debug=1
-const DEBUG = new URLSearchParams(location.search).get('debug') === '1';
+// mode admin (outil local, L4-19 : « droit au but », tout visible pour déboguer) : détail technique (erreur brute, avertissements destinés
+// à l'IA) toujours montré. Jamais montré à l'acquéreur : dans le SaaS, seulement pour l'administrateur (lot 5)
+const ADMIN = true, DEBUG = ADMIN || new URLSearchParams(location.search).get('debug') === '1';
 // chronologie de chantier : chaque phrase apparaît quand la barre atteint son pourcentage, une seule fois, dans l'ordre
 const CHANTIER = [
   [0, 'Réception du plan…'], [2, 'On déroule le plan sur la table de chantier…'], [4, 'On cherche le nord…'], [6, 'On vérifie l’échelle au mètre ruban…'], [8, 'On repère les murs porteurs…'],
@@ -154,7 +170,8 @@ function chantier(p) {
 setInterval(() => { if (shown < lastPct) shown = Math.min(lastPct, shown + Math.max(0.3, (lastPct - shown) * 0.25)); else if (!stopped && lastPct && lastPct < 100 && shown < Math.min(97, lastPct + 10)) shown += 0.04; $('#barFill').style.width = shown + '%'; $('#barPct').textContent = Math.floor(shown) + ' %'; chantier(shown); }, 250);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fr = (v, n = 2) => (Math.round(v * 10 ** n) / 10 ** n).toString().replace('.', ',');
-const planUrl = (id, f = '') => `/plans/${encodeURIComponent(id)}/${f}`;
+// adresses relatives : la même page sert l'outil local (racine) et la copie partagée (sous-dossier d'un site, GitHub Pages)
+const planUrl = (id, f = '') => `plans/${encodeURIComponent(id)}/${f}`;
 
 // changer de plan (dépôt ou carte) : rien de l'ancien ne reste affiché, et ses réponses en retard sont ignorées
 function reset() {
@@ -170,17 +187,17 @@ async function send(file) {
   try {
     if (!file.size) return fail('Fichier vide.');
     if (file.size > 40e6) return fail('Fichier trop lourd (40 Mo maximum).');
-    const r = await fetch('/api/depot', { method: 'POST', headers: { 'x-nom': encodeURIComponent(file.name) }, body: file });
+    const r = await fetch('api/depot', { method: 'POST', headers: { 'x-nom': encodeURIComponent(file.name) }, body: file });
     const j = await r.json().catch(() => ({}));
     if (!r.ok || !j.id) return fail(j.erreur || `Envoi impossible (erreur ${r.status}).`);
-    if (tok === sendTok) { follow(j.id); list(); }
+    if (tok === sendTok) { if (j.existant) $('#jobTitle').textContent = `${file.name} · déjà déposé : c’est ce plan, rien n’est refait`; follow(j.id); list(); }
   } catch (e) { fail('Envoi impossible : le serveur ne répond pas.'); }
   finally { $('#file').value = ''; }
 }
 function follow(id) { if (id !== cur) { shown = 0; lastPct = 0; chantierIdx = -1; } stopped = false; cur = id; clearInterval(timer); poll(); timer = setInterval(poll, 1500); }
 async function poll() {
   const id = cur; if (!id) return;
-  let s; try { const r = await fetch('/api/etat/' + encodeURIComponent(id)); if (!r.ok) return; s = await r.json(); } catch (e) { return; }
+  let s; try { const r = await fetch('api/etat/' + encodeURIComponent(id)); if (!r.ok) return; s = await r.json(); } catch (e) { return; }
   if (id !== cur) return;  // réponse d'un plan qu'on a quitté entre-temps
   const doneSteps = (s.etapes || []).map(e => e.etape), idx = STEPS.findIndex(t => t[0] === s.etape);
   $('#steps').innerHTML = STEPS.filter(t => t[0] !== 'calibration' || doneSteps.includes('calibration') || s.etape === 'calibration').map(([k, t]) => {
@@ -191,7 +208,7 @@ async function poll() {
   $('#msg').className = 'msg ' + (s.statut || ''); $('#msg').textContent = ['refus', 'erreur', 'attente'].includes(s.statut) ? (s.message || '') : '';
   if (s.pct != null) lastPct = Math.max(lastPct, s.pct);
   notifUI(s.statut === 'en_cours');
-  document.title = s.statut === 'en_cours' ? `${Math.floor(Math.max(shown, s.pct || 0))} % · Plan en visite 3D` : 'Plan en visite 3D';
+  document.title = s.statut === 'en_cours' ? `${Math.floor(Math.max(shown, s.pct || 0))} % · Sur Pièce` : 'Sur Pièce';
   const key = id + ':' + s.statut + ':' + s.etape;
   if (!notified[key]) {
     if (s.statut === 'fini') { notified[key] = 1; notify('Votre visite 3D est prête', 'Le plan, la maquette et les photos vous attendent.'); }
@@ -253,7 +270,7 @@ $('#cfix').addEventListener('click', () => { const m = lenVal(); $('#clen').valu
 $('#retry').addEventListener('click', async () => {
   const id = cur; $('#retry').disabled = true;
   try {
-    const r = await fetch('/api/relancer/' + encodeURIComponent(id), { method: 'POST' }), j = await r.json().catch(() => ({}));
+    const r = await fetch('api/relancer/' + encodeURIComponent(id), { method: 'POST' }), j = await r.json().catch(() => ({}));
     if (id !== cur) return;
     if (!r.ok && r.status !== 409) { $('#msg').textContent = j.erreur || `Relance impossible (erreur ${r.status}).`; return; }
     $('#retry').hidden = true; follow(id);  // 409 : déjà relancé ailleurs, on suit simplement l'état
@@ -264,7 +281,7 @@ $('#creset').addEventListener('click', () => { pts = []; draw(); });
 $('#cok').addEventListener('click', async () => {
   const id = cur, { m } = calibOk(); busy = true; $('#cok').disabled = true;
   try {
-    const r = await fetch('/api/calibration/' + encodeURIComponent(id), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ p1: pts[0], p2: pts[1], m }) });
+    const r = await fetch('api/calibration/' + encodeURIComponent(id), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ p1: pts[0], p2: pts[1], m }) });
     const j = await r.json().catch(() => ({}));
     if (id !== cur) return;
     if (!r.ok) { $('#cstate').textContent = j.erreur || `Calibration refusée (erreur ${r.status}).`; return; }
@@ -275,15 +292,63 @@ $('#cok').addEventListener('click', async () => {
 const drop = $('#drop');
 ['dragenter', 'dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
 ['dragleave', 'drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e => send(e.dataTransfer.files[0]));
+drop.addEventListener('drop', e => { if (DEPOT) send(e.dataTransfer.files[0]); });
 $('#file').addEventListener('change', e => send(e.target.files[0]));
 async function list() {
-  let l; try { const r = await fetch('/api/plans'); if (!r.ok) return; l = await r.json(); } catch (e) { return; }
+  let l;
+  if (STATIQUE) { // copie partagée : liste écrite par outils/publier.mjs, fichiers d'admin dans plans/<id>/admin/
+    try { const r = await fetch('plans.json', { cache: 'no-cache' }); if (!r.ok) return; l = ((await r.json()).plans || []).map(p => ({ ...p, statut: 'fini' })); } catch (e) { return; }
+  } else { try { const r = await fetch('api/plans'); if (!r.ok) return; l = await r.json(); } catch (e) { return; } }
   const st = { fini: 'prêt', en_cours: 'en cours', attente: 'en attente', erreur: 'erreur', refus: 'refusé', inconnu: 'inconnu' };
-  $('#list').innerHTML = l.map(p => `<a class="card" href="${p.statut === 'fini' ? esc(planUrl(p.id)) : '#'}" data-id="${esc(p.id)}" data-titre="${esc(p.titre)}">${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy">` : '<span class="ph"></span>'}<div>${esc(p.titre)}<small>${esc(st[p.statut] || p.statut || '')}</small></div></a>`).join('') || '<p style="color:var(--ink-2)">Aucun plan pour l’instant.</p>';
+  const date = t => t ? new Date(t * 1000).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+  $('#list').innerHTML = l.length ? `<table class="plans"><thead><tr><th></th><th>Plan</th><th>Statut</th><th>Modifié</th><th></th></tr></thead><tbody>${l.map(p => `<tr data-id="${esc(p.id)}" data-titre="${esc(p.titre)}">
+    <td>${p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy">` : '<span class="ph"></span>'}</td>
+    <td><b>${esc(p.titre)}</b><small>${esc(p.id)}</small></td><td class="st ${esc(p.statut)}">${esc(st[p.statut] || p.statut)}</td><td class="mono">${esc(date(p.date))}</td>
+    <td><div class="liens">${p.statut === 'fini' ? `<a class="btn" href="${esc(planUrl(p.id))}">Visite</a>${p.pano ? `<a class="btn" href="${esc(planUrl(p.id, 'pano/'))}">360°</a>` : ''}<a class="btn" href="${esc(planUrl(p.id))}#admin">Admin</a>` : ''}<details class="docs" data-id="${esc(p.id)}"><summary class="btn">Documents ▾</summary><ul>${STATIQUE ? '' : `<li><a href="api/export?ids=${encodeURIComponent(p.id)}"><span>Exporter ce plan (.tar.gz)</span><small>tout le dossier, réimportable</small></a></li>`}<li class="sub">Chargement…</li></ul></details>${STATIQUE ? '' : '<button class="btn suivre" type="button">Suivi</button>'}</div></td></tr>`).join('')}</tbody></table>` : '<p class="sub">Aucun plan pour l’instant.</p>';
 }
-$('#list').addEventListener('click', e => { const a = e.target.closest('a.card'); if (a && a.getAttribute('href') === '#') { e.preventDefault(); sendTok++; reset(); $('#job').hidden = false; $('#jobTitle').textContent = a.dataset.titre || 'Votre plan'; follow(a.dataset.id); } });
-list();
+// documents d'un plan : tous les fichiers du dossier (outil local : api/admin/<id> ; copie partagée : plans/<id>/admin/fichiers.json)
+const ROLES = [[/^source\.pdf$/, 'Plan déposé (PDF d’origine)'], [/^source\./, 'Plan déposé (image d’origine)'], [/^page\.png$/, 'Page déposée (image)'], [/^plan-src\.png$/, 'Plan recadré, lu par l’IA'],
+  [/^calibration\.png$/, 'Calibration (échelle)'], [/^plan-.+\.png$/, 'Plan superposable au plan 2D'], [/^plan\.json$/, 'Plan généré (moteur de visite)'], [/^extract\.json$/, 'Analyse du fichier, sans IA'],
+  [/^reponse-ia\.json$/, 'Lecture de l’IA (gardée)'], [/^relecture-ia\.json$/, 'Relecture de l’IA'], [/^reponse-brute.*\.txt$/, 'Réponse brute de l’IA'], [/^appels-ia\.json$/, 'Appels à l’IA (durées, coûts)'],
+  [/^rapport\.json$/, 'Rapport d’assemblage'], [/^controle\.json$/, 'Visite de contrôle'], [/^pano\/controle\.json$/, 'Contrôle du 360°'], [/^etat\.json$/, 'Avancement'],
+  [/^relecture\.png$/, 'Image de relecture'], [/^zoom-.+\.png$/, 'Zoom de relecture'], [/^duel-.+\.png$/, 'Arbitrage (image posée à l’IA)']];
+const rang = n => { const i = ROLES.findIndex(([re]) => re.test(n)); return i < 0 ? 99 : i; }, role = n => (ROLES.find(([re]) => re.test(n)) || [0, n])[1];
+const ko = n => n < 1048576 ? `${Math.max(1, Math.round(n / 1024))} Ko` : `${(n / 1048576).toFixed(1).replace('.', ',')} Mo`;
+$('#list').addEventListener('toggle', async e => {
+  const d = e.target; if (!d.matches || !d.matches('details.docs') || !d.open) return;
+  document.querySelectorAll('details.docs[open]').forEach(x => { if (x !== d) x.open = false; });
+  if (d.dataset.charge) return; d.dataset.charge = '1';
+  const id = d.dataset.id, u = f => STATIQUE ? planUrl(id, 'admin/' + f.split('/').map(encodeURIComponent).join('/')) : `api/admin/${encodeURIComponent(id)}/${f.split('/').map(encodeURIComponent).join('/')}`;
+  let F = null; try { const r = await fetch(STATIQUE ? planUrl(id, 'admin/fichiers.json') : `api/admin/${encodeURIComponent(id)}`, { cache: 'no-store' }); if (r.ok) F = await r.json(); } catch (er) {}
+  d.querySelectorAll('ul li.sub, ul li.doc').forEach(x => x.remove());
+  d.querySelector('ul').insertAdjacentHTML('beforeend', !F ? '<li class="sub">Documents indisponibles.</li>' : F.sort((a, b) => rang(a.nom) - rang(b.nom) || a.nom.localeCompare(b.nom))
+    .map(f => `<li class="doc"><a href="${esc(u(f.nom))}" target="_blank" rel="noopener"><span>${esc(role(f.nom))}</span><small>${esc(f.nom)} · ${ko(f.taille)}</small></a></li>`).join('') || '<li class="sub">Aucun document.</li>');
+}, true);
+document.addEventListener('click', e => { if (!e.target.closest('details.docs')) document.querySelectorAll('details.docs[open]').forEach(x => { x.open = false; }); });
+$('#list').addEventListener('click', e => { const b = e.target.closest('button.suivre'), tr = b && b.closest('tr'); if (!tr) return; sendTok++; reset(); $('#job').hidden = false; $('#jobTitle').textContent = tr.dataset.titre || 'Plan'; follow(tr.dataset.id); scrollTo({ top: 0, behavior: 'smooth' }); });
+// import et export (outils/importer.mjs, exporter.mjs, par le serveur) : compte rendu affiché sous le titre
+async function importer(corps, headers) {
+  const log = $('#impLog'); log.hidden = false; log.textContent = 'Import en cours…';
+  try {
+    const r = await fetch(corps instanceof Blob ? 'api/import' : 'api/import-url', { method: 'POST', headers: { ...headers, 'x-remplacer': $('#impRempl').checked ? '1' : '0' }, body: corps });
+    const j = await r.json().catch(() => ({})); log.textContent = (j.lignes || [j.erreur || `Erreur ${r.status}`]).join('\n');
+  } catch (e) { log.textContent = 'Le serveur ne répond pas.'; }
+  list();
+}
+$('#impFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) importer(f, { 'content-type': 'application/gzip' }); e.target.value = ''; });
+$('#impUrl').addEventListener('click', () => { const u = prompt('Adresse de la copie partagée à importer (https://…/)'); if (u) importer(JSON.stringify({ url: u.trim() }), { 'content-type': 'application/json' }); });
+// dépôt possible seulement avec le serveur Python (pipeline/serveur.py) et une IA configurée (clé, ou rejeu des tests) ; sinon zone
+// désactivée, la raison écrite dedans. Sans serveur (copie partagée) : liste des plans en lecture seule
+let STATIQUE = false, DEPOT = false;
+function depotOff(t) { DEPOT = false; drop.classList.add('off'); $('#file').disabled = true; drop.querySelector('.dz').innerHTML = `<b>Dépôt désactivé</b><span>${esc(t)}</span>`; }
+(async () => {
+  let s = null; try { const r = await fetch('api/sante', { cache: 'no-store' }); if (r.ok) s = await r.json(); } catch (e) {}
+  if (!s) { STATIQUE = true; depotOff('Copie en lecture seule : ni moteur Python ni IA ici. Déposer un plan se fait dans l’outil local.'); }
+  else if (!s.ia) depotOff('IA non configurée : ajoutez la clé API dans le fichier .env à la racine du projet, puis rechargez la page.');
+  else DEPOT = true;
+  $('#outils').hidden = STATIQUE; // export et import : seulement avec le serveur de l'outil
+  list();
+})();
 </script>
 </body>
 </html>

@@ -2,10 +2,13 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 1 · Filets de sécurité et correctifs immédiats | P0 | S (jusqu'à 1 j) | — | `moteur/` [M] | À faire |
+| 1 · Filets de sécurité et correctifs immédiats | P0 | S (jusqu'à 1 j) | — | `moteur/` [M] | Fait (29/09/2026) |
 
 ## Pourquoi
 Pendant chaque visite de contrôle et chaque séance photo, `moteur/controle.mjs` et `moteur/photos.mjs` lancent un petit serveur HTTP qui sert **n'importe quel fichier sous la racine du dépôt** (`.env`, tous les dossiers de `plans/`, `references/`), et Node l'ouvre sur **toutes les interfaces réseau** faute d'hôte précisé. Une machine du même Wi-Fi qui trouve le port peut lire la clé API. Le risque existe déjà en local ; il est rédhibitoire sur un serveur (audit B6, correctif M0.3). En plus, Chrome hérite aujourd'hui des clés API : `enfant` (`pipeline/serveur.py`) lance node sans réduire l'environnement, et puppeteer transmet cet environnement à Chrome, qui affiche des textes issus du plan (ARCHITECTURE.md § 6.7 : Chrome lancé sans variable secrète).
+
+## Fait le 29/09/2026
+`moteur/chrome.mjs` (`serveurStatique`, `servable`, `envSansSecret`) branché dans `controle.mjs`, `photos.mjs`, `pano.mjs` et `pano-visionneuse.mjs` ; liste blanche élargie à ce que charge la visite aujourd'hui (three.js embarqué `moteur/vendor/**.js`, `pano/`). Test `outils/test_statique.mjs` vert (24 ms). Visite de contrôle avec clé leurre : Chrome sans clé, écoute sur 127.0.0.1 seulement ; 5 plans verts. Étape 7 (rotation de la clé) écartée par l'utilisateur : « sans changer la clé, aucun risque, il n'y a eu que moi ».
 
 ## À faire
 1. **Créer `moteur/chrome.mjs`** (nouveau fichier, règle « ajouter plutôt que modifier » d'ARCHITECTURE.md § 8.1) avec deux fonctions pour l'instant, le serveur ci-dessous, par exemple `serveurStatique(root, dir)`, et le filtre de l'étape 2 :

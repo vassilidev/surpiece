@@ -2,7 +2,7 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 8 · Paiement des particuliers | P0 | S (jusqu'à 1 j) | L0-01, L0-04, L2-16, L6-10, L7-06, L8-01, L8-02, L8-03, L8-04, L8-05, L8-08, L8-09 | `site/`, `service/` | À faire |
+| 8 · Paiement des particuliers | P0 | S (jusqu’à 1 j) | L0-01, L0-04, L2-16, L5-29, L6-10, L7-06, L8-01, L8-02, L8-03, L8-04, L8-05, L8-08, L8-09 | `site/`, `service/` | À faire |
 
 ## Pourquoi
 Jalon J1 (`OFFRES.md` § 7.3 ; `ARCHITECTURE.md` § 8.4), absent jusqu'ici du dossier : le plan offert et la vente à 29 €, 15 € et 59 € s'ouvrent à tous. **Tranché : R13.** Jusqu'ici (bêta fermée, lot 6), rien n'est vendu : dépôt réservé aux invités avec un code d'invitation, seule la variante « bêta » du catalogue publiée, aucun message qui propose 29 € (`OFFRES.md` § 2.8, `MESSAGES.md` § 0.8). C'est ce ticket qui ouvre à tous. Les obligations envers les particuliers exposent à des amendes (jusqu'à 15 000 € sans médiateur, `OFFRES.md` § 10, risque 9) ; les tests T0 à T2 doivent dire si l'économie tient avant d'ouvrir le gratuit au public (`OFFRES.md` § 9.2). Ce ticket est la liste de passage, la bascule et la première semaine.

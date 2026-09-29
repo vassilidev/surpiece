@@ -13,6 +13,7 @@
      navigateur (pièce précédente), réseau lent (image ≥ 2048 en moins de 10 s) ;
    - ouverte depuis la visite 3D (?depuis=visite&cap=, bouton 360°) : regard transmis, bouton « Visite 3D » vers le point de vue courant
      (pos de visite.json) et le regard courant ; ce bouton est absent hors visite. */
+import { envSansSecret } from './chrome.mjs';
 const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
 const ANDROID = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36';
 const PROFILS = {
@@ -26,7 +27,7 @@ const DEG = Math.PI / 180, angD = a => Math.atan2(Math.sin(a), Math.cos(a));
 
 export async function verifierVisionneuse({ puppeteer, port, dir, visite, pb, mesures, ancres, stops, angles }) {
   const base = `http://localhost:${port}/${dir}/pano/`, M = mesures.visionneuse = {};
-  const b2 = await puppeteer.launch({ headless: 'new', args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] });
+  const b2 = await puppeteer.launch({ headless: 'new', args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'], env: envSansSecret() });
   const parId = Object.fromEntries(visite.arrets.map(a => [a.id, a])), depart = visite.depart;
   const ouvertes = [];
   async function ouvrir(nom, { hash = '', bloque = null, remplace = null, attendre = true } = {}) {

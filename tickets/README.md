@@ -157,6 +157,7 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L5-26 · Sauvegardes et restauration testée](05-socle/L5-26-sauvegardes-restauration.md) | P0 | M (1 à 3 j) | L5-18 | `service/` | À faire |
 | [L5-27 · Panoramas 360° dans le socle : rendu, marquage, publication, partage](05-socle/L5-27-panoramas-360-socle.md) | P1 | M (1 à 3 j) | L4-15, L4-16, L5-11, L5-12, L5-13 | `service/` | À faire |
 | [L5-28 · Précalcul serveur dans la chaîne en ligne : éclairage, maquette compressée, itinéraires](05-socle/L5-28-precalcul-chaine-en-ligne.md) | P1 | M (1 à 3 j) | L4-13, L4-14, L5-06, L5-10, L5-12 | `service/` | À faire |
+| [L5-29 · BLOQUANT avant l'ouverture du SaaS : mode admin et documents des plans hors de portée du public](05-socle/L5-29-mode-admin-hors-public.md) | P0 | M (1 à 3 j) | L4-19, L5-03, L5-04 | `moteur/`, `pipeline/`, `outils/`, `service/` | À faire |
 
 <a id="lot-6"></a>
 ## 6 · Parcours particulier et bêta fermée
@@ -202,7 +203,7 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L8-04 · CGV particuliers, garantie légale, médiateur](08-paiement/L8-04-cgv-mediateur.md) | P0 | M (1 à 3 j) | L0-07 | `site/`, `service/` | À faire |
 | [L8-05 · Factures, historique d'achats, remboursements](08-paiement/L8-05-factures-historique.md) | P0 | M (1 à 3 j) | L8-01 | `service/` | À faire |
 | [L8-06 · Tests de prix](08-paiement/L8-06-tests-prix.md) | P2 | S (jusqu'à 1 j) | L7-05, L7-06, L8-01 | `service/` | À faire |
-| [L8-07 · Ouverture publique : plan offert et vente aux particuliers](08-paiement/L8-07-ouverture-publique.md) | P0 | S (jusqu'à 1 j) | L0-01, L0-04, L2-16, L6-10, L7-06, L8-01, L8-02, L8-03, L8-04, L8-05, L8-08, L8-09 | `site/`, `service/` | À faire |
+| [L8-07 · Ouverture publique : plan offert et vente aux particuliers](08-paiement/L8-07-ouverture-publique.md) | P0 | S (jusqu'à 1 j) | L0-01, L0-04, L2-16, L5-29, L6-10, L7-06, L8-01, L8-02, L8-03, L8-04, L8-05, L8-08, L8-09 | `site/`, `service/` | À faire |
 | [L8-08 · Téléchargements : photos, plan 2D et fiche en PDF](08-paiement/L8-08-telechargements-pdf.md) | P0 | M (1 à 3 j) | L8-02, L4-07 | `service/`, `outils/` | À faire |
 | [L8-09 · Budget du plan offert indexé sur la marge et coupe-circuit](08-paiement/L8-09-budget-offert-coupe-circuit.md) | P0 | M (1 à 3 j) | L5-09, L5-15, L7-06, L8-01 | `service/` | À faire |
 

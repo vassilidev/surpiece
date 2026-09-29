@@ -24,7 +24,7 @@
    Rendu simple (retour R4 du 29/09/2026) : bascule vers l'ultra réaliste et retour sans reste, nuit sans effet, pièces ni sombres ni
    brûlées, matières peintes lisibles et sans tache de reflet ; bouton 360° vers le bon point de vue et aller-retour.
    Usage : node moteur/controle.mjs plans/<id>   → écrit plans/<id>/controle.json, code 0 si tout passe. */
-import http from 'node:http';
+import { serveurStatique, envSansSecret } from './chrome.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
@@ -35,12 +35,8 @@ const dir = process.argv[2];
 let puppeteer;
 try { puppeteer = (await import('puppeteer')).default; }
 catch { const req = createRequire(path.join(execSync('npm root -g').toString().trim(), 'noop.js')); puppeteer = (await import(req.resolve('puppeteer'))).default; }
-const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg' };
-const server = http.createServer((q, r) => {
-  let p = decodeURIComponent(new URL(q.url, 'http://x').pathname); if (p.endsWith('/')) p += 'index.html';
-  const f = path.join(root, p); if (!f.startsWith(root) || !fs.existsSync(f)) { r.writeHead(404); r.end(); return; }
-  r.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r);
-}).listen(0);
+// serveur local limité à ce que charge la visite, Chrome sans secret (moteur/chrome.mjs, L1-01)
+const server = await serveurStatique(root, dir);
 const port = server.address().port;
 
 // plan brut : ids en double et éléments écartés au chargement ne se voient plus dans App.D
@@ -48,7 +44,7 @@ let brut = null; try { brut = JSON.parse(fs.readFileSync(path.join(root, dir, 'p
 const MULTI = !!(brut && Array.isArray(brut.levels) && brut.levels.length > 1);
 
 const problems = [], errors = [], manque = new Set(), avert = new Set();
-const browser = await puppeteer.launch({ headless: 'new', args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'], protocolTimeout: 600000 });
+const browser = await puppeteer.launch({ headless: 'new', args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'], protocolTimeout: 600000, env: envSansSecret() });
 const page = await browser.newPage(); await page.setViewport({ width: 480, height: 300 });
 page.on('pageerror', e => errors.push(e.message));
 // moteur servi avec la visite (fiche C9 : three.js depuis cdn.jsdelivr.net, une coupure du réseau faisait échouer la visite de contrôle)
@@ -1686,6 +1682,88 @@ async function lumiereSimple(pv) {
      tache) ne dépasse pas sa médiane de plus de 12 sur 255 ; le reflet direct de la lumière d'appoint faisait une tache blanche à 246 en
      haut de l'entrée du 3124.
    Les matières sombres voulues (base < 70 : garde-corps, câbles, capuchons, troncs), métalliques, transparentes ou lumineuses ne sont pas jugées */
+/* ultra réaliste : même lumière à l'arrêt et en mouvement (retour du 29/09/2026 : « dès que je m'arrête c'est réaliste, dès que je bouge
+   ça remet le mode léger sur la lumière », les murs « clignotent »). À chaque arrêt, image pleine qualité (celle de l'arrêt) et image de
+   chaque palier de mouvement (L4-12) : dans chacune de 16 × 10 zones, la médiane de l'écart pixel à pixel ne dépasse pas SEUIL_SAUT sur 255 (zones de détails fins écartées). Les
+   paliers changent la finesse (résolution, antialiasing, halo des ampoules), jamais la lumière. L'occlusion précalculée doit être prête */
+const SEUIL_SAUT = 4;
+async function sautMouvement(pv) {
+  await pv.evaluate(() => { App.set('rendu', 'ultra'); App.set('hour', 13); App.set('lights', 'auto'); });
+  await pv.waitForFunction(() => __v.AO.ready, { timeout: 60000 }).catch(() => {});
+  const r = await pv.evaluate(async SEUIL => {
+    const V = __v, R = V.renderer, gl = R.getContext(), D = App.D, out = { pire: null, pb: [], aoPret: V.AO.ready };
+    const w = gl.drawingBufferWidth, h = gl.drawingBufferHeight, a = new Uint8Array(w * h * 4), BX = 16, BY = 10;
+    // dans chaque zone, médiane de l'écart de luminance pixel à pixel : un changement de lumière décale presque toute la zone ; un contour
+    // ou un détail fin plus ou moins net (résolution, antialiasing du palier) n'en touche que quelques pixels. Zone faite surtout de
+    // contours francs dans l'image de l'arrêt (barreaux serrés d'un garde-corps, lames : plus d'un quart de ses pixels) : écartée, un
+    // clignotement de la lumière se voit sur les murs et les sols voisins
+    const lum = () => { const L = new Int16Array(w * h); for (let i = 0; i < w * h; i++) L[i] = Math.round(0.2126 * a[4 * i] + 0.7152 * a[4 * i + 1] + 0.0722 * a[4 * i + 2]); return L; };
+    const zoneDe = (x, y) => Math.floor(y / h * BY) * BX + Math.floor(x / w * BX);
+    const detail = A => { const n = new Uint32Array(BX * BY), e = new Uint32Array(BX * BY);
+      for (let y = 0; y < h - 2; y += 2) for (let x = 0; x < w - 2; x += 2) { const q = y * w + x, k = zoneDe(x, y); n[k]++; if (Math.abs(A[q + 2] - A[q]) + Math.abs(A[q + 2 * w] - A[q]) > 24) e[k]++; }
+      return Array.from(n, (c, k) => e[k] > 0.25 * c); };
+    const ecarts = (A, B, D) => { const Z = Array.from({ length: BX * BY }, () => []);
+      for (let y = 0; y < h; y += 2) for (let x = 0; x < w; x += 2) { const k = zoneDe(x, y); if (!D[k]) Z[k].push(B[y * w + x] - A[y * w + x]); }
+      return Z.map(z => { z.sort((p, q) => p - q); return z.length ? z[z.length >> 1] : 0; }); };
+    const wait = () => new Promise(r => setTimeout(r, 50));
+    for (const s of D.stops) {
+      V.placeAt(s.p[0], s.p[1], s.level || 0, s.yaw, s.pitch ?? -0.06);
+      for (let i = 0; i < 100 && V.probe.queue.length; i++) await wait();
+      V.autoExp.k = V.autoExp.target; V.applyEnv();
+      V.renderFull(); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, a); const L0 = lum(), D0 = detail(L0);
+      for (let l = 0; l < V.AQ_STEPS.length; l++) {
+        V.renderLow(l); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, a); const E = ecarts(L0, lum(), D0);
+        let m = 0, mk = 0; E.forEach((v, k) => { if (Math.abs(v) > m) { m = Math.abs(v); mk = k; } });
+        if (!out.pire || m > out.pire.d) out.pire = { d: +m.toFixed(1), lieu: `arrêt « ${s.label || s.id} », palier ${l}` };
+        if (m > SEUIL) out.pb.push({ id: s.id, label: s.label || s.id, l, d: +m.toFixed(1), zone: [mk % BX, Math.floor(mk / BX)] });
+      }
+    }
+    V.renderFull(); return out;
+  }, SEUIL_SAUT);
+  console.error(`ultra réaliste, arrêt et mouvement : occlusion précalculée ${r.aoPret ? 'prête' : 'absente'}, pire écart ${r.pire ? r.pire.d : 0} sur 255 (${r.pire ? r.pire.lieu : ''})`);
+  if (!r.aoPret) problems.push({ type: 'lumiere', id: 'occlusion', texte: 'Ultra réaliste : l\'occlusion ambiante précalculée n\'est pas prête après 60 s : la lumière changera entre l\'arrêt et le mouvement.' });
+  const parArret = new Map(); for (const q of r.pb) if (!parArret.has(q.id) || parArret.get(q.id).d < q.d) parArret.set(q.id, q);
+  for (const q of parArret.values()) problems.push({ type: 'lumiere', id: q.id, texte: `Ultra réaliste, arrêt « ${q.label} » : la lumière change en mouvement (palier ${q.l}, écart ${q.d} sur 255 dans une zone de l'image) : elle clignote à chaque pas.` });
+  await pv.evaluate(() => App.set('rendu', 'simple'));
+}
+/* vues d'admin (L4-19 : rayons X, eau, bandeau de débogage), en rendu simple puis ultra réaliste, à chaque arrêt : chaque vue change
+   l'image (elle marche), et l'image revient à l'identique quand on la retire (aucun reste : matières, culling, maillages) ; le bandeau de
+   débogage ne change pas l'image 3D ; ses i/s comptent les images dessinées */
+async function vuesAdmin(pv) {
+  const r = await pv.evaluate(async () => {
+    const V = __v, R = V.renderer, gl = R.getContext(), D = App.D, out = [], w = gl.drawingBufferWidth, h = gl.drawingBufferHeight, a = new Uint8Array(w * h * 4);
+    const img = () => { V.renderFull(); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, a); return a.slice(); };
+    const ecart = (A, B) => { let m = 0, n = 0; for (let i = 0; i < A.length; i += 4) { const d = Math.max(Math.abs(A[i] - B[i]), Math.abs(A[i + 1] - B[i + 1]), Math.abs(A[i + 2] - B[i + 2])); if (d > m) m = d; if (d > 8) n++; } return { m, part: n / (A.length / 4) }; };
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    let fps = null;
+    for (const rendu of ['simple', 'ultra']) {
+      App.set('rendu', rendu); App.set('mode', 'walk'); await wait(300);
+      for (const s of D.stops) {
+        V.placeAt(s.p[0], s.p[1], s.level || 0, s.yaw, s.pitch ?? -0.06);
+        for (let i = 0; i < 100 && V.probe.queue.length; i++) await wait(50);
+        V.autoExp.k = V.autoExp.target; V.applyEnv();
+        const A = img();
+        for (const k of ['xray', 'eau', 'debug']) {
+          App.set(k, true); await wait(60); const B = img(); App.set(k, false); await wait(60); const C = img();
+          const on = ecart(A, B), off = ecart(A, C);
+          const ext = App.isExt(App.roomAt(s.p[0], s.p[1], s.level || 0) || {}); // pièce extérieure (loggia) : pas d'eau, on en voit peu
+          if (k !== 'debug' && on.part < (k === 'eau' && ext ? 0 : 0.01)) out.push({ id: s.id, texte: `Vue ${k === 'xray' ? 'rayons X' : 'eau'} (${rendu}), arrêt « ${s.label || s.id} » : l'image ne change pas (${(on.part * 100).toFixed(2)} % des pixels).` });
+          if (k === 'debug' && on.m > 2) out.push({ id: s.id, texte: `Bandeau de débogage (${rendu}), arrêt « ${s.label || s.id} » : l'image 3D change (${on.m} sur 255).` });
+          if (off.m > 2) out.push({ id: s.id, texte: `Vue ${k === 'xray' ? 'rayons X' : k === 'eau' ? 'eau' : 'débogage'} (${rendu}), arrêt « ${s.label || s.id} » : l'image ne revient pas à l'identique quand on la retire (${off.m} sur 255, ${(off.part * 100).toFixed(2)} % des pixels) : un reste de la vue.` });
+        }
+      }
+    }
+    // i/s du bandeau : 30 images dessinées en marchant, puis lecture
+    App.set('rendu', 'simple'); App.set('debug', true); const s0 = D.stops[0]; V.placeAt(s0.p[0], s0.p[1], s0.level || 0, s0.yaw, s0.pitch ?? -0.06);
+    V.walk.keys.add('ArrowLeft'); const t0 = performance.now(); await new Promise(r => { let n = 0; const f = () => { if (++n < 45) requestAnimationFrame(f); else r(); }; requestAnimationFrame(f); });
+    fps = App.debugInfo(); V.walk.keys.delete('ArrowLeft'); App.set('debug', false);
+    const dt = performance.now() - t0;
+    if (!(fps.fps > 0) || !(fps.ms > 0)) out.push({ id: 'debug', texte: `Bandeau de débogage : i/s ou temps d'image absents en mouvement (${fps.fps} i/s, ${fps.ms} ms).` });
+    return { out, fps: fps.fps, ms: fps.ms, dt: Math.round(dt) };
+  });
+  console.error(`vues d'admin : ${r.out.length} problème(s) ; bandeau en mouvement ${r.fps} i/s, ${r.ms} ms par image`);
+  for (const q of r.out) problems.push({ type: 'admin', id: q.id, texte: q.texte });
+}
 async function matieresSimple(pv) {
   const r = await pv.evaluate(() => {
     const V = __v, THREE = V.THREE, R = V.renderer, gl = R.getContext(), cam = V.camera, out = [], mes = {};
@@ -1895,9 +1973,126 @@ if (!errors.length) {
     if (ph && (ph.caches || ph.eteintes)) problems.push({ type: 'visibilite', id: 'rendu-photo', texte: `Rendu photoréaliste lancé en marchant : la scène part incomplète (${ph.caches} objets cachés, ${ph.eteintes} lampes éteintes).` });
     await lumiereSimple(pv);
     await matieresSimple(pv);
+    await sautMouvement(pv);
+    await vuesAdmin(pv);
   } catch (e) { errors.push('Visite (contrôle de visibilité) : ' + e.message); }
   await pv.close();
 }
+/* portes de la visite (retour du 29/09/2026 : « les portes restent fermées sauf si je clique sur la porte ou sur le bouton d'action ; je
+   n'arrive plus à fermer les portes »), dans une vraie visite (sans ?shoot=1) : toutes fermées au chargement ; marcher droit dessus au
+   clavier ne les ouvre pas et le visiteur reste de son côté ; aller à chaque arrêt de la visite guidée n'en ouvre ni n'en ferme aucune ;
+   un itinéraire ne traverse jamais une porte fermée, et passe quand elle est ouverte ; un clic sur le vantail l'ouvre, un second la
+   referme ; la touche E fait de même avec la porte d'en face */
+async function controlePortes() {
+  const pg = await browser.newPage(); await pg.setViewport({ width: 960, height: 600 });
+  const err = []; pg.on('pageerror', e => err.push(e.message));
+  const pb = (id, texte, level) => problems.push(Object.assign({ type: 'portes', id, texte }, MULTI && level != null ? { level } : {}));
+  try {
+    await pg.goto(`http://localhost:${port}/${dir}/`);
+    await pg.waitForFunction(() => window.App && window.App.engine && window.__v, { timeout: 180000 });
+    await new Promise(r => setTimeout(r, 500));
+    await pg.evaluate(() => { document.getElementById('gallery').hidden = true; App.set('mode', 'walk'); });
+    // portes battantes et portes-fenêtres de plain-pied, avec un côté dans une pièce (hors placard) où le visiteur tient debout
+    const P = await pg.evaluate(() => {
+      const D = App.D, V = __v, MULTI = !!D.multi, pl = r => !r || /placard/i.test(r.id) || App.isExt(r), out = [];
+      for (const op of V.operables) {
+        const o = D.openings[op.id]; if (!o || op.id === 'placard' || !(o.kind === 'door' || o.kind === 'entry' || (o.kind === 'french' && !(o.sill > 0)))) continue;
+        const lv = o.level || 0, m = (o.s[0] + o.s[1]) / 2, y = V.levels ? V.levels[lv].y : 0, rAt = (x, z) => MULTI ? App.roomAt(x, z, lv) : App.roomAt(x, z);
+        const cotes = [-1.1, o.depth + 1.1].map(d => { const q = o.pt(m, d); return { d, q, ok: !pl(rAt(q[0], q[1])) && V.standable(q[0], q[1], y) }; });
+        out.push({ id: op.id, label: o.label || op.id, lv, kind: o.kind, cotes, t: op.t, target: op.target });
+      }
+      return out;
+    });
+    const nom = p => `« ${p.label} »`;
+    for (const p of P) if (p.t !== 0 || p.target !== 0) pb(p.id, `Porte ${nom(p)} ouverte au chargement de la visite : les portes doivent être fermées.`, p.lv);
+    // 1. marcher droit sur la porte fermée, 3 s au clavier
+    for (const p of P) for (const c of p.cotes.filter(c => c.ok)) {
+      const r = await pg.evaluate((id, c, lv) => {
+        const V = __v, o = App.D.openings[id], op = V.operables.find(q => q.id === id), m = (o.s[0] + o.s[1]) / 2, f = o.pt(m, o.depth / 2);
+        V.placeAt(c.q[0], c.q[1], lv, Math.atan2(-(f[0] - c.q[0]), -(f[1] - c.q[1])), -0.06); V.walk.keys.clear(); V.walk.keys.add('KeyW');
+        for (let i = 0; i < 60; i++) V.stepWalk(0.05);
+        V.walk.keys.clear();
+        const dd = (V.walk.x - o.main.a[0]) * o.T[0] + (V.walk.z - o.main.a[1]) * o.T[1];
+        return { target: op.target, t: op.t, passe: c.d < 0 ? dd > -0.02 : dd < o.depth + 0.02 };
+      }, p.id, c, p.lv);
+      if (r.target !== 0 || r.t !== 0) { pb(p.id, `Porte ${nom(p)} ouverte en marchant dessus : elle ne doit s'ouvrir qu'au clic ou avec la touche E.`, p.lv); break; }
+      if (r.passe) { pb(p.id, `Porte ${nom(p)} fermée traversée en marchant dessus.`, p.lv); break; }
+    }
+    // 2. un itinéraire ne traverse pas une porte fermée ; porte ouverte, on passe
+    for (const p of P) {
+      const [a, b] = p.cotes; if (!a.ok || !b.ok) continue;
+      const r = await pg.evaluate((id, a, b, lv) => {
+        const V = __v, o = App.D.openings[id], op = V.operables.find(q => q.id === id);
+        const traverse = P => { if (!P) return false; for (let i = 1; i < P.length; i++) for (let k = 0; k <= 40; k++) { if (MULTIok(P, i, lv)) continue; const x = P[i - 1][0] + (P[i][0] - P[i - 1][0]) * k / 40, z = P[i - 1][1] + (P[i][1] - P[i - 1][1]) * k / 40, ax = x - o.main.a[0], az = z - o.main.a[1], s = ax * o.u[0] + az * o.u[1], d = ax * o.T[0] + az * o.T[1]; if (s > o.s[0] && s < o.s[1] && d > 0.02 && d < o.depth - 0.02) return true; } return false; };
+        function MULTIok(P, i, lv) { return P[i].length > 2 && (P[i][2] !== lv || P[i - 1][2] !== lv); }
+        V.placeAt(a.q[0], a.q[1], lv); const P0 = V.planTo(b.q[0], b.q[1], { lv });
+        op.target = op.t = 1; op.apply(1); V.placeAt(a.q[0], a.q[1], lv); const P1 = V.planTo(b.q[0], b.q[1], { lv });
+        op.target = op.t = 0; op.apply(0);
+        const fin = P1 && P1[P1.length - 1];
+        return { ferme: traverse(P0), ouvert: !!fin && Math.hypot(fin[0] - b.q[0], fin[1] - b.q[1]) < 0.2 };
+      }, p.id, a, b, p.lv);
+      if (r.ferme) pb(p.id, `Un itinéraire traverse la porte ${nom(p)} fermée.`, p.lv);
+      if (!r.ouvert) pb(p.id, `Porte ${nom(p)} ouverte : l'itinéraire ne passe pas de l'autre côté.`, p.lv);
+    }
+    // 3. chaque arrêt de la visite guidée, dans l'ordre : aucune porte ne bouge
+    const arrets = await pg.evaluate(() => App.D.stops.map(s => s.id));
+    for (const id of arrets) {
+      await pg.evaluate(id => App.engine.goStop(id), id);
+      await pg.waitForFunction(() => !__v.walk.anim, { timeout: 20000 }).catch(() => {});
+      await new Promise(r => setTimeout(r, 400));
+      const bouge = await pg.evaluate(() => __v.operables.filter(o => o.target !== 0 || o.t !== 0).map(o => o.id));
+      if (bouge.length) { pb(id, `Aller à l'arrêt « ${id} » ouvre des portes (${bouge.join(', ')}) : elles doivent rester comme le visiteur les a laissées.`); await pg.evaluate(() => __v.operables.forEach(o => { o.target = o.t = 0; o.apply(0); })); }
+    }
+    // 4. clic sur le vantail, là où il est à l'écran (point visé le plus près du centre, sur une grille de 48 × 30) : ouvre, puis
+    //    referme ; touche E, sur une porte qui est l'ouvrant le plus proche en face : idem
+    let essais = 0, cliques = 0, toucheE = false;
+    const viser = (id, lv, c) => pg.evaluate((id, lv, c) => {
+      const V = __v, o = App.D.openings[id], m = (o.s[0] + o.s[1]) / 2, f = o.pt(m, o.depth / 2), cv = V.renderer.domElement;
+      if (c) V.placeAt(c.q[0], c.q[1], lv, Math.atan2(-(f[0] - c.q[0]), -(f[1] - c.q[1])), -0.1);
+      V.scene.updateMatrixWorld(true);
+      let best = null, bd = 1e9;
+      for (let j = 0; j < 30; j++) for (let i = 0; i < 48; i++) {
+        const cx = (i + 0.5) / 48 * innerWidth, cy = (j + 0.5) / 30 * innerHeight; if (document.elementFromPoint(cx, cy) !== cv) continue;
+        const d = Math.hypot(cx - innerWidth / 2, cy - innerHeight / 2); if (d >= bd) continue;
+        if (V.clickPlan(cx, cy).bascule === id) { bd = d; best = { cx, cy }; }
+      }
+      return best;
+    }, id, lv, c);
+    for (const p of P) for (const c of p.cotes.filter(c => c.ok)) {
+      let vise = await viser(p.id, p.lv, c); if (!vise) continue; essais++;
+      const etat = () => pg.evaluate(id => { const op = __v.operables.find(q => q.id === id); return [op.target, op.t]; }, p.id);
+      const attendre = v => pg.waitForFunction((id, v) => { const op = __v.operables.find(q => q.id === id); return op.t === v; }, { timeout: 5000 }, p.id, v).catch(() => {});
+      await pg.mouse.click(vise.cx, vise.cy); await attendre(1); const e1 = await etat();
+      const vise2 = await viser(p.id, p.lv, null);
+      if (e1[0] !== 1 || e1[1] !== 1) pb(p.id, `Un clic sur la porte ${nom(p)} ne l'ouvre pas.`, p.lv);
+      else if (!vise2) pb(p.id, `Porte ${nom(p)} ouverte : son vantail ne se clique plus depuis l'endroit d'où on l'a ouverte (on ne peut pas la refermer).`, p.lv);
+      else {
+        await pg.mouse.click(vise2.cx, vise2.cy); await attendre(0); const e2 = await etat();
+        if (e2[0] !== 0 || e2[1] !== 0) pb(p.id, `Un second clic sur la porte ${nom(p)} ne la referme pas.`, p.lv); else cliques++;
+      }
+      await pg.evaluate(id => { const op = __v.operables.find(q => q.id === id); op.target = op.t = 0; op.apply(0); }, p.id);
+      if (!toucheE && await pg.evaluate((id, lv, c) => { // l'ouvrant le plus proche en face (règle de la touche E) est-il cette porte ?
+        const V = __v, o = App.D.openings[id], m = (o.s[0] + o.s[1]) / 2, f = o.pt(m, o.depth / 2), G = App.geo, W = V.walk;
+        V.placeAt(c.q[0], c.q[1], lv, Math.atan2(-(f[0] - c.q[0]), -(f[1] - c.q[1])), -0.1);
+        const fx = -Math.sin(W.yaw), fz = -Math.cos(W.yaw); let best = null, bd = 1.8;
+        for (const op of V.operables) { if (App.D.multi && op.lv !== W.lv) continue; const q = G.centroid(op.rect), dx = q[0] - W.x, dz = q[1] - W.z, d = Math.hypot(dx, dz); if (d < bd && (dx * fx + dz * fz) / d > 0.5) { bd = d; best = op.id; } }
+        return best === id;
+      }, p.id, p.lv, c)) {
+        toucheE = true;
+        await pg.keyboard.press('KeyE'); await attendre(1); const k1 = await etat();
+        await pg.keyboard.press('KeyE'); await attendre(0); const k2 = await etat();
+        if (k1[1] !== 1 || k2[1] !== 0) pb(p.id, `La touche E n'ouvre ou ne referme pas la porte ${nom(p)} placée en face.`, p.lv);
+      }
+      break;
+    }
+    if (P.length && !essais) pb('clic', 'Aucune porte n\'a pu être visée au clic : l\'ouverture au clic n\'est pas vérifiée.');
+    console.error(`portes : ${P.length} portes, ${cliques}/${essais} ouvertes puis refermées au clic, touche E ${toucheE ? 'essayée' : 'non essayée'}, ${arrets.length} arrêts sans porte bougée`);
+    if (P.length && !toucheE) pb('touche', 'Aucune porte n\'est l\'ouvrant le plus proche en face : la touche E n\'est pas vérifiée.');
+    if (err.length) errors.push('Visite (contrôle des portes) : ' + err[0]);
+  } catch (e) { errors.push('Visite (contrôle des portes) : ' + e.message); }
+  await pg.close();
+}
+if (!errors.length) await controlePortes();
 if (!errors.length) await controle360();
 if (MULTI && brut && !errors.length) { // escalier ou vide écarté au chargement : il manquerait dans la visite
   for (const t of avert) problems.push({ type: 'niveau', id: '', texte: `Le plan contient un élément invalide : ${t}.` });

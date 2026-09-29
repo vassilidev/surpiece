@@ -48,6 +48,7 @@ try { renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPrefer
 catch (e) { App.fail('WebGL n\'est pas disponible sur cet appareil.'); throw e; }
 const PR_FULL = Math.min(devicePixelRatio, App.coarse ? 1.5 : 1.75); // pixel ratio de l'image à l'arrêt
 renderer.setPixelRatio(PR_FULL);
+renderer.info.autoReset = false; // remis à zéro à chaque image dessinée (draw) : toutes ses passes comptées (bandeau de débogage)
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false;
 let shadowAll = true;
 const markShadows = () => { renderer.shadowMap.needsUpdate = true; shadowAll = true; }; // hors mode photo : voir shadowPass()
@@ -207,6 +208,7 @@ function makeMaterials() {
   mk('tableau', { color: 0xf2f2ef, roughness: 0.4 });
   mk('towel', { color: 0xf3f3f1, roughness: 0.25, metalness: 0.1 });
   M.hover = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85, depthWrite: false });
+  for (const [k, m] of Object.entries(M)) if (!['glass', 'bulb', 'bulbOn', 'hover'].includes(k) && (m.isMeshStandardMaterial || m.isMeshPhysicalMaterial)) aoPatch(m);
 }
 
 /* ampoules : en visite, elles reçoivent l'ombre des lampes, jamais celle du soleil (voir reglagesVisite ; en mode photo, aucune ombre
@@ -215,6 +217,68 @@ const LFB_LAMPES = THREE.ShaderChunk.lights_fragment_begin.replace('directLight.
 function lampesSeules(m) {
   m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_begin>', LFB_LAMPES); };
   m.customProgramCacheKey = () => 'lampes-seules';
+}
+
+/* ---------- Occlusion ambiante précalculée (ultra réaliste, en visite) ----------
+   Champ de distance aux surfaces (moteur/ao.js, calculé une fois, en worker, dès que l'ultra réaliste est demandé), lu dans les matières :
+   5 points le long de la normale (6 à 46 cm) ; chacun occulte d'autant qu'une surface est plus proche que sa hauteur. Même ombrage en
+   mouvement et à l'arrêt : l'occlusion d'écran (GTAO) n'était calculée qu'à l'arrêt, les angles et les contacts s'assombrissaient à
+   chaque arrêt et s'éclaircissaient à chaque pas (retour du 29/09/2026 : « les lumières sur les murs clignotent »). Elle reste celle des
+   photos et des 360° (?shoot=1, rendus inchangés). Lumière indirecte (sondes, ciel) entièrement, lumière directe à moitié ; sondes de
+   lumière prises sans elle */
+const AO = { tex: { value: null }, min: { value: new THREE.Vector3() }, size: { value: new THREE.Vector3(1, 1, 1) }, on: { value: 0 }, ready: false, busy: false, ms: 0, DMAX: 0.6 };
+{ const t = new THREE.Data3DTexture(new Uint8Array([255]), 1, 1, 1); t.format = THREE.RedFormat; t.unpackAlignment = 1; t.needsUpdate = true; AO.tex.value = t; }
+const AO_VERT = 'varying vec3 vAoP;\nvarying vec3 vAoN;\n';
+const AO_FRAG = `uniform highp sampler3D aoTex;
+uniform vec3 aoMin, aoSize;
+uniform float aoOn;
+varying vec3 vAoP;
+varying vec3 vAoN;
+float aoChamp(vec3 p, vec3 n) {
+  float occ = 0.0, w = 1.0;
+  for (int i = 0; i < 5; i++) { float h = 0.06 + 0.1 * float(i), d = texture(aoTex, (p + n * h - aoMin) / aoSize).r * ${AO.DMAX.toFixed(2)}; occ += w * max(0.0, h - d - 0.03) / h; w *= 0.7; }
+  return clamp(1.0 - 0.72 * occ / 2.7731, 0.0, 1.0);
+}
+`;
+function aoPatch(m) {
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { aoTex: AO.tex, aoMin: AO.min, aoSize: AO.size, aoOn: AO.on });
+    sh.vertexShader = AO_VERT + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n\tvAoP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAoN = mat3(modelMatrix) * objectNormal;');
+    sh.fragmentShader = AO_FRAG + sh.fragmentShader.replace('#include <aomap_fragment>', `#include <aomap_fragment>
+	if (aoOn > 0.5) { float aoK = aoChamp(vAoP, normalize(vAoN) * (gl_FrontFacing ? 1.0 : -1.0)); reflectedLight.indirectDiffuse *= aoK; reflectedLight.indirectSpecular *= aoK; reflectedLight.directDiffuse *= mix(1.0, aoK, 0.5); }`);
+  };
+  m.customProgramCacheKey = () => 'ao-champ';
+}
+/* triangles de la maquette (murs, sols, plafonds, plinthes, équipements ; ni portes, ni vitrages, ni dehors), repère du monde */
+function aoTriangles() {
+  scene.updateMatrixWorld(true);
+  const out = [], v = new THREE.Vector3();
+  for (const root of [G.arch, G.ceil, G.plinthes, G.fixed]) root && root.traverse(m => {
+    if (!m.isMesh || m.userData.ombre || m.userData.glass || !m.geometry?.attributes.position) return;
+    const mat = Array.isArray(m.material) ? m.material[0] : m.material; if (!mat || mat.transparent || mat === M.mirror) return;
+    const P = m.geometry.attributes.position, I = m.geometry.index, n = I ? I.count : P.count;
+    for (let i = 0; i < n; i++) { v.fromBufferAttribute(P, I ? I.getX(i) : i).applyMatrix4(m.matrixWorld); out.push(v.x, v.y, v.z); }
+  });
+  return new Float32Array(out);
+}
+function ensureAO() {
+  if (AO.ready || AO.busy || SHOOT || S.cut || simple()) return;
+  AO.busy = true; const t0 = performance.now();
+  const top = LV[LV.length - 1], box = [D.bounds[0] - 0.6, LV[0].y - 0.6, D.bounds[2] - 0.6, D.bounds[1] + 0.6, top.y + top.H + 0.6, D.bounds[3] + 0.6];
+  const vol = (box[3] - box[0]) * (box[4] - box[1]) * (box[5] - box[2]), c = Math.max(0.05, Math.cbrt(vol / 6e6));
+  const job = { tri: aoTriangles(), box, c, dmax: AO.DMAX };
+  const fini = r => {
+    const t = new THREE.Data3DTexture(r.data, r.nx, r.ny, r.nz); t.format = THREE.RedFormat; t.minFilter = t.magFilter = THREE.LinearFilter; t.unpackAlignment = 1; t.needsUpdate = true;
+    AO.tex.value.dispose(); AO.tex.value = t; AO.min.value.set(box[0], box[1], box[2]); AO.size.value.set(r.nx * c, r.ny * c, r.nz * c);
+    AO.ready = true; AO.busy = false; AO.ms = Math.round(performance.now() - t0); AO.dims = [r.nx, r.ny, r.nz, c];
+    chainRendu(); aqApply(); invalidate(4);
+  };
+  const local = () => import('./ao.js').then(m => fini(m.champAO(job))).catch(e => { AO.busy = false; console.warn('occlusion précalculée', e); });
+  try {
+    const w = new Worker(new URL('./ao.js', import.meta.url), { type: 'module' });
+    w.onmessage = e => { w.terminate(); fini(e.data); }; w.onerror = () => { w.terminate(); local(); };
+    w.postMessage(job, [job.tri.buffer]);
+  } catch (e) { local(); }
 }
 
 /* ---------- Miroirs ---------- */
@@ -867,7 +931,7 @@ function buildDoor(id, group) {
   LB.build(piv);
   const rect = wallQuad(w, o.s[0], o.s[1], -0.02, t + 0.02);
   const maxA = o.maxA ?? Math.PI / 2;
-  const op = makeOperable(id, v => { piv.rotation.y = th0 + sig * maxA * v; }, rect, { t: (o.kind === 'entry' || o.closed) ? 0 : 1, group: g, lv: o.level });
+  const op = makeOperable(id, v => { piv.rotation.y = th0 + sig * maxA * v; }, rect, { t: (o.kind === 'entry' || o.closed || !SHOOT) ? 0 : 1, group: g, lv: o.level });
   g.traverse(m => { if (m.isMesh) m.userData.op = op; });
   openCells(g, id, o.w);
 }
@@ -1468,7 +1532,8 @@ function captureProbe(id) {
   const p = PROBES[id]; if (!p) return;
   cullRestore(); shadowPass(); // hors mode photo : toute la maquette et ses ombres, comme sans culling
   if (!probe.rt) { probe.rt = new THREE.WebGLCubeRenderTarget(App.coarse ? 48 : 96, { type: THREE.HalfFloatType }); probe.cam = new THREE.CubeCamera(0.05, 400, probe.rt); probe.pmrem = new THREE.PMREMGenerator(renderer); }
-  const save = { env: scene.environment, ei: scene.environmentIntensity, cur: cursor.visible, clip: renderer.clippingPlanes, sh: ambient.sh.clone(), ai: ambient.intensity };
+  const save = { env: scene.environment, ei: scene.environmentIntensity, cur: cursor.visible, clip: renderer.clippingPlanes, sh: ambient.sh.clone(), ai: ambient.intensity, ao: AO.on.value };
+  AO.on.value = 0;
   mirrors.forEach(m => { m.v = m.refl.visible; m.refl.visible = false; m.std.visible = true; });
   const bulbs = lamps.map(l => l.userData.bulb.material); lamps.forEach(l => { l.userData.bulb.material = M.bulb; });
   const pis = portals.map(l => l.intensity); portals.forEach(l => { l.intensity = 0; });
@@ -1483,7 +1548,7 @@ function captureProbe(id) {
   mirrors.forEach(m => { m.refl.visible = m.v; m.std.visible = false; });
   lamps.forEach((l, i) => { l.userData.bulb.material = bulbs[i]; }); portals.forEach((l, i) => { l.intensity = pis[i]; });
   cursor.visible = save.cur; renderer.clippingPlanes = save.clip;
-  scene.environment = save.env; scene.environmentIntensity = save.ei; ambient.sh.copy(save.sh); ambient.intensity = save.ai;
+  scene.environment = save.env; scene.environmentIntensity = save.ei; ambient.sh.copy(save.sh); ambient.intensity = save.ai; AO.on.value = save.ao;
   let k = 3;
   if (ok && sh) { const c0 = sh.coefficients[0], avg = 0.282095 * (0.2126 * c0.x + 0.7152 * c0.y + 0.0722 * c0.z); if (avg > 1e-5) k = clamp(EXP_KEY * (EXPF[id] || 1) / avg, 0.2, 12); }
   if (probe.cache[id]) probe.cache[id].env.dispose();
@@ -1544,7 +1609,8 @@ function applyEnv() {
   renderer.toneMappingExposure = S.exposure * (walkMode ? autoExp.k : 1.0);
   setBloomThr();
 }
-function setBloomThr() { const t = 1.15 / Math.max(0.2, renderer.toneMappingExposure); if (bloom) bloom.threshold = t; if (bloomM) bloomM.threshold = t; }
+// seuil du halo, suivant l'exposition : chaîne de l'arrêt et toutes les chaînes de mouvement (un palier pris ensuite part au bon seuil)
+function setBloomThr() { const t = 1.15 / Math.max(0.2, renderer.toneMappingExposure); if (bloom) bloom.threshold = t; for (const c of chainsM.values()) c.bl.threshold = t; }
 
 /* ---------- Post-traitement ---------- */
 /* chaînes de rendu préallouées : pleine qualité (à l'arrêt, photos) et mouvement (cibles plus petites, allégée par paliers ; une chaîne
@@ -1564,6 +1630,9 @@ function makeChain(aoSamples) { // aoSamples = 0 : sans occlusion ambiante (cha�
     C.addPass(ao);
   }
   const bl = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.18, 0.5, 1.0); C.addPass(bl);
+  // halo calculé à la taille de l'écran (pixels CSS), quel que soit le pixel ratio de la chaîne : son flou est en pixels de ses cibles,
+  // il s'étalait plus loin à basse résolution (paliers de mouvement), la lumière autour des fenêtres et du soleil changeait à chaque pas
+  const blSize = bl.setSize.bind(bl); bl.setSize = (W, H) => { const r = C._pixelRatio || 1; blSize(Math.max(1, Math.round(W / r)), Math.max(1, Math.round(H / r))); };
   C.addPass(new OutputPass());
   const ph = new ShaderPass({
     uniforms: { tDiffuse: { value: null }, vig: { value: 0.22 }, grain: { value: 0.018 }, seed: { value: 0 }, contrast: { value: 0.06 } },
@@ -1581,14 +1650,16 @@ function setupComposer() {
   chainRendu(); // rendu simple : ni occlusion ambiante, ni bloom, ni vignettage ni grain
 }
 function chainRendu() {
-  const u = !simple(); gtao.enabled = S.ao && u; bloom.enabled = u; photoPass.enabled = u;
+  const u = !simple(); gtao.enabled = S.ao && u && (SHOOT || !AO.ready); AO.on.value = S.ao && u && !SHOOT && AO.ready ? 1 : 0; bloom.enabled = u; photoPass.enabled = u;
+  if (u) ensureAO();
   for (const c of chainsM.values()) c.ph.enabled = u;
 }
 
 /* ---------- Qualité adaptative en mouvement (hors mode photo) ----------
    Paliers de la chaîne de mouvement, du plus fin au plus léger : [pixel ratio (jamais au-dessus de celui de l'arrêt), MSAA, bloom].
-   Pas d'occlusion ambiante en mouvement : à basse résolution et peu d'échantillons, elle fait un grain sombre aux angles et dans les
-   renfoncements. Un régulateur sur la médiane des 8 derniers intervalles entre deux images de mouvement (et les images manquées des
+   Un palier change la finesse de l'image, jamais sa lumière : ni occlusion (précalculée, la même partout) ni halo retirés.
+   Pas d'occlusion d'écran (GTAO) en mouvement : à basse résolution et peu d'échantillons, elle fait un grain sombre aux angles et dans
+   les renfoncements ; en visite, l'occlusion précalculée la remplace à l'arrêt comme en mouvement. Un régulateur sur la médiane des 8 derniers intervalles entre deux images de mouvement (et les images manquées des
    30 dernières) vise la cadence de l'écran
    (60 i/s ; 30 i/s si l'écran ou le mode économie d'énergie n'en donne pas plus : on ne dégrade pas l'image pour rien) : il descend
    au-dessus de 1,07 fois la cible ou à 3 images manquées sur 30 (de deux paliers au-delà de 1,8 fois), remonte sous 0,72 fois, ou essaie le palier du dessus après
@@ -1596,7 +1667,9 @@ function chainRendu() {
    trouvé est gardé d'une visite à l'autre sur cet appareil. Une seule image à la fois au GPU (barrière) : pas de file d'images, donc
    pas de retard du regard sur la main ; une image qui ne suit pas se voit dans l'intervalle, et le régulateur descend.
    À l'arrêt, 180 ms après le dernier mouvement : image pleine qualité, identique à celle d'avant. */
-const AQ_STEPS = [[1.25, 4, 1], [1, 4, 1], [1, 0, 1], [1, 0, 0], [0.75, 0, 0], [0.6, 0, 0]];
+// halo (bloom) gardé à tous les paliers : il fait partie de la lumière (fenêtres, taches de soleil) ; coupé en mouvement, il disparaissait
+// à chaque pas et revenait à l'arrêt (jusqu'à 45 sur 255 sur une zone de l'image, contrôle « arrêt et mouvement » du 29/09/2026)
+const AQ_STEPS = [[1.25, 4, 1], [1, 4, 1], [1, 0, 1], [0.85, 0, 1], [0.75, 0, 1], [0.6, 0, 1]];
 // anisotropie des matières en mouvement, par palier (à l'arrêt : le maximum de l'appareil, comme avant)
 const AQ_ANISO = [8, 4, 4, 2, 2, 1];
 const AQ_HOLD = 180, AQ_KEY = 'visite.qualite-mouvement.2';
@@ -1611,7 +1684,7 @@ const aqTarget = () => Math.max(1000 / 60, aq.vs);
 function chainFor(l) {
   const [pr0, ms, bl] = AQ_STEPS[l], pr = Math.min(pr0, PR_FULL), key = pr + ':' + ms, w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
   let c = chainsM.get(key);
-  if (!c) { c = makeChain(0); c.C.renderTarget1.samples = c.C.renderTarget2.samples = ms; c.C.setPixelRatio(pr); chainsM.set(key, c); }
+  if (!c) { c = makeChain(0); c.C.renderTarget1.samples = c.C.renderTarget2.samples = ms; c.C.setPixelRatio(pr); chainsM.set(key, c); if (bloom) c.bl.threshold = bloom.threshold; }
   if (c.w !== w || c.h !== h) { c.C.setSize(w, h); c.w = w; c.h = h; c.warm = false; }
   c.bl.enabled = bl > 0 && !simple(); c.ph.enabled = !simple();
   return c;
@@ -1756,7 +1829,7 @@ function scissorOn(r, sc, cam) {
 function scissorOff(r) { if (!this.userData.scOn) return; this.userData.scOn = false; const rt = r.getRenderTarget(); if (rt) { r.state.scissor(rt.scissor); r.state.setScissorTest(rt.scissorTest); } else r.state.setScissorTest(false); }
 // rendu photoréaliste en préparation (pt.busy) : toute la maquette, sinon la boucle, qui tourne encore pendant un mouvement, recacherait
 // des murs avant que la scène parte au lanceur de rayons
-const cullActive = () => (CUL.force ?? !SHOOT) && S.mode === 'walk' && !pt.active && !pt.busy && !S.cut;
+const cullActive = () => (CUL.force ?? !SHOOT) && S.mode === 'walk' && !pt.active && !pt.busy && !S.cut && !S.xray; // rayons X : tout est vu à travers les murs
 /* parcours de proche en proche depuis les cellules start, vues dans le rectangle r0, avec la projection _vpm. Liste de travail : le
    rectangle d'une cellule ne fait que grandir (réunion), une cellule n'est reprise que si le sien a grandi ou si elle devient vue par des
    portails ouverts ; chaque portail est projeté une fois */
@@ -1894,7 +1967,6 @@ function collide(x, z, r = 0.18, y = 0) {
     if (x < c.bb[0] - r || x > c.bb[1] + r || z < c.bb[2] - r || z > c.bb[3] + r) continue;
     const q = closestOnPoly(c.p, x, z);
     if (!q.inside && q.d >= r) continue;
-    if (c.op && (walk.keys.size || walk.glide || walk.joy.x || walk.joy.y)) c.op.target = 1;
     if (q.inside) { const dx = q.cx - x, dz = q.cz - z, d = Math.hypot(dx, dz); if (d > 1e-9) { x = q.cx + dx / d * r; z = q.cz + dz / d * r; } else { x = q.cx + q.nx * r; z = q.cz + q.nz * r; } }
     else { const dx = x - q.cx, dz = z - q.cz; x = q.cx + dx / q.d * r; z = q.cz + dz / q.d * r; }
   }
@@ -1992,8 +2064,9 @@ function updateHud() {
 }
 /* champ de vision : le pincement zoome jusqu'au prochain arrêt ou changement de pièce */
 function resetZoom() { if (!walk.zoom) return; walk.zoom = 0; if (S.mode === 'walk') { camera.fov = walk.fov; camera.updateProjectionMatrix(); invalidate(); } }
-/* portes à la marche : le vantail s'ouvre avant qu'on l'atteigne (à 1,3 m, si l'on va vers le passage), et celui qui va vers le
-   passage mais au point d'accrocher le tableau de l'épaule (un peu de biais ou un peu décalé) est redressé juste assez pour passer.
+/* portes à la marche : une porte ne s'ouvre ni ne se ferme jamais seule (retour du 29/09/2026 : « les portes restent fermées sauf si je
+   clique dessus ou sur le bouton d'action ») ; qui va vers une porte ouverte mais au point d'accrocher le tableau de l'épaule (un peu de
+   biais ou un peu décalé) est redressé juste assez pour passer. Une porte fermée arrête le visiteur, sans l'aspirer.
    Rien pour qui va vers le mur à côté de la baie, longe la baie ou est sur une volée : on n'est jamais aspiré. Correction latérale au
    plus la moitié du pas (27° d'écart, 0,7 m/s), à moins d'un mètre de la baie */
 const funnelDoors = () => operables.filter(op => { const o = D.openings[op.id]; return o && op.id !== 'placard' && (o.kind === 'door' || (o.kind === 'french' && !(o.sill > 0))); }).map(op => {
@@ -2007,7 +2080,7 @@ function doorAssist(mx, mz) {
   const L = Math.hypot(mx, mz); if (L < 1e-6 || (MULTI && walk.st)) return [mx, mz];
   const ux = mx / L, uz = mz / L; DOORS = DOORS || funnelDoors();
   for (const { op, o, m, hw } of DOORS) {
-    if (MULTI && op.lv !== walk.lv) continue;
+    if ((MULTI && op.lv !== walk.lv) || op.target < 0.5) continue;
     const ax = walk.x - o.main.a[0], az = walk.z - o.main.a[1], lat = ax * o.u[0] + az * o.u[1] - m, dd = ax * o.T[0] + az * o.T[1];
     const ct = ux * o.T[0] + uz * o.T[1], cl = ux * o.u[0] + uz * o.u[1];
     if (Math.abs(ct) < 0.766) continue; // à plus de 40° de l'axe de la baie
@@ -2016,7 +2089,6 @@ function doorAssist(mx, mz) {
     const at = d => lat + cl * Math.max(0, d) / Math.abs(ct), l0 = at(d0), l1 = at(d1), lm = Math.abs(l0) > Math.abs(l1) ? l0 : l1;
     const free = hw - BODY - 0.01;
     if (Math.abs(l0) > hw) continue; // on va vers le mur à côté de la baie : rien
-    if (op.target < 0.5 && d0 < 1.3) { op.target = 1; op.fast = true; } // ouvert en 0,3 s
     if (Math.abs(lm) <= free || free <= 0) continue; // on passe sans rien toucher
     // correction : ramener l'écart au passage libre, au plus la moitié du pas
     const need = (Math.abs(lm) - free) * Math.sign(lm), k = -clamp(need, -0.5 * L, 0.5 * L);
@@ -2080,8 +2152,8 @@ function backOff(px, pz, lv) {
   }
   return null;
 }
-/* destination d'un clic : le sol visé ; l'autre côté d'une porte ; le pied d'un mur, d'un équipement ou du plafond visé (sur le niveau
-   de ce qu'on touche). null : fenêtre, porte palière, placard (on l'ouvre ou la ferme), ciel, épaisseur d'une dalle */
+/* destination d'un clic : le sol visé ; le pied d'un mur, d'un équipement ou du plafond visé (sur le niveau de ce qu'on touche).
+   null : porte, fenêtre, placard (on l'ouvre ou la ferme), ciel, épaisseur d'une dalle */
 function clickTarget(h) {
   const op = h.object.userData.op, lv = walk.lv, Y0 = LV[lv].y;
   // sol visé : sa surface de marche (marche d'escalier : hauteur de la rampe, comme pour qui y marche) ; un sol hors des pièces et des
@@ -2091,14 +2163,7 @@ function clickTarget(h) {
     if (!f || (!f.st && !roomAtLv(h.point.x, h.point.z, f.lv))) { const b = backOff(h.point.x, h.point.z, f ? f.lv : lvOfY(h.point.y)); return b && { x: b[0], z: b[1], lv: f ? f.lv : lvOfY(h.point.y), kind: 'pied' }; }
     if (!isPlacard(roomAtLv(h.point.x, h.point.z, f.lv))) return { x: h.point.x, z: h.point.z, y: f.y, lv: f.lv, kind: 'sol' };
   }
-  if (op) {
-    const o = D.openings[op.id];
-    if (!o || op.id === 'placard' || !(o.kind === 'door' || (o.kind === 'french' && !(o.sill > 0))) || (MULTI && op.lv !== lv)) return null;
-    const m = (o.s[0] + o.s[1]) / 2, dd = (walk.x - o.main.a[0]) * o.T[0] + (walk.z - o.main.a[1]) * o.T[1];
-    const p = o.pt(m, dd < o.depth / 2 ? o.depth + 0.6 : -0.6), r = roomAtLv(p[0], p[1], lv); // 60 cm au-delà de la baie
-    if (!r || isPlacard(r)) return null;
-    const f = freeSpot(p[0], p[1], lv); return { x: f[0], z: f[1], lv, kind: 'porte' };
-  }
+  if (op) return null;
   if (h.object.userData.walk && h.face && h.face.normal.y > 0.5) {
     const y = h.point.y, l2 = lvOfY(y);
     if (!isPlacard(roomAtLv(h.point.x, h.point.z, l2))) return { x: h.point.x, z: h.point.z, y, lv: l2, kind: 'sol' };
@@ -2410,9 +2475,27 @@ function openDoorsOnPath(P) {
 }
 /* itinéraire du visiteur jusqu'à (x, z) : fini exactement au point visé s'il est libre, sinon au point libre le plus proche.
    tgt : { lv } (sol d'un niveau) ou { y } (sol cliqué) ; plan à un niveau : ignoré */
+/* portes fermées (ou qui se ferment) dans la grille des itinéraires, le temps d'une recherche : cases du tableau de la baie, sur son
+   niveau. La grille elle-même reste celle des portes ouvertes (contrôles : chaque pièce accessible, portes ouvertes) */
+function withShutDoors(fn) {
+  if (NAVG.dirty || !(MULTI ? NAVG.layers : NAVG.grid)) { if (MULTI) buildNavLayers(); else buildNavGrid(); }
+  const nx = NAVG.nx, c = NAVG.c, set = [];
+  for (const op of operables) {
+    if (op.id === 'placard' || op.blocks === false || op.target >= 0.5) continue;
+    if (!op.navCells) {
+      op.navCells = []; const xs = op.rect.map(q => q[0]), zs = op.rect.map(q => q[1]);
+      const i0 = Math.max(0, Math.floor((Math.min(...xs) - NAVG.x0) / c)), i1 = Math.min(nx - 1, Math.floor((Math.max(...xs) - NAVG.x0) / c));
+      const j0 = Math.max(0, Math.floor((Math.min(...zs) - NAVG.z0) / c)), j1 = Math.min(NAVG.nz - 1, Math.floor((Math.max(...zs) - NAVG.z0) / c));
+      for (let j = j0 - 1; j <= j1 + 1; j++) for (let i = i0 - 1; i <= i1 + 1; i++) { if (i < 0 || j < 0 || i >= nx || j >= NAVG.nz) continue; const q = closestOnPoly(op.rect, NAVG.x0 + (i + 0.5) * c, NAVG.z0 + (j + 0.5) * c); if (q.inside || q.d < 0.05) op.navCells.push(j * nx + i); }
+    }
+    const g = MULTI ? NAVG.layers[op.lv].grid : NAVG.grid;
+    for (const k of op.navCells) if (!g[k]) { g[k] = 1; set.push([g, k]); }
+  }
+  try { return fn(); } finally { for (const [g, k] of set) g[k] = 0; }
+}
 function planTo(x, z, tgt) {
   const y1 = tgt && tgt.y != null ? tgt.y : LV[tgt && tgt.lv != null ? tgt.lv : walk.lv].y, l1 = lvOfY(y1), [fx, fz] = freeSpot(x, z, l1, y1);
-  const P = MULTI ? findPathY(walk.x, walk.z, walk.y, fx, fz, y1) : findPath2(walk.x, walk.z, fx, fz); if (!P || P.length < 2) return null;
+  const P = withShutDoors(() => MULTI ? findPathY(walk.x, walk.z, walk.y, fx, fz, y1) : findPath2(walk.x, walk.z, fx, fz)); if (!P || P.length < 2) return null;
   // la grille (cases de 8 cm, marge de 20 cm) s'arrête au centre d'une case, parfois au-delà d'un obstacle quand le point est dans un
   // passage plus étroit qu'elle : dernier pas en ligne droite jusqu'au point, depuis le point le plus avancé du chemin d'où il est dégagé
   const e = P[P.length - 1]; if (Math.hypot(fx - e[0], fz - e[1]) < 0.005) return P;
@@ -2432,7 +2515,7 @@ function planTo(x, z, tgt) {
 }
 function navTo(x, z, tgt, yaw, pitch, onEnd) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-  // les portes fermées ne bloquent pas l'itinéraire : elles s'ouvrent au passage
+  // une porte fermée barre l'itinéraire (planTo) : on ne l'ouvre pas au passage
   const P = planTo(x, z, tgt); if (!P) return false;
   let len = 0; const cum = [0]; for (let i = 1; i < P.length; i++) { len += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); cum.push(len); }
   if (len < 0.05 && yaw == null) return true;
@@ -2446,7 +2529,6 @@ function navTo(x, z, tgt, yaw, pitch, onEnd) {
       if (c < 0.5) { cur.redir = { x, z, tgt, yaw, pitch, onEnd }; cur.pending = false; invalidate(); return true; }
     }
   }
-  openDoorsOnPath(P);
   const last = P[P.length - 1], prev = P[P.length - 2], endYaw = yaw ?? Math.atan2(-(last[0] - prev[0]), -(last[1] - prev[1]));
   // destination d'un clic à moins de 35° du regard : on y va sans tourner la tête
   const v = cur && !cur.brake ? cur.v : 0, dAng = Math.abs(angD(Math.atan2(-(last[0] - walk.x), -(last[1] - walk.z)) - walk.yaw));
@@ -2518,8 +2600,8 @@ function goStop(id) {
   }
   if (pt.active) stopPT();
   lookVel = null; resetZoom();
-  if (S.mode === 'walk') { openFor(s); if (navTo(s.p[0], s.p[1], { lv }, s.yaw, s.pitch)) return; }
-  const go = () => { walk.x = s.p[0]; walk.z = s.p[1]; walk.lv = walk._lv = lv; walk.y = y; walk.st = null; walk.yaw = s.yaw; walk.pitch = s.pitch ?? -0.06; walk.glide = null; lastRoom = null; openFor(s, true); autoExp.snap = true; if (S.mode !== 'walk') App.set('mode', 'walk'); else setWalkCamera(); };
+  if (S.mode === 'walk') { if (SHOOT) openFor(s); if (navTo(s.p[0], s.p[1], { lv }, s.yaw, s.pitch)) return; }
+  const go = () => { walk.x = s.p[0]; walk.z = s.p[1]; walk.lv = walk._lv = lv; walk.y = y; walk.st = null; walk.yaw = s.yaw; walk.pitch = s.pitch ?? -0.06; walk.glide = null; lastRoom = null; if (SHOOT) openFor(s, true); autoExp.snap = true; if (S.mode !== 'walk') App.set('mode', 'walk'); else setWalkCamera(); };
   if (S.mode === 'walk') fadeTo(go); else go();
 }
 let orbitAnim = null;
@@ -2573,7 +2655,7 @@ function applyRendu() {
 }
 App.renduEtat = () => ({ rendu: S.rendu, ombreSoleil: sun.castShadow, appoint: fill.visible && fill.intensity > 0, lampes: lamps.filter(l => l.visible).length, lampesOmbre: lamps.filter(l => l.castShadow).length,
   palier: ctxLamps.filter(l => l.visible).length, fenetres: portals.filter(l => l.visible && l.intensity > 0).length, sonde: ambient.visible && ambient.intensity > 0, env: scene.environment === envSimple ? 'neutre' : scene.environment ? 'sonde-ou-ciel' : null,
-  ao: !!gtao.enabled, bloom: !!bloom.enabled, vignettage: !!photoPass.enabled, exposition: +renderer.toneMappingExposure.toFixed(4), sondesEnAttente: probe.queue.length, sondes: Object.keys(probe.cache).length, portePaliere: M.entry_leaf ? M.entry_leaf.color.getHex() : null });
+  ao: !!gtao.enabled || AO.on.value > 0, aoPrecalcul: AO.on.value > 0, bloom: !!bloom.enabled, vignettage: !!photoPass.enabled, exposition: +renderer.toneMappingExposure.toFixed(4), sondesEnAttente: probe.queue.length, sondes: Object.keys(probe.cache).length, portePaliere: M.entry_leaf ? M.entry_leaf.color.getHex() : null });
 
 /* ---------- Réactions aux réglages ---------- */
 App.on(k => {
@@ -2597,7 +2679,9 @@ App.on(k => {
   if (k === 'exposure') { applyEnv(); invalidate(); }
   if (k === 'ao') { chainRendu(); aqApply(); invalidate(); }
   if (k === 'rendu') applyRendu();
-  if (k === 'cut') { if (pt.active) stopPT(); buildArch(S.cut ? 1.2 : null); cutPlane.constant = LV[S.level].y + 1.205; renderer.clippingPlanes = S.cut ? [cutPlane] : []; mirrorsForCut(); G.ceil.visible = S.mode !== 'orbit'; G.doors.visible = !S.cut; G.bso.visible = !S.cut; if (S.cut && S.mode === 'walk') App.set('mode', 'orbit'); invalidate(); }
+  if (k === 'xray') applyXray();
+  if (k === 'eau') applyEau();
+  if (k === 'cut') { if (pt.active) stopPT(); if (!S.cut) ensureAO(); buildArch(S.cut ? 1.2 : null); cutPlane.constant = LV[S.level].y + 1.205; renderer.clippingPlanes = S.cut ? [cutPlane] : []; mirrorsForCut(); G.ceil.visible = S.mode !== 'orbit'; G.doors.visible = !S.cut; G.bso.visible = !S.cut; if (S.cut && S.mode === 'walk') App.set('mode', 'orbit'); invalidate(); }
 });
 
 let lastLvY = LV[S.level].y;
@@ -2656,8 +2740,12 @@ function loop(time) {
   if (!low && !frames && !SHOOT && now - aq.last > 1000 && aqWarm()) { rendered = true; return; } // palier voisin préparé à l'arrêt
   if (frames > 0) { rendered = true; if (SHOOT || !gpuBusy(low, now)) draw(low, time); } // sinon : image retenue par la barrière
 }
+const DBG = { t: [], info: null };
 function draw(low, time) {
-  frames--; cullFrame(); shadowPass(); setAniso(low ? AQ_ANISO[aq.lvl] : maxAniso); (low ? composerM : composer).render(); gpuFence(performance.now());
+  frames--; renderer.info.reset();
+  cullFrame(); shadowPass(); setAniso(low ? AQ_ANISO[aq.lvl] : maxAniso); (low ? composerM : composer).render(); gpuFence(performance.now());
+  const now = performance.now(); DBG.t.push(now); while (DBG.t.length > 120) DBG.t.shift();
+  DBG.info = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, low };
   if (low) { if (aq.lastLow) aqMeasure(time - aq.lastLow); aq.lastLow = time; }
 }
 /* images à la fois au GPU (hors mode photo) : une seule quand c'est possible, la suivante attendant que la précédente soit finie. Sans
@@ -2726,6 +2814,65 @@ function scheduleNav() {
   (window.requestIdleCallback || (f => setTimeout(f, 200)))(() => { if (NAVG.dirty) { if (MULTI) buildNavLayers(); else buildNavGrid(); } }, { timeout: 1500 });
 }
 
+/* ---------- Vues d'admin (mode admin de l'outil local, L4-19) ----------
+   Rayons X : murs, plafonds, dalles et faïence en transparence, portes à demi ; culling coupé (on voit à travers). Eau : chaque pièce
+   intérieure remplie jusqu'à 1 m (test d'immersion de la visite de contrôle rendu visible) et, en rouge, les fuites relevées par ce test
+   (controle.json, lu par la page d'admin). Aucune des deux ne change le rendu par défaut : état d'origine des matières gardé et remis
+   à l'identique (contrôle : image identique après un aller-retour) */
+const XRAY = { mats: ['wall_b', 'wall_c', 'ceiling', 'ceiling_j', 'faience', 'slab', 'slab_j', 'ext', 'plinthe'], demi: ['door_leaf', 'door_frame', 'entry_leaf', 'frame'], sv: null };
+function applyXray() {
+  const on = !!S.xray;
+  if (on && !XRAY.sv) {
+    XRAY.sv = {};
+    for (const [ks, op] of [[XRAY.mats, 0.16], [XRAY.demi, 0.4]]) for (const k of ks) { const m = M[k]; if (!m) continue; XRAY.sv[k] = { transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite }; Object.assign(m, { transparent: true, opacity: op, depthWrite: false }); m.needsUpdate = true; }
+  } else if (!on && XRAY.sv) {
+    for (const [k, v] of Object.entries(XRAY.sv)) { Object.assign(M[k], v); M[k].needsUpdate = true; }
+    XRAY.sv = null;
+  }
+  if (pt.active) stopPT(); pt.dirty = true; markShadows(); invalidate(4);
+}
+const EAU = { g: null, fuites: [] };
+function applyEau() {
+  if (S.eau && !EAU.g) {
+    EAU.g = new THREE.Group(); EAU.g.name = 'eau';
+    const mat = new THREE.MeshBasicMaterial({ color: 0x2f86e0, transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide });
+    for (const r of D.rooms) {
+      if (r.hidden || App.isExt(r) || !r.poly || r.poly.length < 3) continue;
+      const lv = r.level || 0, sh = new THREE.Shape(r.poly.map(([x, z]) => new THREE.Vector2(x, -z)));
+      const g = new THREE.ExtrudeGeometry(sh, { depth: 1.0, bevelEnabled: false }); g.rotateX(-Math.PI / 2); g.translate(0, LV[lv].y + 0.005, 0);
+      const m = new THREE.Mesh(g, mat); m.renderOrder = 3; EAU.g.add(m);
+    }
+    const fm = new THREE.MeshBasicMaterial({ color: 0xe0282e, depthTest: false, transparent: true, opacity: 0.9 });
+    for (const f of EAU.fuites) {
+      const b = new THREE.Mesh(new THREE.SphereGeometry(0.14, 20, 12), fm); b.position.set(f[0], f[1], f[2]); b.renderOrder = 6; EAU.g.add(b);
+      const t = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 3, 8), fm); t.position.set(f[0], f[1] + 1.5, f[2]); t.renderOrder = 6; EAU.g.add(t);
+    }
+    scene.add(EAU.g);
+  } else if (!S.eau && EAU.g) {
+    scene.remove(EAU.g); EAU.g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); EAU.g = null;
+  }
+  if (pt.active) stopPT(); invalidate(4);
+}
+/* fuites du test d'immersion ([x, y, z] du monde), fournies par la page d'admin ; la vue eau est refaite si elle est affichée */
+App.fuitesEau = L => { EAU.fuites = Array.isArray(L) ? L.filter(p => Array.isArray(p) && p.length === 3 && p.every(Number.isFinite)) : []; if (EAU.g) { const on = S.eau; S.eau = false; applyEau(); S.eau = on; applyEau(); } };
+/* bandeau de débogage : images par seconde (dessinées dans la dernière seconde ; 0 au repos, la visite ne redessine que ce qui bouge),
+   temps d'image (médiane des intervalles entre images qui se suivent), palier, dessin de la dernière image, mémoire, culling */
+App.debugInfo = () => {
+  const now = performance.now(), T = DBG.t, n = T.filter(t => now - t < 1000).length, iv = [];
+  for (let i = Math.max(1, T.length - 30); i < T.length; i++) { const d = T[i] - T[i - 1]; if (d < 250) iv.push(d); }
+  iv.sort((a, b) => a - b);
+  let r = MULTI ? roomAtLv(walk.x, walk.z, walk.lv) : roomAtLv(walk.x, walk.z, 0); if (r && r.of) r = D.rooms.find(q => q.id === r.of);
+  const cs = CUL.stats || {};
+  return { fps: n, ms: iv.length ? +iv[iv.length >> 1].toFixed(1) : null, palier: aq.lvl, mouvement: !!aq.low, rendu: S.rendu, mode: S.mode,
+    piece: S.mode === 'walk' ? (r ? r.label || r.id : null) : null, niveau: MULTI ? (S.mode === 'walk' ? walk.lv : S.level) : null,
+    x: +walk.x.toFixed(2), z: +walk.z.toFixed(2), cap: Math.round(((walk.yaw * 180 / Math.PI) % 360 + 360) % 360),
+    appels: DBG.info ? DBG.info.calls : 0, triangles: DBG.info ? DBG.info.triangles : 0, textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries,
+    pixelRatio: +(DBG.info && DBG.info.low ? Math.min(AQ_STEPS[aq.lvl][0], PR_FULL) : PR_FULL).toFixed(2),
+    culling: cullActive() ? `${cs.objets ?? '?'}/${cs.objetsTotal ?? '?'} objets, ${cs.lampes ?? '?'} lampes` : 'coupé',
+    occlusion: simple() ? 'aucune' : AO.on.value ? `précalculée (${AO.ms} ms)` : gtao.enabled ? 'écran (GTAO)' : 'aucune', sondes: probe.queue.length,
+    logiciel: !!SOFTGL };
+};
+
 /* ---------- Démarrage ---------- */
 async function start() {
   App.loader('Génération des matières…', 0.08); await sleep();
@@ -2757,6 +2904,6 @@ async function start() {
     aq, aqMeasure, aqTarget, AQ_STEPS, doorAssist, get composer() { return composer; }, get composerM() { return composerM; }, get frames() { return frames; },
     // culling par portails (contrôle de visibilité, mesures) : état, cellules vues, image pleine qualité ou d'un palier comme la boucle
     reglageSimple, cul: CUL, cullUpdate, cullRestore, cellsAt, markShadows, setAniso, reglagesVisite, TEXQ, SOFTGL, renderFull: () => { cullFrame(); shadowPass(); setAniso(maxAniso); composer.render(); },
-    renderLow: l => { const c = chainFor(l); cullFrame(); shadowPass(); setAniso(AQ_ANISO[l]); c.C.render(); }, cullStats: () => CUL.stats && Object.assign({}, CUL.stats, { ids: undefined }) };
+    renderLow: l => { const c = chainFor(l); cullFrame(); shadowPass(); setAniso(AQ_ANISO[l]); c.C.render(); }, cullStats: () => CUL.stats && Object.assign({}, CUL.stats, { ids: undefined }), AO, ensureAO };
 }
 start().catch(e => { console.error(e); App.fail('Erreur : ' + (e && e.message ? e.message : e)); });

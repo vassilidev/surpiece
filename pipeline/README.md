@@ -77,3 +77,13 @@ node moteur/photos.mjs plans/<id>
 Référence sur plusieurs niveaux : le duplex `3081-613-ef700f1f` (R+1 et R+2 l'un sous l'autre sur la page), avec une lecture préparée à la main dans `reponse-ia.json`.
 
 `outils/finalise.sh <id>` réassemble un plan à partir de sa lecture gardée (`reponse-ia.json`, et `relecture-ia.json` pour ne pas relancer la relecture), sans aucun appel payant, puis lance la visite de contrôle, ses réparations, les photos et la visite à 360°. La page de visite est créée si elle manque. Une lecture qui ne passe pas le contrôle s'arrête là (la correction demanderait un appel à l'IA).
+
+## Mode admin, export, import, copie partagée
+
+- **Page des plans** (`http://localhost:8780/`) : un plan par fichier (redéposer le même fichier ramène au plan existant) ; par plan : Visite, 360°, Admin (maquette avec le panneau d'admin ouvert), Documents (tous les fichiers du dossier, et « Exporter ce plan »), Suivi. En haut : Exporter tout, Importer une archive, Importer depuis une adresse. Le dépôt est désactivé, avec sa raison, sans serveur Python ou sans IA configurée (`/api/sante`).
+- **Visite, bouton Admin** (`moteur/admin.js`) : bandeau de débogage (aussi `?debug=1`), rayons X, eau (fuites du test d'immersion), plan déposé à côté du plan 2D, verdict des contrôles, fichiers du plan lisibles dans la page.
+- **Export** : `node outils/exporter.mjs <archive.tar.gz> [id…]` : dossiers complets des plans.
+- **Import** : `node outils/importer.mjs <archive.tar.gz | dossier | https://…/> [--remplacer]` : archive d'export, copie partagée (dossier ou adresse en ligne) ; plan déjà présent (même fichier déposé ou même identifiant) laissé tel quel.
+- **Copie partagée** (GitHub Pages ou tout hébergement de fichiers) : `node outils/publier.mjs <dossier hors du projet> [id…]` : visites, 360°, mode admin et documents, page des plans en lecture seule. À ne plus faire tel quel à l'ouverture du SaaS (ticket L5-29).
+- **Test de bout en bout** : `node outils/bout_en_bout.mjs [id…]` : dépôt de chaque plan de référence par le site, sans appel payant (serveur de test sans clé, `PLAN_REJEU=1` : lecture gardée reprise ; `PLAN_DOUBLONS=1`), jusqu'à la visite, au 360° et aux photos ; plan obtenu identique à la référence ; copies supprimées.
+- **Serveur des rendus** : `outils/test_statique.mjs` vérifie que les scripts Chrome ne servent que la visite, sur 127.0.0.1, sans clé.
