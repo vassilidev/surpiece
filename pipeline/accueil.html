@@ -85,6 +85,24 @@ a.btn{text-decoration:none;display:inline-block}
 h1{font-size:clamp(24px,3vw,34px)!important}
 .drop{min-height:120px!important;padding:16px!important}.drop b{font-size:19px!important}
 .card small{display:block;color:var(--ink-2);font-weight:400;font-family:var(--mono);font-size:11.5px}
+/* téléphone : la colonne ne s'élargit jamais pour son contenu (sinon toute la page défile de côté) ; le tableau des plans devient
+   une fiche par plan (vignette, titre, statut, date, puis les boutons sur leur propre ligne) */
+.wrap{grid-template-columns:minmax(0,1fr)}
+.job h2{overflow-wrap:anywhere}
+.plans .liens .btn,.docs summary{white-space:nowrap}
+@media (max-width:640px){
+  .wrap{padding:24px 16px 60px;gap:22px}
+  .plans,.plans tbody{display:block}
+  .plans thead{display:none}
+  .plans tr{position:relative;display:grid;grid-template-columns:88px minmax(0,1fr) auto;grid-template-areas:"img titre titre" "img st date" "liens liens liens";gap:2px 12px;align-items:center;padding:10px;border-bottom:1px solid var(--line)}
+  .plans tr:last-child{border-bottom:0}
+  .plans td{padding:0;border:0;min-width:0}
+  .plans td:nth-child(1){grid-area:img}.plans td:nth-child(2){grid-area:titre;overflow-wrap:anywhere}.plans td:nth-child(3){grid-area:st}
+  .plans td:nth-child(4){grid-area:date;font-size:12px;color:var(--ink-2)}.plans td:nth-child(5){grid-area:liens;margin-top:8px}
+  .plans td img,.plans td .ph{width:88px;height:55px}
+  .plans .liens{justify-content:flex-start;flex-wrap:wrap}.plans .liens .btn,.docs summary{padding:8px 12px;font-size:14px}
+  .docs{position:static}.docs ul{left:10px;right:10px;width:auto;top:calc(100% - 6px)}
+}
 </style>
 </head>
 <body>
