@@ -5,7 +5,7 @@ Version du 27/09/2026, alignée le même jour sur les décisions de l'utilisateu
 Sources :
 - recherches : `produit/recherche/nom.md`, `marche.md`, `juridique.md`, `audit-code.md`, `suivi.md`, `auth-paiement.md`, `hebergement.md` ;
 - consignes du projet : `CLAUDE.md` ;
-- code existant, relevé le 27/09/2026 : `pipeline/accueil.html`, `moteur/visite.css`, `moteur/ui.js`. Un autre agent modifie `pipeline/` et `moteur/` : les numéros de ligne cités peuvent bouger.
+- code existant, relevé le 27/09/2026 : `pipeline/accueil.html`, `moteur/visite.css`, `moteur/ui.js`. Le travail sur les niveaux (fini le 27/09/2026, non commité) a modifié `pipeline/` et `moteur/` : les numéros de ligne cités peuvent avoir bougé.
 
 Les ratios de contraste du § 10 ont été calculés le 27/09/2026 avec la formule de luminance relative des WCAG 2.x, sur les couleurs exactes du code.
 
@@ -160,7 +160,7 @@ Sur quoi on ne se bat pas : le photoréalisme, le mobilier et les TMA. Les studi
 
 | Cible | Ce qu'on promet | Ce qu'on ne promet pas |
 |---|---|---|
-| **Particulier** qui doute ou a du mal à se projeter | Voir son logement pièce par pièce, avec les dimensions du plan. Un premier plan offert : la maquette 3D vue du dessus, le plan 2D coté, 2 photos (le séjour, puis la chambre principale ou une autre pièce), les surfaces et les points à faire confirmer, sans la visite. La visite se paie au plan et montre les mêmes images (R1, `MESSAGES.md` § 0.7). | La conformité du logement livré. Un avis sur l'achat ou sur la rétractation. Du mobilier. Une galerie complète de photos : elle ne sera annoncée qu'une fois livrée (L13-02). Pendant la bêta fermée, aucun achat (R13). |
+| **Particulier** qui doute ou a du mal à se projeter | Voir son logement pièce par pièce, avec les dimensions du plan. Un premier plan offert : aujourd'hui, la maquette 3D vue du dessus, le plan 2D coté, 2 photos (le séjour, puis la chambre principale ou une autre pièce), les surfaces et les points à faire confirmer, sans la visite. Ce contenu sera probablement remplacé ou complété par le mode 360° de chaque arrêt (décision du 27/09/2026, confirmée après la mesure de L1-16). La visite se paie au plan et montre les mêmes images (R1, `MESSAGES.md` § 0.7). | La conformité du logement livré. Un avis sur l'achat ou sur la rétractation. Du mobilier. Une galerie complète de photos : elle ne sera annoncée qu'une fois livrée (L13-02). Pendant la bêta fermée, aucun achat (R13). |
 | **Conseiller** (CGP, CIF, agent, mandataire, commercialisateur) | Un lien de visite à envoyer, sans compte pour le prospect. Savoir si le lien a été ouvert : le détail (durée, pièces vues) seulement avec le consentement du prospect (`juridique.md` § 3.7). Des réglages à sa main. Un nombre de plans inclus dans l'abonnement. | Le droit de diffuser le plan d'un promoteur : l'autorisation du promoteur relève du conseiller (`juridique.md` § 4.3). La visite meublée, tant qu'elle n'existe pas. |
 | **Promoteur** | Tous les lots d'un programme en visite, lot par lot, à ses couleurs et sur son site. | La visite de la résidence, les TMA, le photoréalisme : ils figurent sur la feuille de route, sans date. |
 | **Marque blanche** | Le service à la marque du client, sur son domaine. | Une validation de la conformité des lots (`juridique.md` § 2.4). |
@@ -178,7 +178,8 @@ Seuls ces faits, vérifiés, servent de preuves. Le vocabulaire proscrit du § 5
 | Surfaces comparées au tableau du promoteur | « Les surfaces lues sont comparées au tableau du promoteur. Chaque écart vous est signalé. » | Partout |
 | Visite de contrôle automatique avant publication | « Avant de vous être livrée, chaque visite est parcourue automatiquement à la recherche de défauts visibles. » | Partout |
 | Délai de bout en bout | « ‹délai› », mesuré en production (T0). « 8 à 15 minutes » a été mesuré sur Mac avec carte graphique ; la production rend sans carte graphique (R3) : ce chiffre n'est plus publié | Partout, après T0 (R12) |
-| 4 plans réels testés | « Testé sur 4 plans réels : T2 et T3, avec loggia, balcon ou façade en biais. » | Page « Méthode », pros |
+| 4 plans réels testés | « Testé sur 4 plans réels : T2 et T3, avec loggia, balcon ou façade en biais. » | Page « Méthode », pros. Une duplex a été assemblée et contrôlée avec une lecture préparée à la main (L13-08) ; la citer comme plan testé est à valider |
+| Test d'immersion avant publication : un trou de 4 cm ou plus dans un mur, une menuiserie, une dalle ou un plafond bloque la visite | Proposition, à valider : « Avant livraison, chaque visite est vérifiée comme si on la remplissait d'eau : un trou dans un mur ou une fenêtre bloque sa publication. » | Page « Méthode », après validation |
 | Coût IA de 1,10 à 1,85 $ par plan | Aucune formulation publique | Investisseurs et partenaires seulement. Ce chiffre parle d'IA et de marge. |
 
 Aucun témoignage, aucun nombre d'utilisateurs, aucune note ni aucun logo client tant qu'ils n'existent pas réellement, avec l'accord écrit des personnes concernées.
@@ -186,13 +187,13 @@ Aucun témoignage, aucun nombre d'utilisateurs, aucune note ni aucun logo client
 ### 3.4 Limites à dire
 
 Ces limites s'affichent près du bouton d'achat, lisibles, pas en petits caractères :
-- appartements sur un seul niveau ;
+- appartements sur un ou deux niveaux (duplex) : décision 11, confirmée le 27/09/2026 (« oui le duplex on l'a géré c'est bon, c'était avant ça ») ;
 - logement vide, finitions supposées ;
 - pas de mobilier ni de rendu photoréaliste ;
 - illustration non contractuelle : seuls les plans et la notice annexés au contrat de vente font foi.
 
 Règles de communication :
-- ne jamais évoquer les duplex, sur lesquels un travail est en cours ;
+- le duplex peut être nommé comme pris en charge ; ne jamais présenter comme pris en charge un logement sur plus de deux niveaux (triplex) tant qu'aucun plan réel de ce type n'a été validé ;
 - ne jamais écrire « tous types de plans » ;
 - ne jamais dater une option future ;
 - en rendez-vous pro, parler de fonction « en préparation », sans date ;
@@ -289,7 +290,7 @@ Pronoms :
 | immersif, expérience, jumeau numérique, métavers | Bruit des concurrents (`nom.md` § 3), promesse floue | « visite », « à hauteur d'yeux » |
 | conforme, exact, certifié, garanti, sans erreur, fidèle à 100 %, au centimètre (en promesse) | Risque de pratique commerciale trompeuse et promesse contractuelle (`juridique.md` § 5.2) | « fidèle au plan de vente », « d'après le plan » |
 | photoréaliste, meublé, décoré, 4K | Pas encore fournis | Rien, tant que l'option n'existe pas |
-| duplex, tous types de plans, maisons | Non couverts, ou travail en cours | « appartements sur un seul niveau » |
+| tous types de plans, maisons ; triplex tant qu'aucun plan réel n'est validé ; « un seul niveau » (ancienne limite) | Non couverts, pas encore validés, ou devenu faux | la limite du § 3.4 |
 | comme si vous y étiez, vivez, découvrez l'expérience | Cliché, surpromesse | « entrez », « visitez », « faites le tour » |
 | solution, plateforme, outil tout-en-un | Jargon SaaS | Le nom du livrable |
 | lead, onboarding, dashboard, feature, upload | Anglicismes | prospect, prise en main, tableau de bord, fonction, déposer |
@@ -559,13 +560,13 @@ Toute capture du produit (site, réseaux, présentations, salons) montre **l'app
 - **Contenu** : d'abord un T3 d'environ 65 m² sur un seul niveau, avec loggia (65 m², c'est la surface moyenne d'un 3 pièces neuf, FPI T2 2026). Ensuite un T2 d'environ 44 m² avec balcon. Seulement des cas que la chaîne couvre déjà, comme le veut la consigne d'avancer plan par plan.
 - **Passage par la vraie chaîne**, visite de contrôle comprise.
 - **Captures non retouchées** : recadrage et redimensionnement seulement. On note la date et la version du moteur, et l'on refait les captures quand le rendu change. Ce que montre la publicité est ce que produit le service.
-- **Rien de plus que l'offre en vigueur** (R1) : au lancement, les images du témoin sont celles d'une visite livrée, soit la maquette vue du dessus, le plan 2D coté et 2 photos (le séjour, puis la chambre principale), plus des captures de la visite elle-même. Pas de galerie de photos tant qu'elle n'est pas livrée (L13-02). La visite est en mode simple : ni « Rendu photoréaliste de la vue » ni superposition du plan du promoteur à l'écran (R16, L4-11).
+- **Rien de plus que l'offre en vigueur** (R1) : au lancement, les images du témoin sont celles d'une visite livrée, soit la maquette vue du dessus, le plan 2D coté et 2 photos (le séjour, puis la chambre principale), plus des captures de la visite elle-même. Pas de galerie de photos tant qu'elle n'est pas livrée (L13-02). Pas de mode 360° dans les captures tant qu'il n'est pas livré (décision du 27/09/2026). La visite est en mode simple : ni « Rendu photoréaliste de la vue » ni superposition du plan du promoteur à l'écran (R16, L4-11).
 - **Rangement** : `references/temoin/`, versionné (R11, L1-03) : plan, relevé et lecture du témoin. Il reste distinct de `plans/`, qui n'est jamais versionné.
 
 ### 8.3 Mention non contractuelle
 
 Textes canoniques, repris de `juridique.md` § 5.1, à faire valider par l'avocat :
-- **sur toute photo et dans la visite** : « Illustration non contractuelle générée automatiquement à partir du plan de vente. » ;
+- **sur toute photo, sur chaque panorama du mode 360° et dans la visite** : « Illustration non contractuelle générée automatiquement à partir du plan de vente. » ;
 - **format court**, pour les espaces réduits : « Illustration non contractuelle » ;
 - **sur les visuels marketing** : « Appartement témoin fictif · Illustration non contractuelle » ;
 - **dans la fiche** : le paragraphe complet du § 5.1 de `juridique.md`, qui finit par « Seuls les plans et la notice descriptive annexés à votre contrat de vente font foi. ».
@@ -757,7 +758,7 @@ pyftsubset archivo-reduite.ttf --flavor=woff2 --layout-features='*' \
 
 ## 12. Écarts de l'existant avec cette plateforme
 
-Relevés le 27/09/2026. **Rien n'est modifié ici** : un autre agent travaille dans `pipeline/` et `moteur/`.
+Relevés le 27/09/2026. **Rien n'est modifié ici** ; le travail sur les niveaux (fini le 27/09/2026, non commité) a modifié `pipeline/` et `moteur/`.
 
 | Où | Écart | À faire |
 |---|---|---|
@@ -772,9 +773,9 @@ Relevés le 27/09/2026. **Rien n'est modifié ici** : un autre agent travaille d
 | `visite.css` l. 231 | Légendes des vignettes sans aplat | Aplat derrière |
 | `lire.py` (repli du cartouche) | Identifiant technique dans le cartouche | « Votre logement » |
 | `lire.py` (`note`) et photos | Mention non contractuelle seulement dans la galerie | § 8.3 |
-| `accueil.html` (`#detail`), `serveur.py` | Détail technique affiché | Catalogue de messages (§ 4.3 ; `audit-code.md` B9) |
+| `accueil.html` (`#detail`), `serveur.py` | Détail technique montré seulement avec `?debug=1`, et filtre automatique (`masquer`) depuis le 27/09/2026 ; restent des messages qui citent « .env », « API » ou un type anglais (L1-04, L1-05) | Catalogue de messages (§ 4.3 ; `audit-code.md` B9) |
 | `ui.js` (réglages de la visite) | « Rendu photoréaliste de la vue » et superposition du plan du promoteur visibles en mode simple, contraires au § 3.4 et au § 8.4 | Masqués en mode simple ; superposition réservée au propriétaire ou à l'accord du promoteur (R16, ticket L4-11) |
-| `ui.js`, `photos.mjs` (galerie) | Galerie d'environ 11 photos, au-delà de l'offre de lancement | Galerie adaptable à 0, 1, 2 ou N photos, sans emplacement vide (L4-09) ; galerie complète plus tard (L13-02) |
+| `ui.js`, `photos.mjs` (galerie) | Galerie d'environ 11 photos (12 sur la duplex : une vue d'ensemble par niveau), au-delà de l'offre de lancement | Galerie adaptable à 0, 1, 2 ou N photos, sans emplacement vide (L4-09) ; galerie complète plus tard (L13-02) |
 
 ---
 
@@ -786,3 +787,5 @@ Relevés le 27/09/2026. **Rien n'est modifié ici** : un autre agent travaille d
 4. **Le symbole « la pièce »** comme favicon, sous réserve du test à 16 px (§ 7.3).
 5. **La création de l'appartement témoin fictif** (T3 d'environ 65 m² avec loggia). Son dossier est fixé : `references/temoin/`, versionné (R11, § 8.2).
 6. **La validation par l'avocat** des mentions (§ 8.3) et de la formulation des preuves (§ 3.3).
+7. **Le mode 360°** : son nom public (« vue à 360° », « visite à 360° », « panoramas »…) et sa place dans l'offre gratuite, après L1-16.
+8. **Le test d'immersion** comme preuve publique (§ 3.3). La limite affichée sur les niveaux est décidée : « un ou deux niveaux (duplex) » (§ 3.4, décision 11, 27/09/2026).

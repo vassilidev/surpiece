@@ -7,13 +7,22 @@
 ## Pourquoi
 L'attente est le moment du doute : sans carte graphique, elle sera plus longue que les 8 à 15 min mesurées sur Mac (OFFRES.md § 10 risque 3). Décision utilisateur 5 : la vue du dessus 3D découpée est rendue en premier et **affichée en direct sur l'écran d'attente dès qu'elle existe**, puis le plan 2D coté, puis les 2 photos. L'écran « chantier » de `pipeline/accueil.html` est réutilisable tel quel (recherche/audit-code.md § 3) ; seuls changent la source de l'état (la base, L5-11) et les textes, dont la promesse fausse de notification onglet fermé (audit A4).
 
+Décision 16 du 28/09/2026 (mot pour mot) : « la qualité prime sur la rapidité, on peut avoir une app plus lente pour un meilleur résultat plutôt que l'inverse ; on pourra le faire patienter avec une jolie animation, le faire remplir d'autres informations en attendant, lui montrer le plan 2D regénéré par nos soins face à son plan 2D original, lui montrer ce qu'on a extrait, progressivement ». L'attente devient une partie de l'expérience, pas un temps mort (L1-17).
+
 ## À faire
-1. **Copier** dans les gabarits de `service/` (Jinja2 et JS sans étape de build) la barre, la chronologie des 40 phrases (`CHANTIER`, `pipeline/accueil.html:122`), le lissage qui ne recule jamais (`pipeline/accueil.html:152`) et la liste des étapes (`poll`, `:179`). **`pipeline/accueil.html` n'est pas modifié** : l'outil local garde son écran.
+0. **Attente mise en scène (décision 16)**, en plus des points ci-dessous :
+   - une animation soignée qui raconte le chantier (MARQUE.md, sans promesse de délai en dur) ;
+   - **ce qu'on a extrait, au fil de l'eau** : dès l'analyse sans IA, les murs lus dans le PDF se dessinent sur son propre plan, puis les pièces et surfaces du tableau reconnues ; présenté comme « lecture en cours », jamais comme un résultat final avant la visite de contrôle réussie (R2) ;
+   - **son plan original face au plan 2D redessiné**, côte à côte ou en superposition à glisser, dès que le plan 2D est contrôlé ;
+   - **informations à remplir pendant l'attente**, utiles et facultatives (situation, projet, questions pour le promoteur…), à choisir avec L0-05 et L7-03 ;
+   - puis maquette, visite, photos et 360° dès qu'ils existent.
+   Ce qui est montré avant le contrôle (extraction brute seulement, ou davantage) : à décider sur maquette.
+1. **Copier** dans les gabarits de `service/` (Jinja2 et JS sans étape de build) la barre, la chronologie des 40 phrases (`CHANTIER`, `pipeline/accueil.html:122`), le lissage qui ne recule jamais (`pipeline/accueil.html:152`) et la liste des étapes (`poll`, `:179`). **`pipeline/accueil.html` n'est pas modifié** : l'outil local garde son écran. Ne pas reprendre le chemin `?debug=1` (`DEBUG`, `pipeline/accueil.html:122`), qui montre `technique_erreur` dans l'outil local : en service, aucun détail technique n'atteint le navigateur, quel que soit le paramètre. Numéros de ligne du point 1 à relever à nouveau (fichier modifié le 27/09/2026 : `CHANTIER` en `:124`, `poll` en `:181`).
 2. **Page** `app.<domaine>/plans/<id>/attente`, cadrée par organisation (404 sinon). Sections dans l'ordre (MESSAGES.md § 7.4, maquette PARCOURS.md A7) :
    - titre `attente.titre` (« Votre plan est en chantier ») ; barre avec pourcentage en DM Mono ; titre d'onglet `attente.onglet`, puis `attente.onglet_fini` ;
    - phrase de chantier (décorative) ;
    - étapes : « Plan reçu », « Échelle » (seulement si calée), « Lecture du plan », « Vérification avant livraison », « Maquette et photos », « Votre plan est prêt » ou « Votre visite est prête », avec leurs sous-textes ;
-   - **zone des images** : vide tant que le contrôle n'a pas réussi ; la vue du dessus apparaît dès qu'elle est listée par l'état public (L5-11), avec la phrase « Votre appartement est sorti de terre » (à ajouter au catalogue) ; puis le plan 2D coté, puis les photos. Mention courte « Illustration non contractuelle » sous chaque image ;
+   - **zone des images** : vide tant que le contrôle n'a pas réussi ; la vue du dessus apparaît dès qu'elle est listée par l'état public (L5-11), avec `attente.image.vue_dessus` (MESSAGES.md § 7.4) ; puis le plan 2D coté, puis les photos. Duplex (`niveaux_max = 2`, L4-08) : une vue du dessus par niveau, avec le nom du niveau lu sur le plan (« R+1 », « R+2 »). Panoramas 360° (L5-27) : leur apparition sur cet écran est à décider ; par défaut, rien de plus que les images ci-dessus. Mention courte « Illustration non contractuelle » sous chaque image ;
    - `attente.texte` avec l'adresse du compte : on peut fermer la page, un e-mail prévient ;
    - bouton secondaire `attente.notif.bouton` (API Notification, page ouverte seulement), puis `attente.notif.ok` ;
    - bloc « Pendant l'attente » : témoin (`/appartement-temoin`, bouton secondaire, nouvel onglet), rappel de ce qu'apporte le plan offert, lu dans le catalogue et sans prix pendant la bêta (R13) ;
@@ -33,6 +42,7 @@ L'attente est le moment du doute : sans carte graphique, elle sera plus longue q
 - [ ] Capture en mouvement réduit émulé (`page.emulateMediaFeatures`) : aucune animation ; capture à 320 px conforme.
 - [ ] Aucune requête vers `engine.js`, `/moteur/` ou `plan.json` depuis cette page (interception puppeteer).
 - [ ] Zéro défaut visible : aucune image cassée ni noire (dimensions et luminance vérifiées).
+- [ ] Page ouverte avec `?debug=1` : aucun détail technique affiché, le paramètre n'a aucun effet (contrôle des textes de L1-04 sur la page ainsi ouverte).
 
 ## Mesure
 - N : `cta_demo_clique` (`emplacement=attente`), `section_vue`, `erreur_affichee`.
@@ -41,7 +51,7 @@ L'attente est le moment du doute : sans carte graphique, elle sera plus longue q
 ## Points d'attention
 - Tranché : R2. L'aperçu est publié dès que la vue du dessus et le plan 2D sont prêts ; une photo qui échoue après nouvelles tentatives est omise, sans bloquer ni laisser d'emplacement vide ; au pire, la visite est livrée sans photos.
 - Les étapes et le rappel « plan 2D coté, maquette 3D et 2 photos » doivent rester vrais pour la version de l'offre en vigueur : lire le contenu dans le catalogue d'offres (L5-08), pas en dur.
-- « Votre appartement est sorti de terre » et les sous-textes des images sont absents de MESSAGES.md : à y ajouter avant de coder (règle : aucun texte hors catalogue).
+- « Votre appartement est sorti de terre » et les sous-textes des images sont désormais dans MESSAGES.md § 7.4 (`attente.image.*`). Restent à ajouter avant de coder : la variante par niveau (proposée : `attente.image.vue_dessus.niveau`) et, si le 360° apparaît ici, son texte (règle : aucun texte hors catalogue).
 - Les images viennent du plan du client : elles restent privées (URL signées courtes), jamais sur un CDN public sans jeton.
 - Aucun délai en dur (R12) : `attente.texte` porte le marqueur ‹délai›, remplacé par la mesure T0 (MESSAGES.md § 0.3) ; avant T0, la phrase est retirée ou remplacée par son repli. PARCOURS.md § 1.3 propose ensuite le 75e centile sur 7 jours, arrondi aux 5 min supérieures.
 

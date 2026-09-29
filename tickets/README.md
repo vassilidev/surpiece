@@ -9,20 +9,20 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | Lot | Tickets | P0 | Charge | Faits |
 |---|---:|---:|---:|---:|
 | [0 · Décisions et préalables](#lot-0) | 9 | 8 | 12 j | 0 |
-| [1 · Filets de sécurité et correctifs immédiats](#lot-1) | 12 | 11 | 20 j | 0 |
+| [1 · Filets de sécurité et correctifs immédiats](#lot-1) | 18 | 16 | 38 j | 0 |
 | [2 · Vitrine](#lot-2) | 18 | 14 | 38 j | 0 |
 | [3 · Bêta express dockerisée (optionnelle)](#lot-3) | 6 | 0 | 12 j | 0 |
-| [4 · Cœur réutilisable](#lot-4) | 11 | 10 | 21 j | 0 |
-| [5 · Socle en ligne](#lot-5) | 26 | 24 | 66 j | 0 |
-| [6 · Parcours particulier et bêta fermée](#lot-6) | 12 | 9 | 24 j | 0 |
+| [4 · Cœur réutilisable](#lot-4) | 19 | 11 | 45 j | 0 |
+| [5 · Socle en ligne](#lot-5) | 28 | 24 | 70 j | 0 |
+| [6 · Parcours particulier et bêta fermée](#lot-6) | 13 | 9 | 26 j | 0 |
 | [7 · Mesure et entonnoirs](#lot-7) | 8 | 5 | 14 j | 0 |
 | [8 · Paiement des particuliers](#lot-8) | 9 | 8 | 20 j | 0 |
 | [9 · Offre conseillers (Pro)](#lot-9) | 13 | 7 | 30 j | 0 |
 | [10 · Offre promoteurs (Programme)](#lot-10) | 9 | 6 | 21 j | 0 |
 | [11 · Marque blanche](#lot-11) | 4 | 2 | 9 j | 0 |
 | [12 · Publicité et conversions](#lot-12) | 5 | 3 | 10 j | 0 |
-| [13 · Après lancement](#lot-13) | 8 | 0 | 23 j | 0 |
-| **Total** | **150** | **107** | **320 j** | **0** |
+| [13 · Après lancement](#lot-13) | 8 | 0 | 23 j | 1 |
+| **Total** | **167** | **113** | **368 j** | **1** |
 
 <a id="lot-0"></a>
 ## 0 · Décisions et préalables
@@ -48,7 +48,7 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L1-02 · Jeu de référence rejouable sans payer](01-filets-securite/L1-02-references-rejouables.md) | P0 | M (1 à 3 j) | — | `outils/` | À faire |
 | [L1-03 · Dessiner le plan de vente du témoin fictif](01-filets-securite/L1-03-appartement-temoin.md) | P0 | M (1 à 3 j) | — | `outils/` | À faire |
 | [L1-04 · Contrôle automatique « aucun texte technique »](01-filets-securite/L1-04-controle-textes-techniques.md) | P0 | M (1 à 3 j) | L1-02 | `outils/` | À faire |
-| [L1-05 · Retirer les textes techniques et corriger les promesses fausses](01-filets-securite/L1-05-textes-visibles.md) | P0 | M (1 à 3 j) | L1-04 | `pipeline/` [P], `moteur/` [M] | À faire |
+| [L1-05 · Retirer les textes techniques et corriger les promesses fausses](01-filets-securite/L1-05-textes-visibles.md) | P0 | M (1 à 3 j) | L1-04 | `pipeline/` [P], `moteur/` [M] | En cours |
 | [L1-06 · Identifiant de plan sans nom de fichier](01-filets-securite/L1-06-identifiant-sans-nom.md) | P1 | S (jusqu'à 1 j) | L1-02 | `pipeline/` [P] | À faire |
 | [L1-07 · Figer les dépendances](01-filets-securite/L1-07-dependances-figees.md) | P0 | S (jusqu'à 1 j) | — | `outils/` | À faire |
 | [L1-08 · Conservation zéro des données chez OpenRouter](01-filets-securite/L1-08-zdr-openrouter.md) | P0 | S (jusqu'à 1 j) | L1-02 | `pipeline/` [P] | À faire |
@@ -56,6 +56,12 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L1-10 · Masquer le cartouche avant l'envoi au modèle](01-filets-securite/L1-10-masquage-cartouche.md) | P0 | M (1 à 3 j) | L1-02 | `pipeline/` [P] | À faire |
 | [L1-11 · Non-régression en CI : chaîne sans IA du témoin et images approuvées](01-filets-securite/L1-11-ci-non-regression-temoin.md) | P0 | M (1 à 3 j) | L0-08, L1-02, L1-04, L1-07, L1-09, L1-12 | `outils/` | À faire |
 | [L1-12 · Relevé manuel et lecture gardée du témoin](01-filets-securite/L1-12-temoin-releve-lecture.md) | P0 | M (1 à 3 j) | L1-02, L1-03 | `pipeline/` [P] | À faire |
+| [L1-13 · Valider la lecture réelle par l'IA d'un plan à plusieurs niveaux (duplex)](01-filets-securite/L1-13-lecture-reelle-plusieurs-niveaux.md) | P1 | M (1 à 3 j) | L1-02 | `pipeline/` [P] | À faire |
+| [L1-14 · Diagnostic chiffré de la navigation et banc de fluidité](01-filets-securite/L1-14-diagnostic-banc-fluidite.md) | P0 | M (1 à 3 j) | — | `outils/` | En cours |
+| [L1-15 · Corriger clic, regard, déplacement et i/s d'après le diagnostic](01-filets-securite/L1-15-corrections-navigation.md) | P0 | L (3 à 5 j) | L1-02, L1-14 | `moteur/` [M] | En cours |
+| [L1-16 · Mesurer le rendu des panoramas 360° en SwiftShader et confirmer l'offre gratuite](01-filets-securite/L1-16-mesure-panoramas-360.md) | P0 | M (1 à 3 j) | L1-02, L1-09 | `outils/` | En cours |
+| [L1-17 · Délai : l'acheteur a son plan et sa visite en quelques minutes](01-filets-securite/L1-17-delai-quelques-minutes.md) | P0 | L (3 à 5 j) | L1-02 | `pipeline/` [P] | À faire |
+| [L1-18 · Régularité de la lecture : chiffrer l'aléa d'un tirage et le réduire](01-filets-securite/L1-18-regularite-lecture.md) | P0 | L (3 à 5 j) | L1-02 | `pipeline/` [P] | En cours |
 
 <a id="lot-2"></a>
 ## 2 · Vitrine
@@ -69,8 +75,8 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L2-05 · Page conseillers (offre Pro)](02-vitrine/L2-05-page-conseillers.md) | P0 | M (1 à 3 j) | L2-01, L2-12 | `site/` | À faire |
 | [L2-06 · Page promoteurs (offre Programme) et demande de démo](02-vitrine/L2-06-page-promoteurs.md) | P0 | M (1 à 3 j) | L2-01, L2-12 | `site/` | À faire |
 | [L2-07 · Page marque blanche et partenaires](02-vitrine/L2-07-page-marque-blanche.md) | P1 | S (jusqu'à 1 j) | L2-01, L2-12 | `site/` | À faire |
-| [L2-08 · Page tarifs](02-vitrine/L2-08-page-tarifs.md) | P0 | M (1 à 3 j) | L0-04, L2-01 | `site/`, `outils/` | À faire |
-| [L2-09 · Page de l'appartement témoin (visite de démonstration)](02-vitrine/L2-09-page-temoin.md) | P0 | M (1 à 3 j) | L1-05, L1-12, L2-01 | `site/`, `outils/` | À faire |
+| [L2-08 · Page tarifs](02-vitrine/L2-08-page-tarifs.md) | P0 | M (1 à 3 j) | L0-04, L1-16, L2-01 | `site/`, `outils/` | À faire |
+| [L2-09 · Page de l'appartement témoin (visite de démonstration)](02-vitrine/L2-09-page-temoin.md) | P0 | M (1 à 3 j) | L1-05, L1-12, L1-15, L2-01 | `site/`, `outils/` | À faire |
 | [L2-10 · Page Méthode](02-vitrine/L2-10-page-methode.md) | P1 | S (jusqu'à 1 j) | L0-07, L2-01 | `site/` | À faire |
 | [L2-11 · Pages légales et signalement de contenu](02-vitrine/L2-11-pages-legales.md) | P0 | M (1 à 3 j) | L0-03, L0-06, L0-07, L0-09, L2-01 | `site/` | À faire |
 | [L2-12 · Liste d'attente bêta et formulaires pros](02-vitrine/L2-12-liste-attente-formulaires.md) | P0 | M (1 à 3 j) | L0-03, L0-08, L2-01 | `site/`, `service/` | À faire |
@@ -105,10 +111,18 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L4-05 · Catalogue de messages pour l'utilisateur](04-coeur/L4-05-catalogue-messages.md) | P0 | M (1 à 3 j) | L1-04 | `pipeline/` [P] | À faire |
 | [L4-06 · Moteur, bibliothèques 3D et polices servis par nous](04-coeur/L4-06-moteur-servi-versionne.md) | P0 | M (1 à 3 j) | L1-02, L1-07 | `pipeline/` [P], `moteur/` [M] | À faire |
 | [L4-07 · Mention non contractuelle et marquage « généré automatiquement »](04-coeur/L4-07-mention-non-contractuelle.md) | P0 | M (1 à 3 j) | L1-04 | `pipeline/` [P], `moteur/` [M] | À faire |
-| [L4-08 · Plans sur plusieurs niveaux refusés en service](04-coeur/L4-08-niveaux-max.md) | P0 | S (jusqu'à 1 j) | L4-01 | `pipeline/` [P] | À faire |
+| [L4-08 · Réglage niveaux_max : plans au-delà du périmètre validé refusés en service](04-coeur/L4-08-niveaux-max.md) | P0 | S (jusqu'à 1 j) | L4-01 | `pipeline/` [P] | À faire |
 | [L4-09 · Aperçu rendu par le serveur et galerie adaptable](04-coeur/L4-09-apercu-serveur.md) | P0 | M (1 à 3 j) | L1-09 | `moteur/` [M] | À faire |
 | [L4-10 · Visite dans le navigateur du client : compatibilité et repli](04-coeur/L4-10-visite-navigateur-client.md) | P0 | M (1 à 3 j) | L4-05, L4-06 | `moteur/` [M] | À faire |
 | [L4-11 · Mode simple du moteur : réglages avancés et superposition masqués](04-coeur/L4-11-mode-simple-moteur.md) | P0 | S (jusqu'à 1 j) | L1-02 | `moteur/` [M] | À faire |
+| [L4-12 · Qualité adaptative du moteur : textures, résolution, effets](04-coeur/L4-12-qualite-adaptative.md) | P0 | M (1 à 3 j) | L1-14, L1-15 | `moteur/` [M] | En cours |
+| [L4-13 · Éclairage précalculé par le serveur : lumière peinte sur les murs et éclairage par pièce](04-coeur/L4-13-eclairage-precalcule.md) | P2 | L (3 à 5 j) | L1-09, L1-11, L4-12 | `moteur/` [M] | À faire |
+| [L4-14 · Maquette compressée et itinéraires précalculés](04-coeur/L4-14-maquette-compressee-itineraires.md) | P1 | L (3 à 5 j) | L1-11, L4-06 | `moteur/` [M] | À faire |
+| [L4-15 · Panoramas 360° rendus par le serveur à chaque arrêt](04-coeur/L4-15-panoramas-360.md) | P1 | M (1 à 3 j) | L1-09, L1-16 | `moteur/` [M], `pipeline/` [P] | En cours |
+| [L4-16 · Visionneuse 360° sans moteur et navigation d'arrêt en arrêt](04-coeur/L4-16-visionneuse-360.md) | P1 | M (1 à 3 j) | L4-15 | `moteur/` [M] | En cours |
+| [L4-17 · Ne dessiner que ce qu'on voit : maquette découpée par pièce et par niveau, culling par portails](04-coeur/L4-17-culling-pieces-maquette-decoupee.md) | P1 | L (3 à 5 j) | L1-15, L4-12 | `moteur/` [M] | En cours |
+| [L4-18 · Textures compressées à plusieurs résolutions et niveaux de détail des équipements](04-coeur/L4-18-textures-compressees-niveaux-detail.md) | P1 | L (3 à 5 j) | L1-11, L4-06, L4-12 | `moteur/` [M] | En cours |
+| [L4-19 · Outil local en mode admin : allègement, bandeau de débogage, vues rayons X et eau, test de bout en bout](04-coeur/L4-19-outil-admin-debogage-bout-en-bout.md) | P1 | M (1 à 3 j) | L4-11, L4-16 | `moteur/`, `pipeline/` [M] | À faire |
 
 <a id="lot-5"></a>
 ## 5 · Socle en ligne
@@ -141,6 +155,8 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L5-24 · Connexion Google](05-socle/L5-24-connexion-google.md) | P1 | M (1 à 3 j) | L5-03 | `service/` | À faire |
 | [L5-25 · Administration (2/2) : catalogue, crédits, gestes commerciaux, journal de l'équipe](05-socle/L5-25-administration-catalogue-credits.md) | P0 | M (1 à 3 j) | L5-08, L5-17 | `service/` | À faire |
 | [L5-26 · Sauvegardes et restauration testée](05-socle/L5-26-sauvegardes-restauration.md) | P0 | M (1 à 3 j) | L5-18 | `service/` | À faire |
+| [L5-27 · Panoramas 360° dans le socle : rendu, marquage, publication, partage](05-socle/L5-27-panoramas-360-socle.md) | P1 | M (1 à 3 j) | L4-15, L4-16, L5-11, L5-12, L5-13 | `service/` | À faire |
+| [L5-28 · Précalcul serveur dans la chaîne en ligne : éclairage, maquette compressée, itinéraires](05-socle/L5-28-precalcul-chaine-en-ligne.md) | P1 | M (1 à 3 j) | L4-13, L4-14, L5-06, L5-10, L5-12 | `service/` | À faire |
 
 <a id="lot-6"></a>
 ## 6 · Parcours particulier et bêta fermée
@@ -156,9 +172,10 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 | [L6-07 · Mes plans et retour sur mobile](06-parcours-particulier/L6-07-mes-plans-mobile.md) | P1 | M (1 à 3 j) | L6-01 | `service/`, `outils/` | À faire |
 | [L6-08 · Partage de la visite et bouche-à-oreille](06-parcours-particulier/L6-08-partage-famille.md) | P1 | M (1 à 3 j) | L5-13 | `service/`, `site/` | À faire |
 | [L6-09 · Signaler un défaut, qui devient un contrôle](06-parcours-particulier/L6-09-signaler-defaut.md) | P0 | M (1 à 3 j) | L5-17 | `service/` | À faire |
-| [L6-10 · Ouverture de la bêta fermée](06-parcours-particulier/L6-10-ouverture-beta-fermee.md) | P0 | S (jusqu'à 1 j) | L0-09, L1-05, L1-08, L1-10, L2-11, L4-07, L4-10, L4-11, L5-16, L5-18, L5-19, L5-20, L5-21, L5-25, L5-26, L6-01, L6-02, L6-03, L6-04, L6-05, L6-06, L6-09, L6-11 | — | À faire |
+| [L6-10 · Ouverture de la bêta fermée](06-parcours-particulier/L6-10-ouverture-beta-fermee.md) | P0 | S (jusqu'à 1 j) | L0-09, L1-05, L1-08, L1-10, L1-15, L2-11, L4-07, L4-10, L4-11, L5-16, L5-18, L5-19, L5-20, L5-21, L5-25, L5-26, L6-01, L6-02, L6-03, L6-04, L6-05, L6-06, L6-09, L6-11 | — | À faire |
 | [L6-11 · Support client : adresse, formulaire, réponses types, délais](06-parcours-particulier/L6-11-support-client.md) | P0 | M (1 à 3 j) | L5-14, L5-17, L0-09 | `service/`, `site/` | À faire |
 | [L6-12 · Preuves : témoignages autorisés et chiffres mesurés](06-parcours-particulier/L6-12-preuves-temoignages.md) | P1 | S (jusqu'à 1 j) | L6-10, L0-07 | `site/` | À faire |
+| [L6-13 · Aperçu gratuit en 360° (si l'utilisateur le confirme)](06-parcours-particulier/L6-13-apercu-gratuit-360.md) | P1 | M (1 à 3 j) | L1-16, L5-08, L5-27, L6-05, L6-08 | `service/` | À faire |
 
 <a id="lot-7"></a>
 ## 7 · Mesure et entonnoirs
@@ -251,9 +268,9 @@ Priorités : P0 indispensable au jalon du lot, P1 important, P2 plus tard. Taill
 |---|---|---|---|---|---|
 | [L13-01 · Accélérer le rendu](13-apres-lancement/L13-01-accelerer-rendu.md) | P1 | M (1 à 3 j) | L5-10 | `moteur/` [M], `service/` | À faire |
 | [L13-02 · Galerie photo complète](13-apres-lancement/L13-02-galerie-complete.md) | P1 | M (1 à 3 j) | L13-01, L8-02 | `service/` | À faire |
-| [L13-03 · Aperçu interactif limité (à tester)](13-apres-lancement/L13-03-apercu-interactif.md) | P2 | M (1 à 3 j) | L6-05, L12-05, L13-01 | `moteur/` [M], `service/` | À faire |
+| [L13-03 · Vue du dessus manipulable dans l'aperçu (à tester)](13-apres-lancement/L13-03-apercu-interactif.md) | P2 | S (jusqu'à 1 j) | L6-05, L12-05, L13-01 | `moteur/` [M], `service/` | À faire |
 | [L13-04 · Option meublé et aménagement](13-apres-lancement/L13-04-option-meuble.md) | P2 | L (3 à 5 j) | L1-02 | `pipeline/` [P], `moteur/` [M] | À faire |
 | [L13-05 · Options lumière réelle, réalisme et 4K](13-apres-lancement/L13-05-option-realisme.md) | P2 | L (3 à 5 j) | L13-01 | `moteur/` [M] | À faire |
 | [L13-06 · Option variante TMA](13-apres-lancement/L13-06-option-tma.md) | P2 | L (3 à 5 j) | L1-02 | `pipeline/` [P], `moteur/` [M] | À faire |
 | [L13-07 · Vue de la résidence](13-apres-lancement/L13-07-vue-residence.md) | P2 | L (3 à 5 j) | L10-02 | `moteur/` [M] | À faire |
-| [L13-08 · Plans sur plusieurs niveaux en service](13-apres-lancement/L13-08-plusieurs-niveaux.md) | P2 | S (jusqu'à 1 j) | L4-08 | `pipeline/` [P] | À faire |
+| [L13-08 · Plans sur plusieurs niveaux en service](13-apres-lancement/L13-08-plusieurs-niveaux.md) | P1 | M (1 à 3 j) | — | `pipeline/` [P] | Fait (27/09/2026) |

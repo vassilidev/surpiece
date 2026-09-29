@@ -11,7 +11,7 @@ Sources :
 - ton, vocabulaire, preuves autorisées, direction artistique : `produit/MARQUE.md` ;
 - recherches : `produit/recherche/` (marche, juridique, suivi, auth-paiement, hebergement, audit-code, nom) ;
 - consignes du projet : `CLAUDE.md` ;
-- libellés existants : `pipeline/accueil.html`, `moteur/ui.js`, relevés le 27/09/2026 sans modification (un autre agent y travaille).
+- libellés existants : `pipeline/accueil.html`, `moteur/ui.js`, relevés le 27/09/2026 sans modification (le travail sur les niveaux (fini le 27/09/2026, non commité) les a modifiés).
 
 ---
 
@@ -72,7 +72,7 @@ Sources :
 **Prix.** TTC pour les particuliers, HT pour les pros, toujours précisé. Prix ronds, sans prix barré.
 
 **Limites.** Elles s'affichent près de chaque bouton d'achat, lisibles :
-- appartements sur un seul niveau ;
+- appartements sur un ou deux niveaux (duplex) ;
 - logement vide, finitions supposées ;
 - pas de mobilier ni de rendu photoréaliste ;
 - illustration non contractuelle.
@@ -129,10 +129,11 @@ Longueurs : balise title de 60 signes au plus hors marque, meta description de 1
 - 2 photos : le séjour, puis la chambre principale, ou à défaut la pièce principale suivante ;
 - les surfaces par pièce, comparées au tableau du promoteur ;
 - les points à faire confirmer par le promoteur, jamais verrouillés ;
+- [SI LIVRÉ : L6-13, et si le 360° est confirmé comme offre gratuite] la visite à 360°, d'arrêt en arrêt : on regarde autour de soi dans chaque pièce ;
 - un lien d'aperçu pour les proches, valable 30 jours. L'aperçu reste en ligne 6 mois (R7).
 
 **Visite débloquée (visite complète).** La visite se calcule dans le navigateur du client (D5).
-- la visite à hauteur d'yeux : déplacement libre et arrêt dans chaque pièce ;
+- la visite à hauteur d'yeux : déplacement libre et arrêt dans chaque pièce ; [SI LIVRÉ : L4-16] la vue à 360° de chaque arrêt ;
 - la maquette 3D et le plan 2D interactifs ;
 - la fiche complète : surfaces, ouvertures, équipements, hypothèses ;
 - le partage privé avec les proches ;
@@ -143,6 +144,7 @@ Longueurs : balise title de 60 signes au plus hors marque, meta description de 1
 **Règles d'écriture.**
 - **Pas de galerie complète au lancement** (L13-02). « Environ 11 photos », « 8 autres photos », « les autres photos arrivent » ne s'écrivent nulle part. Les textes qui en dépendent portent [SI LIVRÉ : L13-02].
 - **Photo omise.** Une photo qui échoue après nouvelles tentatives est omise, sans bloquer (R2). La galerie s'adapte, sans emplacement vide ; le client est prévenu (`attente.image.photo_omise`, `apercu.photos.omise`) et l'équipe alertée.
+- **360°** (décision n° 15 du 27/09/2026) : tant que sa place n'est pas confirmée (offre gratuite ou non, L1-16), aucun texte ne le promet ; les textes qui le citent portent [SI LIVRÉ : L4-16] (visite) ou [SI LIVRÉ : L6-13] (aperçu). `offre.apercu.resume` et `offre.apercu.liste` auront une variante 360°, écrite quand l'utilisateur aura fixé le contenu gratuit (remplacement ou ajout). Nom public du mode : à décider (`MARQUE.md` § 13). Jamais « immersif » ni « comme si vous y étiez » (§ 0.4).
 - **Publication** (R2) : rien n'est publié sans visite de contrôle réussie. L'aperçu est publié dès que la vue du dessus et le plan 2D sont prêts ; les photos s'y ajoutent ensuite.
 - **Décompte** (R2) : le plan offert est décompté à la publication de l'aperçu. Le déblocage payant ne relance aucune lecture : « sans nouvelle attente » reste vrai.
 - **Mode simple** (R16, L4-11) : la visite montrée au client n'affiche ni « Rendu photoréaliste de la vue » ni la superposition du plan du promoteur, réservée au propriétaire du plan ou à l'accord du promoteur.
@@ -254,7 +256,7 @@ Repli avant T0 : Déposez le plan de vente de votre appartement neuf. Vous obten
 **Ce qui est offert**, sous les assurances : `offre.apercu.resume` (§ 0.7). **[Liste d'attente]** : `offre.apercu.resume.beta`.
 
 **Limites, sous les assurances** (texte courant, pas en petits caractères) :
-Appartements sur un seul niveau · logement présenté vide, finitions supposées · illustration non contractuelle.
+Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · illustration non contractuelle.
 
 **Lien secondaire** : Visiter d'abord l'appartement témoin →
 
@@ -326,6 +328,7 @@ Repli avant T0 : la première phrase devient « Votre maquette vue du dessus s'a
 | Surfaces comparées au tableau du promoteur | Oui | Oui |
 | Points à faire confirmer par le promoteur | Oui | Oui |
 | Visite à hauteur d'yeux | — | Oui : déplacement libre et arrêt dans chaque pièce |
+| Visite à 360°, d'arrêt en arrêt | [SI LIVRÉ : L6-13] Selon la décision sur l'offre gratuite | [SI LIVRÉ : L4-16] Oui |
 | Photos | 2 : le séjour, puis la chambre principale ou une autre pièce | Les mêmes |
 | Fiche : surfaces, ouvertures, équipements, hypothèses | — | Oui |
 | Téléchargements | — | [SI LIVRÉ : L8-08] Images, plan 2D et fiche en PDF |
@@ -434,7 +437,7 @@ Par un programme d'intelligence artificielle, qui repère les murs, les portes, 
 Non. C'est une illustration générée automatiquement à partir du plan de vente. Seuls les plans et la notice descriptive annexés à votre contrat de vente font foi.
 
 **Mon logement est un duplex ou une maison. Est-ce pris en charge ?**
-Pas aujourd'hui. Sur Pièce prend en charge les appartements sur un seul niveau, en PDF ou en image. Un plan sur plusieurs niveaux, une maison ou un plan d'étage avec plusieurs logements est refusé avant d'être lancé : rien n'est décompté. Vous pouvez laisser votre e-mail : nous vous écrirons si cela change. Nous n'annonçons pas de date.
+Un duplex, oui : Sur Pièce prend en charge les appartements sur un ou deux niveaux, en PDF ou en image. Une maison, un logement sur plus de deux niveaux ou un plan d'étage avec plusieurs logements est refusé avant d'être lancé : rien n'est décompté. Vous pouvez laisser votre e-mail : nous vous écrirons si cela change. Nous n'annonçons pas de date.
 
 **Combien de temps faut-il ?**
 Comptez ‹délai›. La maquette vue du dessus s'affiche dès qu'elle est prête, puis le plan 2D et les photos. Vous pouvez fermer la page : on vous écrit dès que c'est prêt. Les jours de forte demande, un plan offert peut attendre son tour ; un plan payé passe en priorité.
@@ -462,7 +465,7 @@ Le logement est présenté vide. Les équipements dessinés sur le plan (cuisine
 Oui. Vous créez un lien privé et l'envoyez à votre conjoint ou à votre famille. Ils l'ouvrent sans compte. En revanche, la visite ne se publie pas sur un réseau social ni dans une annonce : le plan appartient à son auteur.
 
 **Sur quels appareils ?**
-Ordinateur, tablette ou téléphone récent, dans un navigateur à jour, sans rien installer. Si la 3D ne démarre pas sur un appareil, le plan 2D et les photos restent disponibles.
+Ordinateur, tablette ou téléphone, dans un navigateur à jour, sans rien installer. [SI LIVRÉ : L4-12, seuils de L1-14 tenus] La visite s'adapte à votre appareil, même d'entrée de gamme, pour rester fluide. Si la 3D ne démarre pas sur un appareil, le plan 2D et les photos restent disponibles.
 
 **Le promoteur m'a envoyé un plan modifié. Que faire ?**
 Déposez-le comme un nouveau plan. Après un premier achat, chaque plan suivant coûte 15 € TTC pendant 12 mois.
@@ -487,7 +490,7 @@ Repli avant T0 : « Premier plan offert, sans carte bancaire. On vous écrit dè
 - Texte : Nous ouvrons l'accès par petits groupes. Laissez votre e-mail pour recevoir une invitation.
 - Bouton : Demander une invitation
 
-**Limites** : Appartements sur un seul niveau · logement présenté vide, finitions supposées · illustration non contractuelle.
+**Limites** : Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · illustration non contractuelle.
 
 ---
 
@@ -572,7 +575,7 @@ Note (non publiée) : ne promettre aucune baisse des désistements. Aucun taux d
 Repli avant T0 et **[Pré-lancement pro]** : « Du plan de vente au rendez-vous. »
 
 1. **Déposez le plan du lot.** Le PDF du promoteur de préférence. Un plan non pris en charge est refusé avant d'être décompté.
-2. **Recevez la visite vérifiée.** Plan 2D coté, maquette 3D, visite, vue du dessus et 2 photos, et fiche des surfaces comparées au tableau du promoteur.
+2. **Recevez la visite vérifiée.** Plan 2D coté, maquette 3D, visite, [SI LIVRÉ : L4-16] vues à 360°, vue du dessus et 2 photos, et fiche des surfaces comparées au tableau du promoteur.
 3. **Envoyez le lien.** Par e-mail, SMS ou messagerie. Votre prospect l'ouvre sans compte, depuis son téléphone. [SI LIVRÉ : QR code pour vos plaquettes.]
 4. **Votre prospect vous fait signe.** Un bouton « Je suis intéressé, prévenir mon conseiller » vous envoie une notification. C'est lui qui la déclenche.
 
@@ -709,7 +712,7 @@ Vous voyez le nombre d'ouvertures par lot et la date de la dernière. Votre pros
 Oui, si vous avez l'autorisation du promoteur, par exemple dans votre convention de commercialisation. Vous le confirmez avant le premier lien d'un programme.
 
 **Et si le plan n'est pas pris en charge ?**
-Il est refusé avant d'être décompté. Aujourd'hui, Sur Pièce prend en charge les appartements sur un seul niveau.
+Il est refusé avant d'être décompté. Aujourd'hui, Sur Pièce prend en charge les appartements sur un ou deux niveaux (duplex).
 
 **Et si une visite a un défaut ?**
 Signalez-le depuis la visite. Nous la refaisons sans décompter de plan. Chaque défaut confirmé devient un contrôle automatique, pour qu'il ne revienne pas.
@@ -819,7 +822,7 @@ Souvent, seuls quelques lots types ont leur 3D ; les autres n'ont qu'un plan PDF
 **Titre** : Par lot et par programme.
 
 **Pour chaque lot** :
-- plan 2D coté, maquette 3D, visite à hauteur d'yeux, vue du dessus et 2 photos ;
+- plan 2D coté, maquette 3D, visite à hauteur d'yeux, [SI LIVRÉ : L4-16] vues à 360°, vue du dessus et 2 photos ;
 - fiche des surfaces, comparées à votre tableau ;
 - [SI LIVRÉ : L8-08] images en haute définition pour vos plaquettes, avec la mention non contractuelle ;
 - la superposition de votre plan d'origine, sur vos propres pages.
@@ -867,7 +870,7 @@ Souvent, seuls quelques lots types ont leur 3D ; les autres n'ont qu'un plan PDF
 
 **Note sous le déroulé** : Nous nous engageons sur le délai d'un programme, pas sur celui de chaque lot pris isolément.
 
-Aujourd'hui, Sur Pièce prend en charge les appartements sur un seul niveau. Les autres lots figurent dans le rapport comme non pris en charge.
+Aujourd'hui, Sur Pièce prend en charge les appartements sur un ou deux niveaux (duplex). Les autres lots figurent dans le rapport comme non pris en charge.
 
 ### 3.6 Prix
 
@@ -959,7 +962,7 @@ Aujourd'hui, Sur Pièce prend en charge les appartements sur un seul niveau. Les
 Les plans de vente de chaque lot, en PDF vectoriel de préférence : murs, cotes et échelle y sont lus directement. Les images sont acceptées.
 
 **Que deviennent les lots non pris en charge ?**
-Ils figurent dans le rapport et ne sont pas facturés. Aujourd'hui, Sur Pièce prend en charge les appartements sur un seul niveau.
+Ils figurent dans le rapport et ne sont pas facturés. Aujourd'hui, Sur Pièce prend en charge les appartements sur un ou deux niveaux (duplex).
 
 **Pouvons-nous montrer notre plan d'origine dans la visite ?**
 Oui, sur vos propres pages : vous en détenez les droits. Il n'apparaît jamais sur les liens envoyés par des tiers.
@@ -1203,7 +1206,7 @@ Dans l'Union européenne **[À CONFIRMER : hébergeur]**, avec un contrat de sou
 
 ### 5.5 Ce que la visite ne comprend pas
 
-Appartements sur un seul niveau · logement présenté vide, finitions supposées · pas de mobilier ni de rendu photoréaliste · illustration non contractuelle : seuls les plans et la notice annexés à votre contrat font foi.
+Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · pas de mobilier ni de rendu photoréaliste · illustration non contractuelle : seuls les plans et la notice annexés à votre contrat font foi.
 
 ### 5.6 Repère
 
@@ -1303,7 +1306,7 @@ Oui. La TVA de 20 % s'ajoute. Les prix des particuliers sont TTC.
 
 ### 6.2 La visite
 
-- Plein écran, avec les modes existants : Plan 2D · Maquette 3D · Visite · Photos · Fiche.
+- Plein écran, avec les modes existants : Plan 2D · Maquette 3D · Visite · Photos · Fiche ; [SI LIVRÉ : L4-16] 360°.
 - Aides de déplacement : reprendre celles de `moteur/ui.js` (« Glisser pour regarder · toucher le sol pour y aller… »).
 - Mention permanente, en bas à gauche : Appartement témoin fictif · Illustration non contractuelle
 
@@ -1339,7 +1342,7 @@ Oui. La TVA de 20 % s'ajoute. Les prix des particuliers sont TTC.
 **Lien pros** : Vous êtes conseiller ? Voir la page que reçoit votre prospect →
 **[Pré-lancement pro]** : Vous êtes conseiller ? Sur Pièce Pro → (la page prospect de démonstration n'existe pas encore)
 
-**Limites, sous l'appel** : Appartements sur un seul niveau · logement présenté vide, finitions supposées · illustration non contractuelle.
+**Limites, sous l'appel** : Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · illustration non contractuelle.
 
 ---
 
@@ -1370,7 +1373,7 @@ Chaque texte porte une clé (`zone.élément`) pour le catalogue de messages dem
 | `depot.reconnu.bouton_plan` | Lancer ce plan (il vous en reste {n}) |
 | `depot.reconnu.bouton_payant` | Obtenir la visite · 29 € (non affiché pendant la bêta) |
 | `depot.reconnu.changer` | Changer de fichier |
-| `depot.reconnu.limites` | Appartements sur un seul niveau · logement présenté vide, finitions supposées · illustration non contractuelle. |
+| `depot.reconnu.limites` | Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · illustration non contractuelle. |
 | `depot.provisoire_expire` | Déposez à nouveau votre plan : il a été effacé au bout de 24 h, comme prévu. |
 
 **Refus au dépôt.** Titre en gras, puis texte, puis bouton. Tous finissent par « Rien n'a été décompté. » quand un plan était réservé.
@@ -1384,8 +1387,8 @@ Chaque texte porte une clé (`zone.élément`) pour le catalogue de messages dem
 | `depot.refus.protege` | Ce PDF est protégé par un mot de passe | Ouvrez-le, enregistrez-en une copie sans protection, puis déposez cette copie. | Choisir un autre fichier |
 | `depot.refus.abime` | Ce PDF ne s'ouvre pas | Il semble endommagé ou incomplet. Téléchargez-le à nouveau depuis l'e-mail du promoteur. | Choisir un autre fichier |
 | `depot.refus.pas_un_plan` | Ce fichier ne ressemble pas à un plan d'appartement | Déposez le plan de vente de votre logement : le document coté, vu de dessus. | Choisir un autre fichier |
-| `depot.refus.niveaux` | Ce plan comporte plusieurs niveaux | Sur Pièce prend en charge aujourd'hui les appartements sur un seul niveau. | Me prévenir si cela change · Déposer un autre plan |
-| `depot.refus.maison` | Ce plan semble être celui d'une maison | Sur Pièce prend en charge aujourd'hui les appartements sur un seul niveau. | Me prévenir si cela change · Déposer un autre plan |
+| `depot.refus.niveaux` | Ce plan comporte plus de deux niveaux | Sur Pièce prend en charge aujourd'hui les appartements sur un ou deux niveaux. | Me prévenir si cela change · Déposer un autre plan |
+| `depot.refus.maison` | Ce plan semble être celui d'une maison | Sur Pièce prend en charge aujourd'hui les appartements sur un ou deux niveaux. | Me prévenir si cela change · Déposer un autre plan |
 | `depot.refus.plusieurs_lots` | Ce plan montre plusieurs logements | Déposez le plan de votre seul lot, tel qu'il figure dans votre dossier de réservation. | Choisir un autre fichier |
 | `depot.refus.offert_pdf` | Pour un plan offert, déposez le PDF du promoteur | Aujourd'hui, le plan offert se lance seulement depuis le PDF du promoteur. Demandez-le à votre conseiller commercial. | Choisir un autre fichier · Obtenir la visite · 29 € |
 | `depot.refus.perspective` | Ce document n'est pas un plan coté | Une perspective ou un croquis ne donne pas les dimensions. Déposez le plan de vente de votre lot. | Choisir un autre fichier |
@@ -1499,7 +1502,7 @@ Le texte actuel « Vous pouvez fermer cet onglet ou faire autre chose, on vous p
 | calibration | Échelle | Une cote connue est demandée. |
 | lecture | Lecture du plan | Murs, portes, fenêtres et équipements. |
 | controle | Vérification avant livraison | Nous parcourons le logement à la recherche de défauts visibles. |
-| photos | Vue du dessus, plan 2D et photos | Chaque image s'affiche ici dès qu'elle est prête. |
+| photos | Vue du dessus, plan 2D et photos ([SI LIVRÉ : L5-27, si affiché pendant l'attente] et vues à 360°) | Chaque image s'affiche ici dès qu'elle est prête. |
 | fini (offert) | Votre plan est prêt | — |
 | fini (payant) | Votre visite est prête | — |
 
@@ -1509,6 +1512,9 @@ Le texte actuel « Vous pouvez fermer cet onglet ou faire autre chose, on vous p
 |---|---|
 | `attente.image.vue_dessus` | Votre appartement est sorti de terre. Le voici, vu du dessus. |
 | `attente.image.vue_dessus.alt` | Vue du dessus de la maquette 3D |
+| `attente.image.vue_dessus.niveau` | Le {niveau}, vu du dessus. ({niveau} : nom lu sur le plan, « R+1 », « RDC » ; repli « Niveau 1 ») |
+| `attente.image.vue_dessus.niveau.alt` | Vue du dessus de la maquette 3D, {niveau} |
+| `attente.image.360` | [SI LIVRÉ : L5-27, si affiché pendant l'attente, à décider] La visite à 360° est prête : {n} points de vue, d'arrêt en arrêt. |
 | `attente.image.plan` | Le plan coté est tracé. |
 | `attente.image.plan.alt` | Plan 2D coté |
 | `attente.image.photo` | Photo prise : {pièce}. |
@@ -1576,6 +1582,11 @@ Page privée du compte, rendue par le serveur. Elle ne reçoit que des images et
 | `apercu.photos.en_cours` | Les photos arrivent : elles s'ajoutent ici dès qu'elles sont prises. |
 | `apercu.photos.omise` | Une photo n'a pas pu être prise : elle est omise. Le reste de votre plan vous est livré. |
 | `apercu.photos.verrou` | [SI LIVRÉ : L13-02] {n} autres photos avec la visite complète. Non affiché au lancement (R1). |
+| `apercu.360.titre` | [SI LIVRÉ : L6-13] Visite à 360° (nom public à décider) |
+| `apercu.360.aide` | Glisser pour regarder · toucher un point pour y aller |
+| `apercu.360.aide_clavier` | Flèches pour regarder · Entrée pour aller au point choisi |
+| `apercu.360.piece` | {pièce} ; plan à plusieurs niveaux : {pièce} · {niveau} |
+| `apercu.360.mention` | Illustration non contractuelle générée automatiquement à partir du plan de vente. |
 | `apercu.points.titre` | Points à faire confirmer par votre promoteur |
 | `apercu.points.intro` | Le plan ne dit pas tout. Voici ce que nous avons supposé ou ce qui reste à vérifier. |
 | `apercu.points.drapeau_plan` | D'après le plan |
@@ -1601,6 +1612,7 @@ Les points à faire confirmer ne sont jamais verrouillés : ils protègent l'acq
 | `verrou.bouton_plan_dispo` | Ouvrir la visite (utilise 1 de vos {n} plans) |
 | `verrou.onglet` | Disponible avec la visite complète |
 | `verrou.piece` | {pièce} · à visiter avec la visite complète |
+| `verrou.piece.360` | [SI LIVRÉ : L6-13, 360° gratuit] {pièce} · à parcourir librement avec la visite complète |
 | `verrou.photo` | [SI LIVRÉ : L13-02] Photo disponible avec la visite complète |
 | `verrou.telechargement` | [SI LIVRÉ : L8-08] Téléchargements disponibles avec la visite complète |
 
@@ -1643,9 +1655,9 @@ La page de commande, le retour du paiement et la renonciation ne s'affichent qu'
 | `achat.ligne.visite` | Visite complète de votre logement · 29,00 € TTC |
 | `achat.ligne.pack` | Comparer 3 lots : 1er plan 29,00 € + 2 plans suivants à 15,00 € · 59,00 € TTC |
 | `achat.ligne.suivant` | Plan suivant · 15,00 € TTC |
-| `achat.compris` | Visite à hauteur d'yeux, pièce par pièce · maquette 3D et plan 2D interactifs · fiche complète · liens privés · les mêmes images que l'aperçu · [SI LIVRÉ : L8-08] téléchargements · en ligne 24 mois |
+| `achat.compris` | Visite à hauteur d'yeux, pièce par pièce · [SI LIVRÉ : L4-16] vue à 360° de chaque arrêt · maquette 3D et plan 2D interactifs · fiche complète · liens privés · les mêmes images que l'aperçu · [SI LIVRÉ : L8-08] téléchargements · en ligne 24 mois |
 | `achat.validite` | Plans à lancer dans les 12 mois, jusqu'au {date}. |
-| `achat.limites` | Appartements sur un seul niveau · logement présenté vide, finitions supposées · pas de mobilier ni de rendu photoréaliste · illustration non contractuelle. |
+| `achat.limites` | Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · pas de mobilier ni de rendu photoréaliste · illustration non contractuelle. |
 | `achat.retractation` | Vous pouvez renoncer à votre achat pendant 14 jours, tant que vos plans ne sont pas utilisés. Quand vous lancez un plan ou ouvrez une visite, elle vous est livrée tout de suite : vous perdez ce droit pour ce plan. |
 | `achat.remboursement` | Si une visite ne peut pas être produite, rien n'est décompté, et nous remboursons sur simple demande. Une visite livrée sans défaut n'est pas remboursée parce qu'elle ne plaît pas, sous réserve de vos garanties légales. |
 | `achat.liens` | Conditions générales de vente · Politique de remboursement |
@@ -2071,7 +2083,7 @@ Envoyé par l'équipe aux personnes invitées (L6-10). Aucun prix, aucun achat p
   > {Contenu du plan de test, lu dans la variante « bêta » du catalogue (L0-04)}, à lancer avant le {date}.
   >
   > Pour que ça marche :
-  > - un appartement sur un seul niveau ;
+  > - un appartement sur un ou deux niveaux (duplex) ;
   > - le PDF envoyé par le promoteur, de préférence ; une capture nette convient aussi ;
   > - l'adresse e-mail qui reçoit cette invitation, pour créer votre compte.
   >
@@ -2158,6 +2170,7 @@ Chaque message : ce qui s'est passé, ce que ça change, quoi faire. Pas de code
 | `erreur.lien_coupe` | Ce lien de visite n'est plus actif. Demandez un nouveau lien à la personne qui vous l'a envoyé. |
 | `erreur.lien_inconnu` | Ce lien ne mène à aucune visite. Vérifiez qu'il est complet. |
 | `erreur.3d` | La 3D ne démarre pas sur cet appareil. Le plan 2D et les photos restent disponibles. Essayez un navigateur à jour, ou un autre appareil. |
+| `erreur.3d.360` | [SI LIVRÉ : L4-16, si le 360° sert de repli, à décider] La 3D ne démarre pas sur cet appareil. La visite à 360°, le plan 2D et les photos restent disponibles. |
 | `erreur.chargement` | La visite met du temps à se charger. Vérifiez votre connexion ; elle reprend dès que possible. |
 | `erreur.connexion` | La connexion à Internet a été interrompue. Vérifiez-la, puis réessayez. |
 
@@ -2359,9 +2372,9 @@ Le texte actuel de la galerie (« Images de synthèse calculées automatiquement
 
 À placer près de chaque bouton d'achat et de chaque appel au dépôt :
 
-> Appartements sur un seul niveau · logement présenté vide, finitions supposées · pas de mobilier ni de rendu photoréaliste · illustration non contractuelle.
+> Appartements sur un ou deux niveaux (duplex) · logement présenté vide, finitions supposées · pas de mobilier ni de rendu photoréaliste · illustration non contractuelle.
 
-Version courte (sous un bouton) : Appartements sur un seul niveau · logement vide · illustration non contractuelle.
+Version courte (sous un bouton) : Appartements sur un ou deux niveaux (duplex) · logement vide · illustration non contractuelle.
 
 ### 8.5 Signature en marque blanche et sur les pages de conseillers
 
@@ -2417,7 +2430,8 @@ Contenu requis (`juridique.md` § 1.8), à remplir à la création de la sociét
 ### 9.2 Ce que nous lisons
 
 - Les murs, leur épaisseur et leur position.
-- Les portes, leur largeur et leur sens d'ouverture ; les fenêtres et les portes-fenêtres.
+- Les portes, leur largeur et leur sens d'ouverture ; les fenêtres et les portes-fenêtres, d'après le sigle écrit à côté et la légende de votre plan : une « FA » n'a pas le même sens d'un promoteur à l'autre.
+- Les escaliers et les niveaux d'un duplex.
 - Les équipements dessinés : cuisine, douche ou baignoire, vasque, WC.
 - Les cotes, les noms des pièces et, s'il existe, le tableau des surfaces du promoteur.
 - Les espaces extérieurs : loggia, balcon.
@@ -2433,7 +2447,7 @@ Vous cliquez les deux extrémités d'une cote connue et vous indiquez sa longueu
 ### 9.5 Comment nous vérifions
 
 - **Les surfaces.** Chaque surface lue est comparée au tableau du promoteur. Chaque écart vous est signalé.
-- **La visite.** Avant de vous être livrée, chaque visite est parcourue automatiquement à la recherche de défauts visibles : une fente par laquelle on verrait dehors, une porte qu'on ne peut pas franchir, une pièce inaccessible depuis l'entrée. Quand un défaut ne peut pas être réparé, la visite n'est pas livrée, et rien n'est décompté.
+- **La visite.** Avant de vous être livrée, chaque visite est parcourue automatiquement à la recherche de défauts visibles : une fente par laquelle on verrait dehors, une porte qu'on ne peut pas franchir, une pièce inaccessible depuis l'entrée. [À VALIDER : utilisateur, avocat ; `MARQUE.md` § 3.3] Nous remplissons aussi chaque pièce d'eau, virtuellement, portes et fenêtres fermées : si l'eau trouve une sortie, même de 4 cm, un trou existe et la visite n'est pas livrée. Chaque fenêtre est comparée au sigle écrit à côté d'elle sur le plan. Quand un défaut ne peut pas être réparé, la visite n'est pas livrée, et rien n'est décompté.
 - **Chaque défaut devient un contrôle.** Chaque défaut que nous trouvons, ou que vous nous signalez et que nous confirmons, devient un nouveau contrôle automatique, pour qu'il ne revienne pas.
 
 ### 9.6 Ce que nous supposons
@@ -2470,7 +2484,7 @@ C'est encore peu de plans. Nous avançons plan par plan : un nouveau type de pla
 - Nous ne vérifions pas le logement construit : seuls les plans annexés à votre contrat font foi.
 - Nous ne donnons pas d'avis sur votre achat ni sur votre contrat.
 - Pas de mobilier ni de rendu photoréaliste.
-- Pas de plans sur plusieurs niveaux, pas de maisons.
+- Pas de logements sur plus de deux niveaux, pas de maisons.
 
 **Bouton** : Importer mon plan
 **Lien** : Visiter l'appartement témoin →
@@ -2515,6 +2529,7 @@ Chiffres à publier seulement une fois mesurés, datés et sur un volume suffisa
 4. À qui l'avez-vous montré ?
 5. Avez-vous vu un défaut ? Lequel ?
 6. Qu'est-ce qui vous a manqué ?
+7. La visite était-elle fluide sur votre appareil ? Lequel ?
 
 ### 10.4 Texte d'autorisation (à faire valider) **[À VALIDER : avocat]**
 
@@ -2565,7 +2580,7 @@ Précautions :
 
 | Point | Ce document | Autre document | Proposition |
 |---|---|---|---|
-| Le mot « duplex » | Apparaît une fois, dans la question de FAQ de l'accueil (§ 1.9), parce que les visiteurs le cherchent | `MARQUE.md` § 3.4 : ne jamais évoquer les duplex | Garder le mot dans la question seulement ; la réponse ne promet rien. Les refus disent « plusieurs niveaux ». À trancher |
+| Le mot « duplex » | Apparaît dans la question de FAQ de l'accueil (§ 1.9), parce que les visiteurs le cherchent ; la réponse dit oui | `MARQUE.md` § 3.4 : périmètre « un ou deux niveaux (duplex) » | Décidé le 27/09/2026 (décision 11, complétée par l'utilisateur : « oui le duplex on l'a géré c'est bon, c'était avant ça ») : duplex acceptés en service (`niveaux_max = 2`, L4-08) ; la FAQ répond oui pour le duplex ; le triplex reste sans promesse ; le refus au-delà dit « plus de deux niveaux » (L0-05, question 3, tranchée) |
 | Partage au banquier | Carte « rendez-vous bancaire » (§ 1.7) | `OFFRES.md` annexe B, question 6 | Publier seulement après l'avis de l'avocat ; sinon supprimer la carte |
 | Délai | ‹délai› partout, avec un repli avant T0 (R12, § 0.3) | `OFFRES.md` § 1 : délai mesuré en production ; `PARCOURS.md` § 1.3 : règle du 75e centile | Remplacer ‹délai› par la valeur T0, tenue en une seule valeur de configuration |
 | Contenu des offres | Aperçu et visite selon R1 ; ni « environ 11 photos » ni « 8 autres photos » (§ 0.7) | Anciennement `OFFRES.md` § 0.1, § 2.2, § 2.4, § 6.4 et `PARCOURS.md` A9 à A12 : 11 photos, 8 photos rendues au déblocage, « vue d'ensemble plongeante » | **Résolu (R1)** : documents alignés le 27/09/2026 |
@@ -2580,14 +2595,14 @@ Précautions :
 | Écran d'attente | Promet un e-mail | `pipeline/accueil.html` promet une notification onglet fermé | Corriger le texte actuel (`audit-code.md` A4) |
 | Mention de la galerie | Textes canoniques § 8.3 | `lire.py` (`note`) | Aligner |
 
-Aucun fichier de `pipeline/` ni de `moteur/` n'est modifié ici : un autre agent y travaille.
+Aucun fichier de `pipeline/` ni de `moteur/` n'est modifié ici ; le travail sur les niveaux (fini le 27/09/2026, non commité) les a modifiés.
 
 ### 12.2 Décisions attendues de l'utilisateur
 
 1. Le nom : « Sur Pièce » est retenu comme nom provisoire (D10), « Avant-Clés » en plan B ; dépôt et domaines restent à faire avant toute publication (rechercher-remplacer, puis les passages **[dépend du nom]**, si le plan B est choisi).
 2. Les prix, tous des hypothèses de lancement (`OFFRES.md`).
 3. Le titre retenu de chaque page, et l'ordre des tests de variantes.
-4. Le mot « duplex » dans la FAQ (§ 12.1).
+4. Le mot « duplex » dans la FAQ (§ 12.1). Décidé le 27/09/2026 (décision 11) : la FAQ répond oui pour le duplex.
 5. La carte « rendez-vous bancaire » (§ 1.7).
 6. Le bloc « bêta fondateurs » et la durée de l'entretien mensuel (§ 2.9) : il sert d'appel principal des pages pros en pré-lancement (R21).
 7. La durée de validité du lien et du code de connexion (§ 7.3) et le délai du rappel avant suppression d'un aperçu (§ 7.11, E11).
@@ -2596,6 +2611,10 @@ Aucun fichier de `pipeline/` ni de `moteur/` n'est modifié ici : un autre agent
 10. Le libellé de la deuxième photo (« la chambre principale ou une autre pièce »), à confirmer sur les plans de référence avec la règle de L4-09.
 11. La fin estimée d'une maintenance, saisie à l'activation (§ 7.16) : champ à ajouter au réglage de L5-21.
 12. Les propositions du § 12.1 : `/tarifs` non publiée en liste d'attente, bouton « Demander une invitation ».
+13. La place du 360° : offre gratuite, à la place ou en plus de l'aperçu de R1, après la mesure de son coût de rendu (L1-16) ; son nom public ; textes marqués [SI LIVRÉ] jusque-là.
+14. Le 360° comme repli quand la 3D ne démarre pas (`erreur.3d.360`).
+15. La formulation du test d'immersion (§ 9.5), si l'utilisateur en fait une preuve publique (`MARQUE.md` § 3.3).
+16. Les codes proposés pour les plans à plusieurs niveaux : `depot.refus.niveaux_illisibles` (niveaux non séparés, défaut de lecture, distinct du refus de périmètre `depot.refus.niveaux`) et `depot.reconnu.niveaux` (« 2 niveaux reconnus (R+1 et R+2) ») (L4-05).
 
 ### 12.3 À faire relire par l'avocat
 

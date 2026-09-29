@@ -15,9 +15,9 @@ Dans une instance en marque blanche, le client personnalise son logo, sa couleur
    - échec : proposer la teinte la plus proche qui passe en ne faisant varier que la luminosité (OKLCH), aperçu montré, couleur d'origine permise dans le logo ;
    - tests sur les exemples du § 9.3 : orange `#F39200` refusé en clair, violet `#6C2A8C` et rouge `#C8102E` acceptés en clair avec une variante sombre dérivée.
 3. **Jetons** : une seule feuille de jetons (L2-01) ; l'accent du client remplace le Bleu plan (boutons, cotes, focus, état en cours) ; neutres, couleurs de sens (Vert réception, Brique, Ocre soleil), typographies (Archivo, DM Mono), codes du plan et structure restent fixes. Accent à moins de 20° de teinte de la Brique ou du Vert réception : les états gardent libellé et forme.
-4. **Écrans** : connexion, inscription, attente, aperçu, Mes plans, espace pro, pages de visite ; marque trouvée par l'hôte (L11-01), ou par l'organisation sur nos domaines ; `<title>` de la forme « ‹Nom affiché› · … » ; favicon du client.
+4. **Écrans** : connexion, inscription, attente, aperçu (visionneuse 360° comprise si elle y est, L6-13), Mes plans, espace pro, pages de visite (mode 360° compris, L4-16) ; marque trouvée par l'hôte (L11-01), ou par l'organisation sur nos domaines ; `<title>` de la forme « ‹Nom affiché› · … » ; favicon du client.
 5. **E-mails** (L5-14) : nom d'expéditeur, logo dans l'en-tête, accent sur le bouton ; textes inchangés et passés au contrôle des textes. Envoi depuis le domaine du client : seulement si le fournisseur le permet (point ouvert de D4) ; sinon `mail.<domaine>` avec le nom d'expéditeur du client.
-6. **Ce qui reste fixe, vérifié par des tests** : mention « illustration non contractuelle » dans les photos, la visite et la fiche, non désactivable ; aucun prix sur la page de visite par défaut ; photos non remplacées ; modes et structure inchangés.
+6. **Ce qui reste fixe, vérifié par des tests** : mention « illustration non contractuelle » dans les photos, les panoramas 360°, la visite et la fiche, non désactivable ; aucun prix sur la page de visite par défaut ; photos non remplacées ; modes et structure inchangés.
 7. **Signature** « Visite réalisée avec Sur Pièce » (MESSAGES.md § 8.5) présente par défaut, retirée seulement si l'option payée est active ; jamais une formule qui laisserait croire que nous validons le lot.
 8. **Contrôle d'accessibilité** (MARQUE.md § 10.2, règle 8) : ratios recalculés à l'enregistrement et en CI sur le fichier de jetons et l'accent de chaque client ; toute régression fait échouer la publication.
 
@@ -36,7 +36,7 @@ Dans une instance en marque blanche, le client personnalise son logo, sa couleur
 - **Référence** : le JSON du lot cite MARQUE.md § 10 (accessibilité) ; les règles de marque blanche sont au § 9. Les deux s'appliquent ici.
 - **Dépendance non déclarée** : L11-01 pour la marque trouvée par l'hôte (écran de connexion sur le domaine du client). Sans lui, le thème ne s'applique qu'aux pages de nos domaines rattachées à l'organisation.
 - Le bandeau de consentement du client et ses mentions légales sont vérifiés dans la mise en service (L11-04), pas ici.
-- Coordination `moteur/` : si la visite doit lire plus que `reglages.json` de L9-06 (favicon, titre), c'est un petit diff `[M]` à faire avec l'agent des duplex (ARCHITECTURE.md § 8.1).
+- Coordination `moteur/` : si la visite doit lire plus que `reglages.json` de L9-06 (favicon, titre), c'est un petit diff `[M]` sur le code commité du travail sur les niveaux (fait le 27/09/2026), critère de fusion d'ARCHITECTURE.md § 8.1.
 
 ## Références
 - produit/MARQUE.md § 6.2, § 6.3, § 7.5, § 9.1, § 9.2, § 9.3, § 10.1, § 10.2 ; produit/MESSAGES.md § 8.5.

@@ -14,9 +14,9 @@ La seule mention « non contractuel » est la note de la galerie (`lire.py:1273`
    - **idempotence** : une image déjà marquée (marqueur XMP présent) n'est pas marquée une seconde fois ;
    - `verifier_image(chemin) -> liste de problèmes` : bande présente (zone de pixels comparée au rendu attendu de la bande), XMP présent avec la valeur attendue ;
    - ligne de commande : `python3 pipeline/marquage.py plans/<id>/photos` (marque) et `--verifier`.
-2. **Branchement local** : `photos` (`pipeline/serveur.py:378`) marque le dossier après `photos.mjs`, puis vérifie ; une vérification en échec empêche l'état « fini » (publication bloquée) avec un message du catalogue ; `outils/finalise.sh` appelle le même marquage à la fin. Ces deux points sont les seuls diffs dans les appelants.
-3. **Visite** (`moteur/ui.js`) : bandeau permanent et discret portant la mention longue (courte sous 480 px de large), visible dans les quatre modes (galerie, plan 2D, maquette, visite), lisible sur mobile (11 px au moins, contraste AA, MARQUE.md § 10), sans masquer les commandes. Classe `ui` : il est masqué pendant les captures de `photos.mjs` et `controle.mjs`, puisque les images reçoivent la bande ensuite.
-4. **Fiche** (`ficheHTML`, `ui.js:408`) : paragraphe de MESSAGES.md § 8.3 (ligne « Fiche du logement ») toujours ajouté à la fin.
+2. **Branchement local** : `photos` (`pipeline/serveur.py:482`) marque le dossier après `photos.mjs`, puis vérifie ; une vérification en échec empêche l'état « fini » (publication bloquée) avec un message du catalogue ; `outils/finalise.sh` appelle le même marquage à la fin. Ces deux points sont les seuls diffs dans les appelants.
+3. **Visite** (`moteur/ui.js`) : bandeau permanent et discret portant la mention longue (courte sous 480 px de large), visible dans tous les modes (galerie, plan 2D, maquette, visite, et 360° dès que L4-16 est livré), sur chaque onglet de niveau d'un plan à plusieurs niveaux, lisible sur mobile (11 px au moins, contraste AA, MARQUE.md § 10), sans masquer les commandes. Classe `ui` : il est masqué pendant les captures de `photos.mjs` et `controle.mjs`, puisque les images reçoivent la bande ensuite.
+4. **Fiche** (`ficheHTML`, `ui.js:416`) : paragraphe de MESSAGES.md § 8.3 (ligne « Fiche du logement ») toujours ajouté à la fin.
 5. **Galerie** : la note par défaut (`lire.py:1273`) prend le texte canonique ; le moteur affiche de toute façon la mention, y compris pour les anciens `plan.json`.
 6. **Une seule source par langage** : `marquage.MENTION` et `MENTION_COURTE` en Python (reprises du catalogue de L4-05 s'il est fusionné), constante dans `ui.js` ; un test vérifie qu'elles sont identiques à MESSAGES.md § 8.3.
 7. **Contrôle automatique** : `--verifier` sur tout dossier de photos avant publication ; dans la visite de contrôle ou le contrôle des textes (L1-04), vérifier que le bandeau existe, est visible et porte la mention exacte dans chaque mode, et que la fiche contient le paragraphe.
@@ -25,7 +25,7 @@ La seule mention « non contractuel » est la note de la galerie (`lire.py:1273`
 - [ ] Chaque image de `photos/` (JPEG, et PNG d'aperçu de L4-09) porte la mention et la métadonnée XMP, sur les références (L1-02) et le témoin (L1-12) ; lu par `--verifier` et par un lecteur XMP indépendant.
 - [ ] Marquer deux fois ne double pas la bande.
 - [ ] Une image non marquée fait échouer `--verifier`, et l'outil local n'atteint pas l'état « fini » ; message sans texte technique.
-- [ ] Bandeau visible dans les quatre modes, à 1 280 px, 375 px et 320 px de large (largeur minimale, R10) ; fiche avec son paragraphe ; contrôle des textes (L1-04) réussi.
+- [ ] Bandeau visible dans tous les modes (360° compris dès L4-16) et sur chaque onglet de niveau, à 1 280 px, 375 px et 320 px de large (largeur minimale, R10) ; fiche avec son paragraphe ; contrôle des textes (L1-04) réussi.
 - [ ] Hors de la bande, les images restent à moins de 2/255 de la ligne de base.
 - [ ] Rejeu sans IA, test de fumée ; aucune lecture payante ; critère de fusion d'ARCHITECTURE.md § 8.1.
 
@@ -36,11 +36,12 @@ La seule mention « non contractuel » est la note de la galerie (`lire.py:1273`
 - **Visuels du témoin** : texte « Appartement témoin fictif · Illustration non contractuelle » (MESSAGES.md § 8.3) ; `marquer_image` accepte un texte de remplacement pour L2-03.
 - **Vignettes** : les vignettes sont la même image réduite ; la bande n'y est plus lisible, d'où le bandeau permanent de la visite.
 - Manifeste C2PA signé : non traité ici (clés de signature, coût) ; à rouvrir si l'avocat l'exige.
-- **Coordination avec le travail sur les duplex** : `ui.js`, `serveur.py` et `lire.py` sont modifiés en parallèle ; nouveau fichier `pipeline/marquage.py`, trois petits diffs ; critère de fusion d'ARCHITECTURE.md § 8.1. Jusqu'à ce ticket, la bêta express porte la mention par écrit (L3-06).
+- **Coordination avec le travail sur les niveaux** (terminé le 27/09/2026, pas encore commité : 23 fichiers, dont `pipeline/niveaux.py`) : partir de son commit ; `ui.js`, `serveur.py` et `lire.py` le portent ; nouveau fichier `pipeline/marquage.py`, trois petits diffs ; critère de fusion d'ARCHITECTURE.md § 8.1. Jusqu'à ce ticket, la bêta express porte la mention par écrit (L3-06).
+- **Panoramas 360°** (L4-15) : métadonnée XMP sur chaque face. Mention incrustée sur chaque face, ou seulement bandeau permanent dans la visionneuse : à décider avec l'avocat (L0-07). Une bande incrustée se verrait six fois en tournant la tête.
 
 ## Références
 - produit/recherche/juridique.md § 5.1, § 5.4, § 7 (n° 7), § 8 ; produit/MESSAGES.md § 8.3, § 12.3 ; produit/OFFRES.md § 1 (Mentions), § 5.2 ; produit/ARCHITECTURE.md § 2.3 (étape 8), § 7.3, M1.8 ; produit/recherche/audit-code.md A6.
-- pipeline/lire.py:1273 (`note` par défaut) ; pipeline/serveur.py:378 (`photos`) ; moteur/photos.mjs (JPEG en qualité 0,9, masquage de `.ui` pendant les captures) ; moteur/ui.js:379-399 (galerie, `g-note`), :408 (`ficheHTML`) ; moteur/visite.css:1-16 (jetons) ; outils/finalise.sh.
+- pipeline/lire.py:1445 (`note` par défaut) ; pipeline/serveur.py:482 (`photos`) ; moteur/photos.mjs (JPEG en qualité 0,9, masquage de `.ui` pendant les captures) ; moteur/ui.js:387-407 (galerie, `g-note`), :416 (`ficheHTML`) ; moteur/visite.css:1-16 (jetons) ; outils/finalise.sh.
 
 ## Hors périmètre
 - Mention sur la page d'aperçu : L6-05. Téléchargements et PDF : L8-08. Visuels du témoin : L2-03. Signature « Visite réalisée avec » et son retrait : L11-02 et L11-04 (thème et offre de marque blanche).

@@ -31,6 +31,7 @@ Le cartouche d'un plan de vente porte des données personnelles ou identifiantes
 ## Critères d'acceptation
 - [ ] Sur les 4 références et le témoin, les images envoyées ne montrent plus l'adresse, le programme, le lot ni aucun nom ; le tableau des surfaces, les noms des pièces et les cotes restent lisibles (relecture de l'utilisateur, datée).
 - [ ] Contrôles scriptés de l'étape 5 réussis ; le champ `id` n'est plus envoyé.
+- [ ] `lire.legende_baies` donne le même résultat sur le texte filtré et sur le texte d'origine, pour les 5 références (au D201, FA = « fenêtre sur allège » ; à la duplex, FA = « fenêtre allège vitrée ») ; aucun rectangle masqué ne coupe une zone de niveau.
 - [ ] Rejeu L1-02 identique ; contrôle des textes (L1-04) et fumée de l'outil local réussis.
 - [ ] Si l'utilisateur donne son accord : lecture de contrôle sur 432 et D201 au moins égale à la ligne de base (D201 : 7 ouvertures sur 7, 6 équipements sur 6 ; 432 : 6 sur 7 et 6 sur 7). Sans accord, le ticket ne peut pas être fermé : il reste « vérifié sans payer ».
 - [ ] Tout texte personnel repéré après coup devient un cas du jeu de test du masquage.
@@ -40,7 +41,7 @@ Le cartouche d'un plan de vente porte des données personnelles ou identifiantes
 - **Plans en image** : sans reconnaissance de caractères, pas de masquage automatique. Options à présenter : (a) accepter et l'écrire dans la politique de confidentialité ; (b) reconnaissance de caractères locale (nouvelle dépendance, coût de maintenance) ; (c) demander à l'utilisateur de recadrer ou de masquer lui-même, au dépôt. Décision de l'utilisateur, avec l'avocat (L0-07).
 - Sur beaucoup de plans, le tableau des surfaces est **dans** le cartouche : masquer ligne par ligne, jamais un bloc entier.
 - Numéro de lot écrit dans la zone du plan (près du dessin) : non masqué par cette méthode ; à noter dans l'analyse des transferts.
-- Coordination : `extract.py`, `lire.py` et `serveur.py` sont en cours de modification par l'agent des duplex ; ce ticket ajoute un fichier et deux appels. Si `extract.json` change de forme (duplex : zones des niveaux, pages empilées), adapter la détection de la zone du plan.
+- Coordination : `extract.py`, `lire.py` et `serveur.py` portent le travail sur les niveaux (fini le 27/09/2026, non commité) ; ce ticket ajoute un fichier et deux appels, sur le commit qui l'intègre. `extract.json` a changé de forme le 27/09/2026 (zone et nom de chaque niveau, pages d'un même logement empilées) : la zone du plan est l'union des zones de niveaux ; les noms de niveaux et la légende des sigles restent envoyés au modèle (un sigle ne vaut que par la légende de son plan).
 - `page.png` est aussi servi publiquement avec la visite (audit B7) : le masquage ne règle pas cette fuite (L3-03, L5-12).
 
 ## Références

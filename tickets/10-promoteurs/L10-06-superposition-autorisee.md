@@ -12,11 +12,11 @@ Le fichier du promoteur et tout ce qui en est une image (`page.png`, `plan-<…>
 2. **Vérification par l'équipe** (administration, double authentification, L5-17) : lecture du document, décision motivée dans `journal_equipe`, puis nouvelle version des réglages avec `superposition_autorisee = true`.
 3. **Réglage explicite par publication** : `publications.superposition`, faux par défaut même quand l'organisation est autorisée.
 4. **Publication** (extension de la liste blanche de L5-12, seulement si `publications.superposition` est vrai) :
-   - `plan.json` filtré garde `underlay` (`{file, x, z, w, h}`, `moteur/SCHEMA.md` l. 96 ; avec plusieurs niveaux, `offset` et `zone`, l. 121) ;
+   - `plan.json` filtré garde `underlay` (`{file, x, z, w, h}`, `moteur/SCHEMA.md:98` ; avec plusieurs niveaux, `offset` et `zone` de chaque niveau, l. 113 et 123 : le calque se dessine décalé de `−offset` sur l'onglet de son niveau) ;
    - `file` réécrit vers une route de l'application qui vérifie le jeton, `/v/<jeton>/calque/<n>.png`, avec `Cache-Control: private, no-store` ; **jamais sur le CDN**, pour qu'une révocation coupe l'accès ;
    - dans tous les autres cas, `underlay` retiré et l'image introuvable par toutes les voies (test existant de L5-12).
 5. **Retrait de l'autorisation** (fin d'accord, demande du titulaire) : republication sans calque de toutes les publications concernées, en moins d'une heure ; alerte si l'une échoue.
-6. **Interface** (**Tranché : R16**) : l'option « Plan 2D : superposer le plan du promoteur » (`moteur/ui.js:363`) est masquée en mode simple par L4-11, livré avant la bêta fermée : elle n'est réservée qu'au propriétaire ou à un accord du promoteur. Ce ticket ne fournit `underlay` qu'aux publications autorisées ; il ne modifie pas `moteur/`.
+6. **Interface** (**Tranché : R16**) : l'option « Plan 2D : superposer le plan du promoteur » (`moteur/ui.js:371`, relevé le 27/09/2026) est masquée en mode simple par L4-11, livré avant la bêta fermée : elle n'est réservée qu'au propriétaire ou à un accord du promoteur. Ce ticket ne fournit `underlay` qu'aux publications autorisées ; il ne modifie pas `moteur/`.
 
 ## Critères d'acceptation
 - [ ] Sans autorisation : `underlay` absent de `plan.json` publié, route du calque en 404 (tests par `visite.`, `cdn.` et `app.`).
@@ -33,7 +33,7 @@ Le fichier du promoteur et tout ce qui en est une image (`page.png`, `plan-<…>
 ## Références
 - produit/ARCHITECTURE.md § 2.4 (vue propriétaire), § 4.2 (`reglages_organisation`, `publications`), § 5.3, § 7.3, M5.4.
 - produit/OFFRES.md § 4.4 ; produit/PARCOURS.md C6 ; produit/recherche/audit-code.md B7.
-- `moteur/SCHEMA.md:96`, `:121` (`underlay`, `offset`, `zone`) ; `moteur/ui.js:363` (option), `:632` (dessin du calque) ; `pipeline/lire.py:1152` (`underlay`).
+- `moteur/SCHEMA.md:98`, `:113`, `:123` (`underlay`, `offset`, `zone`) ; `moteur/ui.js:371` (option), `:672` (dessin du calque) ; `pipeline/lire.py:1319` (`underlay`), relevés le 27/09/2026.
 
 ## Hors périmètre
 - Publication et liste blanche générales : L5-12. Intégration : L10-04. Contrat et licence : L10-01.

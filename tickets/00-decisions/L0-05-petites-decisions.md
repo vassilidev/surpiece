@@ -14,7 +14,7 @@ Les documents de `produit/` laissent une douzaine de petites questions à l'util
    |---|---|---|---|---|
    | 1 | Vouvoiement partout | MARQUE.md § 4.2 | oui, partout | MARQUE.md § 13 (2) |
    | 2 | Favicon « la pièce » | MARQUE.md § 7.3, § 7.5 | oui, sous réserve du test à 16 px | MARQUE.md § 13 (4) ; L2-02 |
-   | 3 | Mot « duplex » dans la FAQ de l'accueil | MESSAGES.md § 1.9, § 12.1 ; MARQUE.md § 3.4 | le garder dans la question seulement, réponse sans promesse ; les refus disent « plusieurs niveaux » | MESSAGES.md § 12.2 (4) |
+   | 3 | Mot « duplex » dans la FAQ de l'accueil | MESSAGES.md § 1.9, § 12.1 ; MARQUE.md § 3.4 | **tranchée le 27/09/2026** par la décision 11 (« oui le duplex on l'a géré c'est bon, c'était avant ça ») : la FAQ répond oui pour le duplex (un ou deux niveaux) ; le triplex reste sans promesse ; déjà reportée dans MESSAGES.md § 12.2 (4) et MARQUE.md § 3.4 | MESSAGES.md § 12.2 (4) |
    | 4 | Carte « rendez-vous bancaire » | MESSAGES.md § 1.7, § 12.1 ; OFFRES.md annexe B (question 6) | publier seulement après l'avis de l'avocat, sinon la retirer | MESSAGES.md § 12.2 (5) |
    | 5 | Bloc « bêta fondateurs » et durée de l'entretien mensuel | MESSAGES.md § 2.9 ; OFFRES.md § 3.10 | principe tranché par R21 (avant les lots 9 à 11, les pages pros proposent un entretien ou la bêta fondateurs, L2-18) ; contenu du bloc et durée de l'entretien à trancher | MESSAGES.md § 12.2 (6) |
    | 6 | Durée de validité du lien de connexion | MESSAGES.md § 7.3 ; ARCHITECTURE.md § 6.3 | 15 min, usage unique, avec code à 6 chiffres | MESSAGES.md § 12.2 (7) |
@@ -37,7 +37,7 @@ Les documents de `produit/` laissent une douzaine de petites questions à l'util
 
 ## Points d'attention
 - **Questions repérées en plus**, absentes du résumé du ticket, à proposer dans la même séance : outil des tableaux de bord, Metabase ou vues SQL (SUIVI.md § 8, point 4) ; respect de GPC en plus de DNT (SUIVI.md § 8, point 5) ; titre retenu de chaque page et ordre des tests de variantes (MESSAGES.md § 12.2, point 3), sachant que seuls les textes se testent par tirage, côté serveur pour les comptes connectés, et les prix uniquement par périodes (R8).
-- Le mot « duplex » : un autre agent travaille sur les duplex, mais la règle reste de ne rien promettre tant qu'ils ne sont pas validés sur des plans réels (ARCHITECTURE.md § 8.1, règle 4 ; OFFRES.md § 7.1).
+- Le mot « duplex » (question 3) : tranché par l'utilisateur le 27/09/2026. La chaîne gère les plans sur plusieurs niveaux (décision 11), validée sur une duplex (L13-08, fait) ; les duplex sont acceptés en service (`niveaux_max = 2`, L4-08). La lecture réelle par l'IA (L1-13) reste une vérification utile, pas un préalable. Le triplex n'est promis qu'après validation sur un plan réel (OFFRES.md § 7.1).
 - Les questions 11 et 12 touchent la conformité (exemption CNIL d'Umami) : l'analyse d'exemption est faite par L7-08 ; la règle du bandeau (R18) en dépend.
 
 ## Références

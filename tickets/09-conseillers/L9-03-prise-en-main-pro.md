@@ -35,7 +35,7 @@ Le déclic d'un conseiller, c'est « mon prospect ouvre le lien et se signale »
 ## Points d'attention
 - **Tranché** : L9-04 (lien et page prospect : étapes 1 et 4) et L9-06 (logo et coordonnées : étape 3) sont des dépendances déclarées.
 - **Exception au cadrage** : une publication (celle du témoin) partagée entre organisations déroge à la règle « tout est cadré par organisation » (`ARCHITECTURE.md` § 4.1). L'écrire dans l'utilitaire de cadrage et la couvrir par les tests de L5-19.
-- Le témoin doit rester à jour avec la dernière version validée du moteur (rejeu sans IA à chaque nouvelle version).
+- Le témoin doit rester à jour avec la dernière version validée du moteur (rejeu sans IA à chaque nouvelle version) ; ses panoramas 360° et ses fichiers précalculés, quand ils existent, sont refaits au même rejeu, sans IA.
 - Les rôles décrits ici viennent de `PARCOURS.md` B8 ; leurs droits exacts sont testés par L5-04.
 
 ## Références

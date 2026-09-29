@@ -19,7 +19,7 @@ L'outil local n'a aucune isolation entre comptes (audit B1, B2), des identifiant
    6. `/.env`, `/plans/…/reponse-ia.json` et `/…/page.png` inaccessibles par toutes les voies : application, visite, CDN, et serveur statique des scripts Chrome (contrôle de L1-01 réutilisé) ;
    7. limites effectives, une par ligne du point 2 ;
    8. aucun secret ni jeton dans les journaux produits par la suite (motifs `sk-or-`, `sk-ant-`, `sk_live_`, `whsec_`, jetons de test).
-4. **Fichiers hostiles** : corpus produit par un script (aucun plan réel) dans `service/tests/fichiers_hostiles/` : PDF à objets imbriqués sans fin, PDF de milliers de pages, PDF avec JavaScript ou fichier joint, polyglotte PDF et ZIP, PNG de 50 000 × 50 000 px (bombe de décompression), JPEG tronqué, ZIP renommé en `.pdf`, HEIC. Attendu : refus avec un code du catalogue ou arrêt du sous-processus d'analyse à sa limite de temps ou de mémoire (L5-06), processus web toujours réactif, aucun fichier lu hors du dossier du travail.
+4. **Fichiers hostiles** : corpus produit par un script (aucun plan réel) dans `service/tests/fichiers_hostiles/` : PDF à objets imbriqués sans fin, PDF de milliers de pages (dont des pages qui portent chacune un nom de niveau, pour éprouver l'empilement des pages d'un même logement, `pages_niveaux`), PDF avec JavaScript ou fichier joint, polyglotte PDF et ZIP, PNG de 50 000 × 50 000 px (bombe de décompression), JPEG tronqué, ZIP renommé en `.pdf`, HEIC. Attendu : refus avec un code du catalogue ou arrêt du sous-processus d'analyse à sa limite de temps ou de mémoire (L5-06), processus web toujours réactif, aucun fichier lu hors du dossier du travail.
 5. **Dépendances** : audit des paquets Python et npm figés par L1-07 (`pip-audit`, `npm audit`) en CI, non bloquant au début.
 6. Un court README de la suite : chaque faille trouvée ajoute un test, avec la référence de l'incident.
 
@@ -35,14 +35,14 @@ L'outil local n'a aucune isolation entre comptes (audit B1, B2), des identifiant
 - **Ordre des tickets** : L5-03 a besoin des limites (lien de connexion) avant ce ticket. Une seule implémentation : créée dans L5-03, généralisée et testée ici.
 - IPv6 regroupé en /64 et IP partagées (réseaux mobiles, CGNAT) : des familles peuvent se gêner. Valeurs de départ à ajuster sur les journaux (§ 6.4).
 - Test de délai de l'énumération : seuil statistique pour éviter une suite instable.
-- `ouvrir_image` (`pipeline/serveur.py:112`) et `extract.py` ne sont pas modifiés : la protection vient des limites du sous-processus, pour ne pas toucher `pipeline/` pendant le travail sur les duplex.
+- `ouvrir_image` (`pipeline/serveur.py:146`) et `extract.py` ne sont pas modifiés : la protection vient des limites du sous-processus, pour ne pas toucher `pipeline/` (fichiers modifiés par le travail sur les niveaux (terminé le 27/09/2026, pas encore commité)).
 - Webhooks Stripe non signés ou rejoués (§ 6.8) : test ajouté avec L8-01.
 - Un test d'intrusion externe n'est pas prévu dans les documents ; à envisager avant le premier promoteur.
 
 ## Références
 - `produit/ARCHITECTURE.md` § 4.1, § 4.2 (`limites`), § 6.1, § 6.3, § 6.4, § 6.7, § 6.8, § 9.5.
 - `produit/recherche/audit-code.md` A10, B1 à B6 ; `produit/PARCOURS.md` A3 (10 analyses par heure et par IP).
-- `pipeline/serveur.py:52` (`format_fichier`), `:112` (`ouvrir_image`), `:132` (`analyse`) ; `moteur/photos.mjs:19-24`, `moteur/controle.mjs:18-23` (serveurs statiques).
+- `pipeline/serveur.py:52` (`format_fichier`), `:146` (`ouvrir_image`), `:166` (`analyse`) ; `moteur/photos.mjs:19-24`, `moteur/controle.mjs:20-24` (serveurs statiques).
 
 ## Hors périmètre
 - Anti-abus du crédit offert et Turnstile : L6-06. Webhooks Stripe : L8-01.

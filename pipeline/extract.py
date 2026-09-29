@@ -422,10 +422,365 @@ def vote_echelle(cands):
     return K, confiance, f"{best_n} indices concordants sur {len(cands)} ({', '.join(kinds)})" + (f", {second} pour la meilleure autre valeur" if second else '')
 
 
+# étiquettes de niveau : la ligne de texte entière (« R+1 », « RDC », « Rez-de-jardin », « 1er étage », « Combles »…)
+NIV = re.compile(r'^(R\s*[+-]\s*\d{1,2}|RDC|RDJ|REZ([\s-]*DE[\s-]*(CHAUSS[EÉ]E|JARDIN))?|N\s*[+-]\s*\d{1,2}|NIVEAU\s*[+-]?\s*\d{1,2}|NIVEAU\s+(BAS|HAUT)'
+                 r'|\d{1,2}\s*(ER|RE|E|EME|ÈME)\s+[EÉ]TAGE|[EÉ]TAGE(\s*\d{1,2})?|COMBLES?|MEZZANINE|SOUS[\s-]*SOL(\s*\d)?|ENTRESOL)$', re.I)
+
+
+def rang_niveau(t):
+    """hauteur relative d'un niveau d'après son étiquette (RDC = 0, R+2 = 2, sous-sol < 0, combles en haut), None si inconnue"""
+    import unicodedata
+    s = unicodedata.normalize('NFKD', ' '.join(t.split())).encode('ascii', 'ignore').decode().upper()
+    for pat, f in ((r'^R\s*([+-])\s*(\d+)$', lambda g: int(g[1]) * (1 if g[0] == '+' else -1)), (r'^N\s*([+-])\s*(\d+)$', lambda g: int(g[1]) * (1 if g[0] == '+' else -1)),
+                   (r'^(RDC|RDJ|REZ.*)$', lambda g: 0), (r'^NIVEAU\s*([+-]?)\s*(\d+)$', lambda g: int(g[1]) * (-1 if g[0] == '-' else 1)),
+                   (r'^NIVEAU\s+BAS$', lambda g: 0), (r'^NIVEAU\s+HAUT$', lambda g: 1), (r'^(\d+)\s*(ER|RE|E|EME)\s+ETAGE$', lambda g: int(g[0])),
+                   (r'^ETAGE\s*(\d+)$', lambda g: int(g[0])), (r'^ETAGE$', lambda g: 1), (r'^SOUS[\s-]*SOL\s*(\d)$', lambda g: -int(g[0])),
+                   (r'^SOUS[\s-]*SOL$', lambda g: -1), (r'^ENTRESOL$', lambda g: 0.5), (r'^MEZZANINE$', lambda g: 50), (r'^COMBLES?$', lambda g: 100)):
+        mt = re.match(pat, s)
+        if mt:
+            return f(mt.groups())
+    return None
+
+
+def emprise_noire(page, drawings):
+    """boîte (points de page) du plus gros amas d'aplats noirs de la page : le dessin du plan, pas le cartouche ni le plan de situation"""
+    from shapely.geometry import box
+    W, H = page.rect.width, page.rect.height; bs = []
+    for g in drawings:
+        r = g.get('rect')
+        if g['type'] in ('f', 'fs') and color_kind(g.get('fill')) == 'black' and r and r.width < W * 0.5 and r.height < H * 0.5:
+            bs.append(box(r.x0, r.y0, r.x1, r.y1))
+    if not bs:
+        return None
+    U = pieces(unary_union([b.buffer(6) for b in bs])); t = STRtree(bs)
+    ms = [sum(bs[j].area for j in t.query(P, predicate='contains')) for P in U]
+    k0 = max(range(len(U)), key=lambda k: ms[k]); B = list(U[k0].bounds); pris = {k0}; changed = True
+    while changed:  # amas voisins (murs coupés par les baies), comme la zone du logement
+        changed = False
+        for k, P in enumerate(U):
+            b = P.bounds
+            if k not in pris and ms[k] >= 0.08 * ms[k0] and b[0] - 60 < B[2] and B[0] - 60 < b[2] and b[1] - 60 < B[3] and B[1] - 60 < b[3]:
+                pris.add(k); B = [min(B[0], b[0]), min(B[1], b[1]), max(B[2], b[2]), max(B[3], b[3])]; changed = True
+    return tuple(B)
+
+
+def numeros_lot(page):
+    """numéros de lot écrits sur la page (« Lot n° 613 ») : le mot qui suit « lot » sur la même ligne, à moins de 80 pt"""
+    ws = page.get_text('words'); out = set()
+    for w in ws:
+        if w[4].lower().strip(':') != 'lot':
+            continue
+        suite = sorted((v for v in ws if v[0] >= w[2] - 1 and v[0] - w[2] < 80 and abs((v[1] + v[3]) / 2 - (w[1] + w[3]) / 2) < 0.5 * (w[3] - w[1])), key=lambda v: v[0])
+        for v in suite:
+            t = v[4].strip(':.,')
+            if re.fullmatch(r'(?i)n°?|no|:|', t):
+                continue
+            if re.fullmatch(r'(?i)[a-z]?\d+[a-z]?', t):
+                out.add(t.upper())
+            break
+    return out
+
+
+def pages_niveaux(doc):
+    """PDF d'un logement sur plusieurs niveaux, un niveau par page : pages d'au moins 50 tracés portant chacune une seule étiquette
+    de niveau près de son dessin (pas celles du tableau des surfaces), toutes différentes, et du même lot quand le numéro est écrit
+    (deux lots superposés d'un même immeuble ne font pas un duplex). Rend leurs indices, sinon None."""
+    if len(doc) < 2:
+        return None
+    out, noms, lots = [], [], []
+    for i, p in enumerate(doc):
+        try:
+            dr = p.get_drawings()
+            if len(dr) < 50:
+                continue
+            b = emprise_noire(p, dr)
+            if not b:
+                continue
+            mg = max(30, 0.12 * max(b[2] - b[0], b[3] - b[1]))
+            labs = set()
+            for bl in p.get_text('dict')['blocks']:
+                for l in bl.get('lines', []):
+                    t = ' '.join(''.join(s['text'] for s in l['spans']).split()); cx, cy = (l['bbox'][0] + l['bbox'][2]) / 2, (l['bbox'][1] + l['bbox'][3]) / 2
+                    if NIV.match(t) and b[0] - mg <= cx <= b[2] + mg and b[1] - mg <= cy <= b[3] + mg:
+                        labs.add(t.upper())
+        except Exception:
+            continue
+        if len(labs) == 1:
+            out.append(i); noms += list(labs)
+            lots.append(numeros_lot(p))
+    if any(a and b and not a & b for a in lots for b in lots):
+        return None
+    return out if len(out) >= 2 and len(set(noms)) == len(noms) else None
+
+
+def empiler(doc, pages):
+    """pages d'un même logement posées l'une sous l'autre sur une seule page, vecteurs et textes conservés"""
+    new = pymupdf.open(); rs = [doc[i].rect for i in pages]
+    pg = new.new_page(width=max(r.width for r in rs), height=sum(r.height for r in rs)); y = 0
+    for i, r in zip(pages, rs):
+        pg.show_pdf_page(pymupdf.Rect(0, y, r.width, y + r.height), doc, i); y += r.height
+    return new
+
+
+def xy_cut(ids, bx, gap, depth=0):
+    """découpe récursive par bandes vides d'au moins `gap` traversant tout le groupe (en z puis en x) ; bx[i] = (x0, z0, x1, z1)"""
+    if depth > 8 or len(ids) < 2:
+        return [ids]
+    for ax in (1, 0):
+        iv = sorted((bx[i][ax], bx[i][ax + 2], i) for i in ids)
+        cuts, hi = [], iv[0][1]
+        for a, b, i in iv[1:]:
+            if a - hi >= gap:
+                cuts.append((hi, a))
+            hi = max(hi, b)
+        if cuts:
+            parts, lo = [], -1e9
+            for c0, c1 in cuts + [(1e9, 1e9)]:
+                parts.append([i for i in ids if lo <= bx[i][ax] and bx[i][ax + 2] <= c0 + 1e-9]); lo = c1
+            return [q for p in parts if p for q in xy_cut(p, bx, gap, depth + 1)]
+    return [ids]
+
+
+def partage(region, boxes):
+    """cases disjointes couvrant `region`, une par boîte : coupe au milieu de la plus large bande vide qui sépare les boîtes (en z puis en x)"""
+    if len(boxes) == 1:
+        return [region]
+    best = None
+    for ax in (1, 0):
+        iv = sorted(range(len(boxes)), key=lambda i: boxes[i][ax]); hi = boxes[iv[0]][ax + 2]
+        for k in range(1, len(iv)):
+            a = boxes[iv[k]][ax]
+            if a > hi and (best is None or a - hi > best[0]):
+                best = (a - hi, ax, (hi + a) / 2, iv[:k], iv[k:])
+            hi = max(hi, boxes[iv[k]][ax + 2])
+    if best is None:
+        return None
+    _, ax, c, g1, g2 = best
+    r1, r2 = list(region), list(region); r1[ax + 2] = c; r2[ax] = c
+    p1, p2 = partage(r1, [boxes[i] for i in g1]), partage(r2, [boxes[i] for i in g2])
+    if p1 is None or p2 is None:
+        return None
+    out = [None] * len(boxes)
+    for i, z in zip(g1 + g2, p1 + p2):
+        out[i] = z
+    return out
+
+
+def recalage(murs_a, murs_b, res=0.01):
+    """décalage d du niveau b sur le niveau a (p_a = p_b − d) par corrélation des masques de murs (FFT, pic affiné au dixième de pixel),
+    et part des murs superposés (du plus petit des deux)"""
+    import numpy as np
+    from PIL import Image, ImageDraw
+    def bbox(ms):
+        xs = [x for p in ms for x, _ in p]; zs = [z for p in ms for _, z in p]
+        return min(xs), min(zs), max(xs), max(zs)
+    ba, bb_ = bbox(murs_a), bbox(murs_b)
+    W = max(ba[2] - ba[0], bb_[2] - bb_[0]) + 0.2; H = max(ba[3] - ba[1], bb_[3] - bb_[1]) + 0.2
+    nx, nz = int(2 * W / res) + 2, int(2 * H / res) + 2  # zéros sur la moitié : corrélation linéaire, sans repliement
+    def masque(ms, b):
+        im = Image.new('L', (nx, nz), 0); d = ImageDraw.Draw(im)
+        for p in ms:
+            d.polygon([((x - b[0]) / res + 5, (z - b[1]) / res + 5) for x, z in p], fill=1)
+        return np.asarray(im, np.float64)
+    A, B = masque(murs_a, ba), masque(murs_b, bb_)
+    C = np.fft.irfft2(np.fft.rfft2(A) * np.fft.rfft2(B).conj(), s=A.shape)
+    iz, ix = np.unravel_index(int(np.argmax(C)), C.shape)
+    def fin(c0, cm, cp):
+        den = cm - 2 * c0 + cp
+        return 0.5 * (cm - cp) / den if den < 0 else 0.0
+    sx = ix + fin(C[iz, ix], C[iz, ix - 1], C[iz, (ix + 1) % nx]); sz = iz + fin(C[iz, ix], C[iz - 1, ix], C[(iz + 1) % nz, ix])
+    sx = sx - nx if sx > nx / 2 else sx; sz = sz - nz if sz > nz / 2 else sz
+    rec = float(C[iz, ix] / max(1.0, min(A.sum(), B.sum())))
+    return (float(bb_[0] - ba[0] - sx * res), float(bb_[1] - ba[1] - sz * res)), rec
+
+
+def escaliers(zones, out):
+    """séries d'au moins 5 girons : traits parallèles de 0,6 à 1,4 m, à pas régulier de 0,18 à 0,34 m, pleins (traits, bords d'aplats) ou en tirets.
+    Rend [{zone, axe, largeur, pas, girons, tirets, coupe}] ; coupe = milieu de la ligne de coupe oblique qui traverse la volée."""
+    res = []
+    for zid, (zx0, zz0, zx1, zz1) in zones:
+        dans = lambda p: zx0 <= p[0] <= zx1 and zz0 <= p[1] <= zz1
+        segs = []  # (a, b, tiret)
+        for p in out['remplissages_blancs'] + out['remplissages_gris']:
+            xs, zs = [q[0] for q in p], [q[1] for q in p]
+            if max(xs) - min(xs) < 3 and max(zs) - min(zs) < 3 and dans(((min(xs) + max(xs)) / 2, (min(zs) + max(zs)) / 2)):
+                segs += [(p[j], p[(j + 1) % len(p)], False) for j in range(len(p))]
+        segs += [(a, b, False) for a, b in out['traits']]
+        segs += [(p[j], p[j + 1], True) for p in out['pointilles'] for j in range(len(p) - 1)]
+        segs = [(a, b, t) for a, b, t in segs if math.dist(a, b) >= 0.05 and dans(((a[0] + b[0]) / 2, (a[1] + b[1]) / 2))]
+        obliques = [(a, b) for a, b in out['traits'] if dans(((a[0] + b[0]) / 2, (a[1] + b[1]) / 2))]
+        angs = {}
+        for a, b, t in segs:
+            if math.dist(a, b) >= 0.3:
+                k = int(round(math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])))) % 180
+                angs[k] = angs.get(k, 0) + 1
+        vus = set()
+        for k0 in sorted(angs, key=lambda k: -angs[k]):
+            if angs[k0] < 5 or any(min(abs(k0 - v), 180 - abs(k0 - v)) <= 3 for v in vus):
+                continue
+            vus.add(k0); th = math.radians(k0); d = (math.cos(th), math.sin(th)); n = (-d[1], d[0])
+            rows = []
+            for a, b, t in segs:
+                ang = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])) % 180
+                if min(abs(ang - k0), 180 - abs(ang - k0)) > 2:
+                    continue
+                o = ((a[0] + b[0]) / 2 * n[0] + (a[1] + b[1]) / 2 * n[1])
+                t0, t1 = sorted((a[0] * d[0] + a[1] * d[1], b[0] * d[0] + b[1] * d[1]))
+                rows.append((o, t0, t1, t))
+            rows.sort(); lignes, cl = [], []
+            for r in rows + [None]:
+                if r is not None and (not cl or r[0] - cl[-1][0] <= 0.015):
+                    cl.append(r); continue
+                if cl:  # une droite : morceaux jointifs (trous de moins de 30 cm), chacun candidat giron
+                    iv = sorted((c[1], c[2], c[3], c[0]) for c in cl); cur = None
+                    for t0, t1, t, oc in iv + [(1e9, 1e9, False, 0)]:
+                        if cur and t0 - cur[1] <= 0.3:
+                            cur[1] = max(cur[1], t1); cur[2].append((t0, t1, t, oc)); continue
+                        if cur:
+                            L = cur[1] - cur[0]
+                            lt = sum(b - a for a, b, _, _ in cur[2]); acc = 0  # position : médiane pondérée par la longueur des morceaux
+                            for a, b, _, oc_ in sorted(cur[2], key=lambda r: r[3]):
+                                acc += b - a; o = oc_
+                                if acc >= lt / 2:
+                                    break
+                            u = [list(x) for x in sorted((a, b) for a, b, _, _ in cur[2])]; cov = []
+                            for a, b in u:
+                                if cov and a <= cov[-1][1]:
+                                    cov[-1][1] = max(cov[-1][1], b)
+                                else:
+                                    cov.append([a, b])
+                            tir = sum(b - a for a, b, t, _ in cur[2] if t)
+                            if 0.6 <= L <= 1.4 and sum(b - a for a, b in cov) >= 0.6 * L:
+                                lignes.append((o, cur[0], cur[1], tir >= 0.25 * L))
+                        cur = [t0, t1, [(t0, t1, t, oc)]]
+                cl = [r] if r is not None else []
+            lignes.sort(); pris = set()
+            while True:
+                best = []
+                for i in range(len(lignes)):
+                    if i in pris:
+                        continue
+                    ch = [i]; pas = None
+                    while True:
+                        o, t0, t1, _ = lignes[ch[-1]]; cand = []
+                        for j in range(ch[-1] + 1, len(lignes)):
+                            oj, u0, u1, _ = lignes[j]
+                            if oj - o > 0.34:
+                                break
+                            if j in pris or oj - o < 0.18 or min(t1, u1) - max(t0, u0) < 0.7 * min(t1 - t0, u1 - u0):
+                                continue
+                            if pas and abs(oj - o - pas) > 0.15 * pas:
+                                continue
+                            cand.append((abs(oj - o - pas) if pas else 0, oj - o, j))
+                        if not cand:
+                            break
+                        _, dp, j = min(cand); ch.append(j); pas = pas or dp
+                    if len(ch) > len(best):
+                        best = ch
+                if len(best) < 6:
+                    break
+                pris |= set(best); L = [lignes[i] for i in best]
+                sp = [b[0] - a[0] for a, b in zip(L, L[1:])]; pas = statistics.median(sp)
+                tm = statistics.median((l[1] + l[2]) / 2 for l in L); larg = statistics.median(l[2] - l[1] for l in L)
+                P = lambda o, t: [round(o * n[0] + t * d[0], 3), round(o * n[1] + t * d[1], 3)]
+                # coupe : trait oblique (15 à 75° des girons) qui traverse la volée sur au moins 30 cm
+                vol = Polygon([P(L[0][0], tm - larg / 2), P(L[-1][0], tm - larg / 2), P(L[-1][0], tm + larg / 2), P(L[0][0], tm + larg / 2)])
+                cs = []
+                for a, b in obliques:
+                    ang = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])) % 180; da = min(abs(ang - k0), 180 - abs(ang - k0))
+                    if 15 <= da <= 75:
+                        I = vol.intersection(LineString([a, b]))
+                        if not I.is_empty and I.length >= 0.3:
+                            cs.append(I.centroid)
+                res.append({'zone': zid, 'axe': [P(L[0][0], tm), P(L[-1][0], tm)], 'largeur': round(larg, 3), 'pas': round(pas, 3), 'girons': len(L) - 1,
+                            'tirets': sum(1 for l in L if l[3]), 'coupe': [round(statistics.mean(c.x for c in cs), 3), round(statistics.mean(c.y for c in cs), 3)] if cs else None})
+    return res
+
+
+def niveaux(out, labels):
+    """niveaux d'un logement dessinés sur la même page : bandes vides sur toute l'encre du plan (sans le cadre de page ni le cartouche),
+    groupes d'au moins 25 % de la masse de murs du plus grand. labels = [(x, z, texte)] en mètres. Rend (niveaux, ordre_incertain) ou (None, False)."""
+    W, H = out['emprise_murs'][1], out['emprise_murs'][3]
+    bx, murs = [], []  # boîtes de l'encre ; murs[i] = aire si l'élément est un mur
+    def ajoute(pts, aire=0.0):
+        xs, zs = [p[0] for p in pts], [p[1] for p in pts]; b = (min(xs), min(zs), max(xs), max(zs))
+        w, h = b[2] - b[0], b[3] - b[1]
+        if (w > 0.6 * W and h > 0.6 * H) or w > W + 1 or h > H + 1:  # cadre de page, cartouche, grand aplat de fond
+            return
+        bx.append(b); murs.append(aire)
+    for p in out['murs_noirs']:
+        ajoute(p, abs(shoelace(p)))
+    for k in ('remplissages_blancs', 'remplissages_gris', 'traits', 'pointilles', 'symboles'):
+        for p in out[k]:
+            ajoute(p)
+    for a in out['arcs']:
+        ajoute(a[:3])
+    for h in out['hachures']:
+        ajoute(h['poly'])
+    parts = xy_cut(list(range(len(bx))), bx, 0.6)
+    aire = [sum(murs[i] for i in p) for p in parts]; amax = max(aire or [0])
+    grp = []
+    for p, a in zip(parts, aire):
+        b = (min(bx[i][0] for i in p), min(bx[i][1] for i in p), max(bx[i][2] for i in p), max(bx[i][3] for i in p))
+        if amax and a >= 0.25 * amax and b[2] - b[0] >= 2.5 and b[3] - b[1] >= 2.5:
+            grp.append({'bb': b})
+    if len(grp) < 2:
+        return None, False
+    # étiquettes : même convention pour toute la page (toutes au-dessus de leur dessin, ou toutes en dessous), à moins de 1,5 m
+    lab = [(x, z, t) for x, z, t in labels if not any(g['bb'][0] <= x <= g['bb'][2] and g['bb'][1] <= z <= g['bb'][3] for g in grp)]
+    choix = None
+    for conv in ('dessus', 'dessous'):
+        aff, ok = {}, True
+        for x, z, t in lab:
+            cand = []
+            for k, g in enumerate(grp):
+                x0, z0, x1, z1 = g['bb']
+                dz = (z0 - z) if conv == 'dessus' else (z - z1)
+                if x0 - 1.5 <= x <= x1 + 1.5 and 0 < dz < 1.5:
+                    cand.append((dz + max(0, x0 - x, x - x1), k))  # à hauteur égale, le dessin au-dessus duquel elle est écrite
+            if cand:
+                dz, k = min(cand)
+                ok = ok and k not in aff; aff[k] = (dz, x, z, t)  # deux étiquettes pour un même dessin : convention rejetée
+        sc = (len(aff), -sum(v[0] for v in aff.values()))
+        if ok and aff and (choix is None or sc > choix[0]):
+            choix = (sc, aff)
+    for k, (dz, x, z, t) in (choix[1].items() if choix else []):
+        grp[k]['nom'] = ' '.join(t.split()); grp[k]['etiquette'] = [x, z]
+    # zones : cases disjointes coupées au milieu des bandes vides entre dessins (étiquette comprise), réduites au dessin et sa marge de 1,2 m
+    for g in grp:
+        b = g['bb']; e = g.get('etiquette') or [b[0], b[1]]
+        g['bz'] = (min(b[0], e[0] - 0.15), min(b[1], e[1] - 0.15), max(b[2], e[0] + 0.15), max(b[3], e[1] + 0.15))
+    region = [-1.2, -1.2, W + 1.2, H + 1.2]
+    cases = partage(region, [g['bz'] for g in grp])
+    if cases is None:
+        return None, False
+    for g, c in zip(grp, cases):
+        b = g['bz']; g['zone'] = [round(max(c[0], b[0] - 1.2), 3), round(max(c[1], b[1] - 1.2), 3), round(min(c[2], b[2] + 1.2), 3), round(min(c[3], b[3] + 1.2), 3)]
+    rg = [rang_niveau(g['nom']) if g.get('nom') else None for g in grp]
+    incertain = None in rg or len(set(rg)) < len(rg)
+    ordre = sorted(range(len(grp)), key=(lambda k: rg[k]) if not incertain else (lambda k: (-round(grp[k]['bb'][3], 1), grp[k]['bb'][0])))  # sinon : du bas de la page vers le haut
+    res = []
+    for o, k in enumerate(ordre):
+        g = grp[k]; z = g['zone']
+        ms = [p for p in out['murs_noirs'] if z[0] <= (min(q[0] for q in p) + max(q[0] for q in p)) / 2 <= z[2] and z[1] <= (min(q[1] for q in p) + max(q[1] for q in p)) / 2 <= z[3]]
+        g['ms'] = ms
+        if o == 0:
+            dec, rec = (0.0, 0.0), None
+        else:
+            dec, rec = recalage(grp[ordre[0]]['ms'], ms)
+        res.append({'id': f'n{o}', 'nom': g.get('nom'), 'ordre': o, 'zone': z, 'decalage': [round(dec[0], 3) + 0.0, round(dec[1], 3) + 0.0],  # + 0.0 : jamais de « -0.0 »
+                    'recouvrement': round(rec, 2) if rec is not None else None, 'etiquette': g.get('etiquette')})
+    return res, incertain
+
+
 def extract(pdf, outdir, pid, K_force=None):
     outdir = Path(outdir); outdir.mkdir(parents=True, exist_ok=True)
-    doc = pymupdf.open(pdf)
-    npage = choisir_page(doc); page = doc[npage]
+    doc = pymupdf.open(pdf); pages = pages_niveaux(doc) if len(doc) > 1 else None
+    if pages:  # un niveau par page : pages empilées sur une seule, lue comme une page à plusieurs niveaux
+        doc = empiler(doc, pages); npage = 0
+    else:
+        npage = choisir_page(doc)
+    page = doc[npage]
     if page.rotation:  # /Rotate : tracés, textes et images dans le repère de la page affichée (le fichier n'est pas modifié)
         page.remove_rotation()
     drawings = page.get_drawings()
@@ -493,7 +848,7 @@ def extract(pdf, outdir, pid, K_force=None):
         if g['type'] in ('f', 'fs') and k in ('black', 'white', 'grey'):
             for pts in fill_polys(g):
                 xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-                polys.append({'k': k, 'v': luminance(g.get('fill')), 'pts': pts, 'bb': (min(xs), min(ys), max(xs), max(ys)), 'area': abs(shoelace(pts))})
+                polys.append({'k': k, 'v': luminance(g.get('fill')), 'pts': pts, 'bb': (min(xs), min(ys), max(xs), max(ys)), 'area': abs(shoelace(pts)), 'sq': g.get('seqno')})
     area = lambda k, f=lambda p: True: sum(p['area'] for p in polys if p['k'] == k and f(p))
     if not raster and area('grey', lambda p: p['v'] < 0.55) > 3 * area('black'):  # murs en gris foncé
         for p in polys:
@@ -583,15 +938,28 @@ def extract(pdf, outdir, pid, K_force=None):
     # les petites icônes proches (nord, flèche d'entrée) restent à l'écart
     gl = sorted(groups.values(), key=lambda g: -g[0]); main = gl[0]
     bb = lambda ps: (min(p['bb'][0] for p in ps), min(p['bb'][1] for p in ps), max(p['bb'][2] for p in ps), max(p['bb'][3] for p in ps))
-    walls = list(main[1]); changed = True
-    while changed:
-        changed = False; B = bb(walls)
-        for g in gl[1:]:
-            if g[1][0] in walls or g[0] < 0.08 * main[0]:
-                continue
-            b = bb(g[1]); m2 = 2.5 * K
-            if b[0] - m2 < B[2] and B[0] - m2 < b[2] and b[1] - m2 < B[3] and B[1] - m2 < b[3]:
-                walls += g[1]; changed = True
+    walls = list(main[1])
+    def voisins():
+        changed = True
+        while changed:
+            changed = False; B = bb(walls)
+            for g in gl[1:]:
+                if g[1][0] in walls or g[0] < 0.08 * main[0]:
+                    continue
+                b = bb(g[1]); m2 = 2.5 * K
+                if b[0] - m2 < B[2] and B[0] - m2 < b[2] and b[1] - m2 < B[3] and B[1] - m2 < b[3]:
+                    walls.extend(g[1]); changed = True
+    voisins()
+    # autres niveaux du logement dessinés plus loin (côte à côte, pages empilées) : amas d'au moins 30 % de la masse, d'au moins 3 × 3 m,
+    # aux murs d'épaisseur comparable (le plan de situation du cartouche a des murs de 1 mm)
+    ep = lambda ps: statistics.median(2 * p['area'] / (Polygon(p['pts']).length or 1) for p in ps)
+    e0, n0 = ep(main[1]), len(walls)
+    for g in gl[1:]:
+        b = bb(g[1])
+        if g[1][0] not in walls and g[0] >= 0.3 * main[0] and b[2] - b[0] >= 3 * K and b[3] - b[1] >= 3 * K and 0.5 <= ep(g[1]) / (e0 or 1) <= 2:
+            walls.extend(g[1])
+    if len(walls) > n0:
+        voisins()
     X0 = min(p['bb'][0] for p in walls); Y0 = min(p['bb'][1] for p in walls)
     X1 = max(p['bb'][2] for p in walls); Y1 = max(p['bb'][3] for p in walls)
     M = 1.2 * K
@@ -676,7 +1044,7 @@ def extract(pdf, outdir, pid, K_force=None):
             pointilles.append([m(p) for p in Lc.simplify(0.02 * K).coords])
 
     out = {
-        'id': pid, 'source': Path(pdf).name, 'page': npage + 1, 'format': 2,  # 2 : un polygone par morceau d'aplat (indices de murs_noirs différents du format 1)
+        'id': pid, 'source': Path(pdf).name, 'page': pages[0] + 1 if pages else npage + 1, 'format': 2,  # 2 : un polygone par morceau d'aplat (indices de murs_noirs différents du format 1)
         'echelle': {'pt_par_m': round(K, 4), 'ech': f'1/{round(72 / 0.0254 / K)}', 'controle': scale_note, 'confiance': confiance}, 'raster': raster,
         'repere': 'mètres ; origine au coin haut-gauche des murs ; x vers la droite, z vers le bas',
         'legende': {'arcs': '[extrémité, extrémité, centre, rayon] : débattements de portes et fenêtres, pleins ou en tirets',
@@ -701,6 +1069,8 @@ def extract(pdf, outdir, pid, K_force=None):
         cx, cy = (w[0] + w[2]) / 2, (w[1] + w[3]) / 2
         (tz if inside(cx, cy) else tp_).append([*m((cx, cy)), w[4]] if inside(cx, cy) else [round(cx), round(cy), w[4]])
     out['textes'] = tz; out['textes_hors_plan'] = tp_
+    if pages:
+        out['pages'] = [i + 1 for i in pages]
     for w, v in dim_words:
         cx, cy = (w[0] + w[2]) / 2, (w[1] + w[3]) / 2
         if not inside(cx, cy):
@@ -709,6 +1079,22 @@ def extract(pdf, outdir, pid, K_force=None):
         dl = ligne_de_cote((cx, cy), u, tw, size, dimsegs)
         if dl and abs(dl[0] / K - v) / v < 0.03:
             out['cotes'].append([*m(dl[1]), *m(dl[2]), w[4]])
+
+    # niveaux dessinés sur la page (duplex, triplex) : zones, noms, ordre, recalage, escaliers ; rien pour un plan à un seul niveau
+    vis = [((w[0] + w[2]) / 2, (w[1] + w[3]) / 2) for w in words]
+    labels = []
+    for (x0, y0, x1, y1), _, _, t in tlines:
+        t = ' '.join(t.split()); cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        if NIV.match(t) and inside(cx, cy) and any(x0 <= x <= x1 and y0 <= y <= y1 for x, y in vis):
+            labels.append((*m((cx, cy)), t))
+    nv, incertain = niveaux(out, labels)
+    if nv:
+        out['niveaux'] = nv
+        if incertain:
+            out['ordre_incertain'] = True
+        out['escaliers_detectes'] = escaliers([(n['id'], n['zone']) for n in nv], out)
+        out['legende']['niveaux'] = "dessins des niveaux côte à côte sur la page {id, nom, ordre (du bas vers le haut), zone [x0,z0,x1,z1], decalage} : p_commun = p − decalage"
+        out['legende']['escaliers_detectes'] = 'séries de girons {zone, axe, largeur, pas, girons, tirets, coupe} : coupe = ligne de coupe oblique, côté plein = bas de la volée'
 
     # images : plan pour l'IA, calque transparent ; le cadre est rogné à la page quand la marge en sort
     clip = pymupdf.Rect(rx0, ry0, rx1, ry1) & page.rect
@@ -728,8 +1114,140 @@ def extract(pdf, outdir, pid, K_force=None):
         out['underlay'] = {'file': f'plan-{pid}.png', 'x': round((clip.x0 - X0) / K, 3), 'z': round((clip.y0 - Y0) / K, 3), 'w': round(clip.width / K, 3), 'h': round(clip.height / K, 3)}
     except ImportError:
         pass
+    if not raster:  # tracés que la lecture ne reçoit pas (clés « _ ») : épaisseurs, rectangles, cercles, murs vus à travers leur découpe
+        out.update(complements(page, K, X0, Y0, inside, murs))
+    else:
+        out['_complements'] = COMPLEMENTS
     (outdir / 'extract.json').write_text(json.dumps(out, ensure_ascii=False))
     return out
+
+
+# ---------- compléments (constats du 28/09/2026) ----------
+# Clés « _ » d'extract.json : jamais envoyées à l'IA (build_messages les retire), lues par la chaîne (murs.py) et la visite de contrôle.
+# COMPLEMENTS change quand leur contenu change : completer() les recalcule pour un plan déjà lu, sans toucher au reste (indices de murs_noirs
+# compris, auxquels renvoie la lecture gardée).
+COMPLEMENTS = 1
+
+
+def decoupes(page):
+    """découpe (chemin de « clip ») qui s'applique à chaque tracé, par numéro de tracé : polygone shapely en points de page, None sans
+    découpe. Pile des découpes de get_drawings(extended=True) : une découpe de niveau n vaut pour les tracés de niveau > n qui suivent,
+    jusqu'au prochain élément de niveau ≤ n ; découpes imbriquées intersectées."""
+    from shapely.geometry import box
+    pile, res = [], {}
+    for d in page.get_drawings(extended=True):
+        lv = d.get('level', 0)
+        while pile and pile[-1][0] >= lv:
+            pile.pop()
+        if d['type'] == 'clip':
+            sc = d.get('scissor'); g = box(sc.x0, sc.y0, sc.x1, sc.y1) if sc else None
+            try:
+                ps = [Polygon(q).buffer(0) for q in fill_polys(d)]
+                ch = unary_union([q for q in ps if not q.is_empty]) if ps else None
+            except Exception:
+                ch = None
+            if ch is not None and not ch.is_empty:
+                g = ch if g is None else g.intersection(ch)
+            if pile and pile[-1][1] is not None:
+                g = pile[-1][1] if g is None else g.intersection(pile[-1][1])
+            pile.append((lv, g))
+        elif d['type'] == 'group':
+            pile.append((lv, pile[-1][1] if pile else None))
+        else:
+            res[d.get('seqno')] = pile[-1][1] if pile else None
+    return res
+
+
+def complements(page, K, X0, Y0, inside, murs):
+    """_murs_decoupes : {indice de murs_noirs: [polygones]} pour chaque aplat que la découpe du PDF rogne (D201 : trois bouts de 30 cm
+    hors du logement, blancs au rendu, pris pour des murs) ; liste vide s'il disparaît.
+    _segments : [x0, z0, x1, z1, épaisseur en pt] de chaque trait plein de plus de 4 cm (lignes et côtés des rectangles), pour distinguer
+    une cloison (trait gras) d'une façade de coffret ou de placard (trait fin).
+    _quads : [[4 coins], épaisseur, numéro de tracé] de chaque rectangle ou quadrilatère tracé (items 're' et 'qu', absents de « traits ») :
+    symbole de gaine technique (un carré et un triangle dans le même tracé), meubles et équipements.
+    _cercles : [x, z, rayon, nature] des petits cercles (3 à 15 cm de rayon) tracés ou remplis : descente d'eaux pluviales."""
+    m = lambda p: [round((p[0] - X0) / K, 3), round((p[1] - Y0) / K, 3)]
+    dans = lambda p: inside(p[0], p[1])
+    drawings = page.get_drawings()
+    out = {'_complements': COMPLEMENTS, '_murs_decoupes': {}, '_segments': [], '_quads': [], '_cercles': []}
+    try:
+        clip = decoupes(page)
+    except Exception:
+        clip = {}
+    for i, p in enumerate(murs):
+        c = clip.get(p.get('sq'))
+        if c is None or c.is_empty:
+            continue
+        g = Polygon(p['pts']).buffer(0)
+        if g.within(c.buffer(0.01 * K)):
+            continue
+        r = g.intersection(c)
+        if g.area - r.area < max(1e-4 * K * K, 0.01 * g.area):
+            continue
+        out['_murs_decoupes'][str(i)] = [[m(q) for q in P.exterior.coords[:-1]] for P in pieces(r) if P.area > 1e-4 * K * K]
+    cercles = []
+    for g in drawings:
+        ck = color_kind(g.get('color')); fk = color_kind(g.get('fill'))
+        trait = g['type'] in ('s', 'fs') and ck in ('black', 'grey') and g.get('dashes') in (None, '[] 0', '')
+        w = round(g.get('width') or 0, 2)
+        for it in g['items']:
+            if it[0] in ('re', 'qu'):
+                r = it[1]
+                q = [(r.x0, r.y0), (r.x1, r.y0), (r.x1, r.y1), (r.x0, r.y1)] if it[0] == 're' else [(r.ul.x, r.ul.y), (r.ur.x, r.ur.y), (r.lr.x, r.lr.y), (r.ll.x, r.ll.y)]
+                if not all(dans(a) for a in q) or max(math.dist(q[j], q[(j + 1) % 4]) for j in range(4)) / K < 0.02:
+                    continue
+                if trait:
+                    out['_quads'].append([[m(a) for a in q], w, g.get('seqno')])
+                    for j in range(4):
+                        a, b = q[j], q[(j + 1) % 4]
+                        if math.dist(a, b) / K >= 0.04:
+                            out['_segments'].append([*m(a), *m(b), w])
+            elif it[0] == 'l' and trait:
+                a, b = (it[1].x, it[1].y), (it[2].x, it[2].y)
+                if dans(a) and dans(b) and math.dist(a, b) / K >= 0.04:
+                    out['_segments'].append([*m(a), *m(b), w])
+        # petits cercles : contour d'au moins 8 points (ou courbes), tous à ±12 % du rayon autour de leur centre
+        for s_ in subpaths(g):
+            if len(s_) < 8 or not dans(s_[0]):
+                continue
+            cx, cy = sum(p[0] for p in s_) / len(s_), sum(p[1] for p in s_) / len(s_)
+            ds = [math.dist((cx, cy), p) for p in s_]; r = sum(ds) / len(ds)
+            if 0.03 <= r / K <= 0.15 and max(abs(d - r) for d in ds) <= 0.12 * r:
+                nat = fk if g['type'] in ('f', 'fs') and fk else 'trait'
+                cercles.append([*m((cx, cy)), round(r / K, 3), nat])
+    for c in cercles:  # un même cercle tracé et rempli, ou dessiné deux fois : une seule fois (le rempli d'abord)
+        if not any(abs(c[0] - o[0]) < 0.01 and abs(c[1] - o[1]) < 0.01 and abs(c[2] - o[2]) < 0.01 for o in out['_cercles']):
+            out['_cercles'].append(c)
+    return out
+
+
+def completer(dossier):
+    """extract.json d'un plan déjà lu, sans les compléments de la version courante : recalculés depuis le PDF (même extraction, dans un
+    dossier temporaire) et ajoutés tels quels, si l'extraction refaite retrouve exactement les mêmes murs (sinon rien n'est touché : la
+    lecture gardée renvoie aux indices de murs_noirs). Renvoie l'extract, complété ou non."""
+    import tempfile
+    dossier = Path(dossier); f = dossier / 'extract.json'
+    try:
+        e = json.loads(f.read_text())
+    except (OSError, ValueError):
+        return None
+    if e.get('_complements') == COMPLEMENTS:
+        return e
+    src = dossier / (e.get('source') or 'source.pdf')
+    if not src.exists():
+        return e
+    try:
+        with tempfile.TemporaryDirectory() as t:
+            ech = e.get('echelle') or {}
+            n = extract(src, t, e.get('id', 'plan'), K_force=ech.get('pt_par_m') if ech.get('confiance') == 'saisie' else None)
+    except (Exception, SystemExit):
+        return e
+    a, b = e.get('murs_noirs', []), n.get('murs_noirs', [])
+    if len(a) != len(b) or any(len(p) != len(q) or any(abs(u[0] - v[0]) > 0.003 or abs(u[1] - v[1]) > 0.003 for u, v in zip(p, q)) for p, q in zip(a, b)):
+        return e
+    e.update({k: v for k, v in n.items() if k.startswith('_')})
+    f.write_text(json.dumps(e, ensure_ascii=False))
+    return e
 
 
 if __name__ == '__main__':

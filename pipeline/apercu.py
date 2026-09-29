@@ -6,7 +6,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-VERT, ORANGE, MAGENTA = (0, 150, 60, 235), (230, 110, 0, 255), (215, 0, 175, 255)
+VERT, ORANGE, MAGENTA, CYAN = (0, 150, 60, 235), (230, 110, 0, 255), (215, 0, 175, 255), (0, 170, 210, 255)
 
 
 def _police(taille):
@@ -71,9 +71,33 @@ def dessine(folder, P, extract=None, calib=None, nom='relecture.png'):
             _equipement(d, fx, P2, lw, font, i)
         except (KeyError, TypeError, IndexError, ValueError):
             continue
+    for e in P.get('escaliers') or []:  # plusieurs niveaux : escaliers de la lecture, repère de la page
+        try:
+            _escalier(d, e, P2, lw, font)
+        except (KeyError, TypeError, IndexError, ValueError, ZeroDivisionError):
+            continue
     out = Image.alpha_composite(im.convert('RGBA'), base).convert('RGB')
     out.save(folder / nom)
     return folder / nom
+
+
+def _escalier(d, e, P2, lw, font):
+    """emprise des marches et foulée fléchée vers le haut (niveau bas), trémie hachurée et garde-corps (niveau haut)"""
+    f, w = e['foulee'], e.get('largeur', 0.9)
+    for a, b in zip(f, f[1:]):
+        L = math.dist(a, b); u = ((b[0] - a[0]) / L, (b[1] - a[1]) / L); n = (-u[1] * w / 2, u[0] * w / 2)
+        d.polygon([P2((a[0] + n[0], a[1] + n[1])), P2((b[0] + n[0], b[1] + n[1])), P2((b[0] - n[0], b[1] - n[1])), P2((a[0] - n[0], a[1] - n[1]))], outline=CYAN, width=lw)
+    d.line([P2(p) for p in f], fill=CYAN, width=lw)
+    a, b = f[-2], f[-1]; L = math.dist(a, b); u = ((b[0] - a[0]) / L, (b[1] - a[1]) / L); n = (-u[1], u[0])
+    d.polygon([P2(b), P2((b[0] - u[0] * 0.25 + n[0] * 0.12, b[1] - u[1] * 0.25 + n[1] * 0.12)), P2((b[0] - u[0] * 0.25 - n[0] * 0.12, b[1] - u[1] * 0.25 - n[1] * 0.12))], fill=CYAN)
+    d.text(P2(f[0]), f"{e.get('contremarches', '?')} CM", fill=CYAN, font=font, anchor='mm')
+    t = e['tremie']; d.polygon([P2(p) for p in t], fill=CYAN[:3] + (60,), outline=CYAN, width=lw)
+    xs, zs = [p[0] for p in t], [p[1] for p in t]
+    for k in range(1, 12):  # hachures de la trémie
+        x = min(xs) + (max(xs) - min(xs)) * k / 12
+        d.line([P2((x, min(zs))), P2((x - (max(zs) - min(zs)), max(zs)))], fill=CYAN[:3] + (140,), width=1)
+    for g in e.get('garde_corps') or []:
+        d.line([P2(p) for p in g], fill=CYAN, width=lw * 2)
 
 
 def _ouverture(d, oid, o, W, P2, lw, font, coul=ORANGE):
@@ -154,6 +178,11 @@ def _equipement(d, f, P2, lw, font, i):
         d.line([at(0.18 + 0.25 * (1 + math.cos(a)), 0.18 * math.sin(a)) for a in [j / 24 * 2 * math.pi for j in range(25)]], fill=MAGENTA, width=lw)
         d.text(at(0.43, 0), lab, fill=MAGENTA, font=font, anchor='mm')
         return
+    if not (isinstance(f.get('x'), list) and isinstance(f.get('z'), list)):  # descente EP (dep : p et r) ou équipement ponctuel
+        c = P2(f['p']); rr = max(lw * 2, (P2((f['p'][0] + (f.get('r') or 0.05), f['p'][1]))[0] - c[0]))
+        d.ellipse([c[0] - rr, c[1] - rr, c[0] + rr, c[1] + rr], outline=MAGENTA, width=lw)
+        d.text((c[0], c[1] - rr - lw * 4), lab, fill=MAGENTA, font=font, anchor='mm')
+        return
     x0, x1 = sorted(f['x']); z0, z1 = sorted(f['z'])
     d.rectangle([P2((x0, z0)), P2((x1, z1))], outline=MAGENTA, width=lw)
     if t in ('vanity', 'towel') and f.get('dir'):
@@ -171,6 +200,23 @@ def _equipement(d, f, P2, lw, font, i):
         if seg:
             d.line([P2(seg[0]), P2(seg[1])], fill=MAGENTA, width=lw * 3)
     d.text(P2(((x0 + x1) / 2, (z0 + z1) / 2)), lab, fill=MAGENTA, font=font, anchor='mm')
+
+
+EXEMPLES = [  # un équipement de chaque type de moteur/SCHEMA.md, sous ses deux formes (rectangle x/z, ou point p)
+    {'type': 'shower', 'x': [0.2, 1.1], 'z': [0.2, 1.1], 'drain': [0.4, 0.4]}, {'type': 'bath', 'x': [0.2, 0.9], 'z': [1.2, 2.9]},
+    {'type': 'wc', 'p': [1.5, 0.2], 'dir': [0, 1]}, {'type': 'vanity', 'x': [1.2, 1.8], 'z': [1.2, 1.7], 'dir': [0, 1]},
+    {'type': 'towel', 'x': [1.2, 1.7], 'z': [2.0, 2.06], 'dir': [0, -1]}, {'type': 'tableau', 'x': [2.0, 2.4], 'z': [0.2, 0.4]},
+    {'type': 'placard', 'x': [2.0, 2.8], 'z': [1.0, 1.6], 'face': 'w'}, {'type': 'dep', 'p': [2.6, 2.6], 'r': 0.05}, {'type': 'dep', 'p': [2.6, 2.9]}]
+
+
+def auto_test():
+    """chaque type d'équipement se dessine et a une emprise, sans exception : appelé avant toute relecture payante.
+    Sinon, le dessin l'omet en silence (la relecture croit à un oubli) et l'arbitrage échoue (correction gardée sans vérification)."""
+    im = Image.new('RGBA', (400, 400)); d = ImageDraw.Draw(im); P2 = lambda p: (40 + p[0] * 100, 40 + p[1] * 100)
+    for i, f in enumerate(EXEMPLES):
+        _equipement(d, f, P2, 2, _police(12), i)
+        e = emprise(f)
+        assert len(e) == 4 and e[0] <= e[2] and e[1] <= e[3], f"emprise fausse pour {f['type']}"
 
 
 def zooms(folder, P, extract=None, calib=None, image='relecture.png', cote=760, marge=0.55):
@@ -197,4 +243,22 @@ def zooms(folder, P, extract=None, calib=None, image='relecture.png', cote=760, 
         dd.text((6, 8), f"{r.get('name', r['id'])} : plan d'origine", fill=(0, 0, 0), font=font)
         dd.text((a.width + 30, 8), f"[{r['id']}] lecture", fill=(0, 120, 45), font=font)
         p = folder / f"zoom-{r['id']}.png"; comp.save(p); out.append((r['id'], p))
+    for j, e in enumerate(P.get('escaliers') or []):  # plusieurs niveaux : un zoom sur la volée et un sur la trémie
+        for cote_, pts in (('bas', e.get('foulee') or []), ('haut', e.get('tremie') or [])):
+            if len(pts) < 2:
+                continue
+            xs = [p[0] for p in pts]; zs = [p[1] for p in pts]
+            box = (int(ox + (min(xs) - marge - 0.6) * k), int(oy + (min(zs) - marge - 0.6) * k), int(ox + (max(xs) + marge + 0.6) * k), int(oy + (max(zs) + marge + 0.6) * k))
+            box = (max(0, box[0]), max(0, box[1]), min(orig.width, box[2]), min(orig.height, box[3]))
+            if box[2] - box[0] < 20 or box[3] - box[1] < 20:
+                continue
+            a, b = orig.crop(box), lu.crop(box)
+            f = cote / max(a.width, a.height)
+            a = a.resize((max(1, int(a.width * f)), max(1, int(a.height * f))), Image.LANCZOS); b = b.resize(a.size, Image.LANCZOS)
+            comp = Image.new('RGB', (a.width * 2 + 24, a.height + 40), 'white')
+            comp.paste(a, (0, 40)); comp.paste(b, (a.width + 24, 40)); dd = ImageDraw.Draw(comp)
+            nom = f"escalier-{j + 1}-{cote_}"
+            dd.text((6, 8), f"Escalier {j + 1}, {'volée (niveau bas)' if cote_ == 'bas' else 'trémie (niveau haut)'} : plan d'origine", fill=(0, 0, 0), font=font)
+            dd.text((a.width + 30, 8), f"[{nom}] lecture", fill=(0, 120, 45), font=font)
+            p = folder / f"zoom-{nom}.png"; comp.save(p); out.append((nom, p))
     return out

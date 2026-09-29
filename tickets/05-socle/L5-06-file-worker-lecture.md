@@ -5,18 +5,18 @@
 | 5 · Socle en ligne | P0 | L (3 à 5 j) | L4-04, L5-05, L5-07, L5-15 | `service/` | À faire |
 
 ## Pourquoi
-Aujourd'hui la file tient dans la mémoire d'un processus (`RUNNING`, `SLOTS`, `pipeline/serveur.py:23-24`), un redémarrage passe tout en erreur (`reprise_au_demarrage`, `:674`), l'analyse n'a aucun délai et la calibration relance `extract()` dans la requête HTTP (audit A1, A2, A10). Chaque « Relancer » peut repayer une lecture (B8). Ce ticket met la chaîne existante, découpée en étapes par L4-04, derrière une file Postgres : sous-processus bornés en temps et en mémoire, battement de cœur, reprise sans repayer après un arrêt brutal, une relance payante au plus, état en base pour l'écran « chantier ».
+Aujourd'hui la file tient dans la mémoire d'un processus (`RUNNING`, `SLOTS`, `pipeline/serveur.py:23-24`), un redémarrage passe tout en erreur (`reprise_au_demarrage`, `:779`), l'analyse n'a aucun délai et la calibration relance `extract()` dans la requête HTTP (audit A1, A2, A10). Chaque « Relancer » peut repayer une lecture (B8). Ce ticket met la chaîne existante, découpée en étapes par L4-04, derrière une file Postgres : sous-processus bornés en temps et en mémoire, battement de cœur, reprise sans repayer après un arrêt brutal, une relance payante au plus, état en base pour l'écran « chantier ».
 
 ## À faire
 1. Procrastinate sur la même base (schéma appliqué par une migration Alembic), files `analyse`, `lecture`, `rendu`. La file `rendu` ne fait qu'appeler l'exécutant de L5-10 ; tant qu'il n'existe pas, le travail s'arrête en `attente_rendu`.
-2. Tables `travaux` et `etapes` (ARCHITECTURE § 4.2), avec l'index unique `un_travail_actif_par_plan` qui remplace `reserver` (`pipeline/serveur.py:444`).
+2. Tables `travaux` et `etapes` (ARCHITECTURE § 4.2), avec l'index unique `un_travail_actif_par_plan` qui remplace `reserver` (`pipeline/serveur.py:548`).
 3. Worker `service/worker/lecture.py` (image `worker-lecture`). Pour chaque étape (`analyser`, `calibrer`, `qualifier`, `lire`, `controler` de `pipeline/etapes.py`) :
    - le processus parent télécharge les entrées dans un dossier temporaire organisé comme `plans/<id>/` (L5-02), lance **un sous-processus** `python -m service.worker.etape <travail_id> <etape>`, puis téléverse les sorties ;
    - le sous-processus reçoit seulement le dossier, la configuration résolue (L4-01) et, pour `lire` et `qualifier`, la clé IA choisie par L5-09 selon la source du lot (R23) ; ni identifiants de base ni identifiants S3 ;
-   - limites : mémoire (`RLIMIT_AS`, 2 Go pour la lecture, 1,5 Go pour l'analyse, à mesurer), délai (analyse 2 min, lecture 30 min, contrôle 15 min) ; au dépassement, le groupe de processus est tué avec son Chrome (logique d'`enfant` et `arreter`, `:329-337`) ;
+   - limites : mémoire (`RLIMIT_AS`, 2 Go pour la lecture, 1,5 Go pour l'analyse, à mesurer), délai (analyse 2 min, lecture 30 min, contrôle 15 min). À mesurer aussi sur la duplex 3081-613 : recalage des niveaux par corrélation des murs, pages empilées. Pour le contrôle, mesurer avec le test d'immersion `etancheite` (grille de cubes de 2 cm sur tous les maillages) ; au dépassement, le groupe de processus est tué avec son Chrome (logique d'`enfant` et `arreter`, `:329-337`) ;
    - la progression remonte par des lignes JSON sur la sortie standard ; le parent l'écrit en base par `SuiviBase` (interface `Suivi` de L4-04) : `travaux.etape`, `pct` (jamais en baisse), `etapes` (durée, `code_erreur`, `detail_technique` interne).
 4. Protection des lectures payées : pendant `lire`, le parent téléverse dans l'espace privé, **au fil de l'eau** (toutes les 5 s), chaque fichier nouveau ou modifié parmi `reponse-brute*.txt`, `reponse-ia.json`, `relecture-ia.json`, `appels-ia.json`. Un arrêt brutal ne perd alors que l'appel en cours.
-5. Battement de cœur : `travaux.battement_le` mis à jour toutes les 30 s par le parent. Tâche périodique (chaque minute) : un travail `en_cours` sans battement depuis plus de 2 min est remis en file à la même étape ; la lecture reprend depuis la réponse gardée, sans nouvel appel pour ce qui est déjà gardé (`read_plan`, `pipeline/lire.py:1308`).
+5. Battement de cœur : `travaux.battement_le` mis à jour toutes les 30 s par le parent. Tâche périodique (chaque minute) : un travail `en_cours` sans battement depuis plus de 2 min est remis en file à la même étape ; la lecture reprend depuis la réponse gardée, sans nouvel appel pour ce qui est déjà gardé (`read_plan`, `pipeline/lire.py:1480`).
 6. Relances : une reprise qui ne rappelle pas l'IA est illimitée. Une reprise qui doit repayer une lecture incrémente `relances_payantes` ; au-delà de 1, le travail passe `echec`, l'équipe reprend la main (L5-17). Toutes les passes et relances d'un plan restent dans le même budget de 3 $ (R6, L5-09). Le bouton « Réessayer » de l'utilisateur suit la même règle.
 7. Routes :
    - `POST /api/plans/{id}/calibration` : validation des saisies reprise de `calibration` (`:634` : mètres entre 0,30 et 25, points à plus de 40 px), puis étape `calibrer` en file ; plus aucun `extract()` dans la requête ;
@@ -47,7 +47,7 @@ Aujourd'hui la file tient dans la mémoire d'un processus (`RUNNING`, `SLOTS`, `
 - produit/ARCHITECTURE.md § 2.3, § 4.2 (`travaux`, `etapes`), § 4.3, § 5.6, § 7.2, § 8.2, § 9.2, M2.6.
 - produit/recherche/audit-code.md A1, A2, A10, B8, B10 ; produit/OFFRES.md § 6.4, § 6.7.
 - produit/PARCOURS.md A7 (cas limites), A15 ; produit/MESSAGES.md § 7.4, § 7.12.
-- `pipeline/serveur.py:23-25`, `:132` (`analyse`), `:289` (`lecture`), `:329-337` (`enfant`, `arreter`), `:346` (`controle`), `:419` (`run`), `:444` (`reserver`), `:634` (`calibration`), `:674` ; `pipeline/lire.py:1308` (`read_plan`).
+- `pipeline/serveur.py:23-25`, `:166` (`analyse`), `:352` (`lecture`), `:431-439` (`enfant`, `arreter`), `:448` (`controle`), `:523` (`run`), `:548` (`reserver`), `:739` (`calibration`), `:779` ; `pipeline/lire.py:1480` (`read_plan`).
 
 ## Hors périmètre
 - Écran « chantier » : L6-03. Qualification étendue aux PDF : L6-02. Budgets IA : L5-09.

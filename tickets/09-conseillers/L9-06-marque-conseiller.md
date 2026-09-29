@@ -16,7 +16,7 @@ Les pages de visite envoyées aux prospects doivent être à l'image du cabinet 
    - logo : PNG, JPEG ou SVG de 1 Mo au plus ; un SVG est assaini ou converti en PNG côté serveur (il peut contenir du script) ; dimensions normalisées ; original dans l'espace privé (`org/<id>/reglages/`), copie publiée sous un préfixe aléatoire.
 4. **`reglages.json`** servi par l'application à `visite.<domaine>/v/<jeton>/reglages.json` (et pour la vue propriétaire) quand le plan appartient à une organisation pro : champs publics de la version active seulement ; 404 pour un particulier ; `Cache-Control: private, max-age=60`.
 5. **Petit diff [M] dans `moteur/ui.js`** (M4.2) :
-   - `boot()` lit `reglages.json` en option juste après `plan.json` (`ui.js:439`) ; absent ou illisible → apparence actuelle, sans message ;
+   - `boot()` lit `reglages.json` en option juste après `plan.json` (`ui.js:447`) ; absent ou illisible → apparence actuelle, sans message ;
    - jetons `--accent` et `--accent-ink` (clair et sombre, `moteur/visite.css:1-16`) posés par `document.documentElement.style.setProperty`, permis par la CSP ;
    - logo dans la case d'identité du cartouche (`.cart-id`, `pageHTML`) ; mot d'accueil et coordonnées dans la colonne de la galerie (`g-side`) ; textes insérés par `textContent` ou `esc()` ;
    - la mention non contractuelle et la signature « Visite réalisée avec Sur Pièce » restent.
@@ -36,7 +36,8 @@ Les pages de visite envoyées aux prospects doivent être à l'image du cabinet 
 - `couleur_ajustee` (à ajouter à `SUIVI.md`, `PARCOURS.md` § 8.1).
 
 ## Points d'attention
-- **Coordination** : diff [M] petit et isolé, sur une branche courte, pendant le travail sur les duplex ; `engine.js` n'est pas touché ; prévenir l'agent des duplex avant fusion.
+- **Coordination** : diff [M] petit et isolé, sur une branche courte, après la fusion du travail sur les niveaux (27/09/2026) et en accord avec les corrections de navigation (L1-15) et la qualité adaptative (L4-12) ; `engine.js` n'est pas touché. Au point 5, `boot` est désormais en `ui.js:445` (relevé le 27/09/2026).
+- **Visionneuse 360°** (L4-16) : proposition, elle lit le même `reglages.json` (logo, accent) sur la page prospect, sans diff [M].
 - **Moteur versionné** : les visites publiées avec une version antérieure ne lisent pas `reglages.json`. Les rejouer sans IA (L5-17) pour qu'elles prennent la marque, ou l'accepter pour les visites déjà envoyées.
 - **Partage avec L9-04** : la barre de la page prospect (`prospect.js`, bouton d'intérêt, téléphone) est dans L9-04 ; ce ticket ne fait que la marque dans la visite. Garder une seule source de coordonnées (`reglages_organisation.textes`).
 - **Réglages sans ticket** : « choix et ordre des photos » (Cabinet) est sans objet au lancement (**Tranché : R1** : 2 photos, galerie complète seulement avec L13-02, `OFFRES.md` § 3.5) ; la vue d'accueil et la hauteur sous plafond par défaut (Équipe) sont prises par L9-07 ; la fiche PDF aux couleurs du cabinet n'a pas de ticket.
@@ -45,7 +46,7 @@ Les pages de visite envoyées aux prospects doivent être à l'image du cabinet 
 ## Références
 - produit/ARCHITECTURE.md M4.2, § 4.2 (`reglages_organisation`), § 6.2, § 7.3, § 8.1 ; produit/OFFRES.md § 3.3, § 3.5.
 - produit/MARQUE.md § 5.2, § 9.1 à § 9.3, § 10 ; produit/PARCOURS.md B9, § 8.1 ; produit/MESSAGES.md § 7.9, § 8.5.
-- `moteur/ui.js:439` (`boot`, lecture de `plan.json`), `pageHTML` (`.cart-id`, `g-side`) ; `moteur/visite.css:1-16` (jetons).
+- `moteur/ui.js:447` (`boot`, lecture de `plan.json`), `pageHTML` (`.cart-id`, `g-side`) ; `moteur/visite.css:1-16` (jetons).
 
 ## Hors périmètre
 - Page prospect, bouton d'intérêt, consentement : L9-04. Thème complet et domaines des clients : L11-01, L11-02.

@@ -18,7 +18,7 @@ Version du 27/09/2026. **Proposition à valider par l'utilisateur.** Alignée le
 **Sources.**
 - `OFFRES.md`, `MARQUE.md`, `ARCHITECTURE.md`, `CLAUDE.md`.
 - `recherche/` : audit-code, marche, suivi, auth-paiement, hebergement, juridique, nom.
-- L'existant, relu le 27/09/2026 : `pipeline/accueil.html` (écran « chantier », calibration au clic), `pipeline/serveur.py` (refus motivés, analyse, qualification), `moteur/ui.js` (galerie, bouton `g-cta`, fiche). Un autre agent modifie `pipeline/` et `moteur/` : les numéros de ligne peuvent bouger. Rien n'y est modifié ici.
+- L'existant, relu le 27/09/2026 : `pipeline/accueil.html` (écran « chantier », calibration au clic), `pipeline/serveur.py` (refus motivés, analyse, qualification), `moteur/ui.js` (galerie, bouton `g-cta`, fiche). Le travail sur les niveaux (fini le 27/09/2026, non commité) a modifié `pipeline/` et `moteur/` : les numéros de ligne peuvent avoir bougé. Rien n'y est modifié ici.
 
 **Documents écrits en parallèle, lus le 27/09/2026 à 12 h 28.** Ils peuvent encore évoluer.
 - **`MESSAGES.md`** est le catalogue des textes. Ce document cite ses **clés** (par exemple `depot.reconnu.titre`) et ses e-mails (E1 à E15). Un texte absent du catalogue est proposé ici et marqué **« à ajouter »**.
@@ -35,7 +35,7 @@ Version du 27/09/2026. **Proposition à valider par l'utilisateur.** Alignée le
 - Le compte n'est demandé qu'au clic sur « Lancer mon plan offert » : Google ou un e-mail, deux cases, pas de carte.
 - Le chantier démarre dès que l'e-mail est vérifié. On peut fermer l'onglet : un e-mail prévient quand c'est prêt.
 - Après la vérification avant livraison, l'écran d'attente montre en direct la **vue du dessus 3D découpée**, puis le **plan 2D coté**, puis **2 photos** (D5, L6-03).
-- L'aperçu gratuit ne contient que ces images, les surfaces et les points à faire confirmer : **ni moteur ni `plan.json`** ne sont envoyés au navigateur (D6, R1, R4). Il est publié dès que la vue du dessus et le plan 2D sont prêts ; une photo qui échoue est omise sans bloquer (R2).
+- L'aperçu gratuit ne contient que ces images, les surfaces et les points à faire confirmer : **ni moteur ni `plan.json`** ne sont envoyés au navigateur (D6, R1, R4). Décision de principe du 27/09/2026 (n° 15) : la visite 360° d'arrêt en arrêt, en panoramas rendus par le serveur, entre dans toutes les visites et deviendra probablement l'offre gratuite, à confirmer par son coût de rendu (L1-16 ; mise en service L6-13). Il est publié dès que la vue du dessus et le plan 2D sont prêts ; une photo qui échoue est omise sans bloquer (R2).
 - La visite se débloque pour 29 € TTC, **sans nouvelle lecture ni nouvelle attente** : elle se calcule dans le navigateur (D5). Pas de galerie complète au lancement (L13-02, R1).
 - **Bêta fermée** (lot 6) : dépôt réservé aux invités, aucun achat ni prix proposé. Ouverture à tous et vente en L8-07 (R13).
 - Un échec ne décompte rien, avec un e-mail, et le remboursement en argent se demande simplement.
@@ -108,7 +108,7 @@ Les maquettes « ordinateur » font 74 colonnes, les maquettes « mobile » 38. 
    - « Vérification avant livraison », pas « visite de contrôle » (terme interne).
    - « Lu dans le plan » ou « automatiquement », jamais « IA » dans l'interface. La page « Méthode », les CGU et la politique de confidentialité disent en revanche clairement qu'un modèle d'intelligence artificielle lit le plan (`MARQUE.md` § 5.2).
    - Jamais « conforme », « exact », « certifié », « garanti » ni « au centimètre » dans une promesse.
-7. **Les limites sont toujours visibles près de l'action** (`MESSAGES.md` § 8.4) : appartements sur un seul niveau, logement vide, finitions supposées, illustration non contractuelle.
+7. **Les limites sont toujours visibles près de l'action** (`MESSAGES.md` § 8.4) : appartements sur un ou deux niveaux (duplex), logement vide, finitions supposées, illustration non contractuelle.
 
 ### 1.3 Textes
 
@@ -158,8 +158,8 @@ Tout est défini dans `SUIVI.md`. Rappels utiles aux parcours :
   - le lien de connexion s'ouvre dans un autre navigateur, qui ne voit pas le même stockage.
 
   On y masque donc le bouton Google, on met en avant le **code à 6 chiffres** (A5), et le dépôt est gardé **côté serveur** (A3), pas seulement dans le navigateur.
-- **Réseau faible.** L'envoi reprend depuis la copie locale. La visite pèse environ 3 Mo par ouverture (`recherche/hebergement.md` § 1).
-- **La visite se calcule dans le navigateur du client** (D5) : sa compatibilité fait partie du produit. Sans WebGL ou après une perte de contexte, repli sur la galerie, le plan 2D et la fiche, avec `erreur.3d`, jamais d'écran noir (L4-10).
+- **Réseau faible.** L'envoi reprend depuis la copie locale. La visite pèse environ 3 Mo par ouverture (`recherche/hebergement.md` § 1) ; poids à remesurer avec la maquette compressée et l'éclairage précalculé (L4-10, L4-14).
+- **La visite se calcule dans le navigateur du client** (D5) : sa compatibilité et sa **fluidité sur un appareil modeste** (portable d'entrée de gamme, téléphone) font partie du produit (décision n° 12). Qualité adaptative (L4-12) ; fichiers précalculés par le serveur (éclairage, maquette compressée, itinéraires ; L4-13, L4-14) ; pas de rendu en direct sur le serveur (coût). Seuils chiffrés : L1-14. Sans WebGL ou après une perte de contexte, repli sur la galerie, le plan 2D et la fiche, avec `erreur.3d`, jamais d'écran noir (L4-10).
 
 ### 1.6 Cas limites du dépôt (communs à A, B et C)
 
@@ -176,8 +176,8 @@ Détection : **N** = dans le navigateur, avant l'envoi ; **A** = analyse serveur
 | PDF endommagé ou sans page lisible | A | `depot.refus.abime` | Nouveau dépôt | `plan_analyse` (`pdf_endommage`, `pdf_sans_page`) |
 | Image trop petite (moins de 700 px sur le petit côté) | A | `depot.refus.petit` | Nouveau dépôt | `plan_analyse` (`image_trop_petite`) |
 | Murs ou tracés non reconnus | A | `depot.refus.illisible` | Nouveau dépôt | `plan_analyse` (`trace_non_reconnu`) |
-| Plusieurs pages | A | **À ajouter** : « Le PDF compte ‹5› pages : la page ‹3›, la plus détaillée, sera lue. » + <Choisir une autre page> | Vignette de la page retenue ; la règle de choix reste celle d'`extract.py` | `page_pdf_changee` (N) **à ajouter** |
-| Plusieurs niveaux | A ou Q | `depot.refus.niveaux` et formulaire « Me prévenir si cela change » (`MESSAGES.md` § 7.1) | Arrêt. En production, `niveaux_max = 1` tant que ces plans ne sont pas validés plan par plan (`ARCHITECTURE.md` § 1, L4-08). Le mot « duplex » n'est pas écrit dans les refus (`MESSAGES.md` § 12.1) | `plan_analyse` ou `plan_qualifie` (`plusieurs_niveaux`) ; `alerte_prise_en_charge_demandee` |
+| Plusieurs pages | A | **À ajouter** : « Le PDF compte ‹5› pages : la page ‹3›, la plus détaillée, sera lue. » + <Choisir une autre page> | Vignette de la page retenue ; la règle de choix reste celle d'`extract.py`. Des pages qui forment les niveaux d'un même logement sont empilées, pas choisies : un duplex est lu en entier ; refus `depot.refus.niveaux` au-delà de `niveaux_max = 2` | `page_pdf_changee` (N) **à ajouter** |
+| Plus de deux niveaux | A ou Q | `depot.refus.niveaux` et formulaire « Me prévenir si cela change » (`MESSAGES.md` § 7.1) | Arrêt. Depuis le 27/09/2026, la chaîne traite les plans sur plusieurs niveaux (niveaux détectés et nommés, pages d'un même logement empilées, arrêt avant la lecture payante si les niveaux ne se séparent pas ; L13-08, fait). En production, `niveaux_max = 2` : duplex acceptés (décision 11), refus au-delà (L4-08) ; le triplex s'ouvre quand un plan réel de triplex a été validé. Le refus dit « plus de deux niveaux » (`MESSAGES.md` § 7.1) | `plan_analyse` ou `plan_qualifie` (`plusieurs_niveaux`) ; `alerte_prise_en_charge_demandee` |
 | Maison | Q | `depot.refus.maison` | Idem | valeur `maison` **à ajouter** à `motif_refus` |
 | Plusieurs logements sur la page, ou PDF de plusieurs lots | Q | `depot.refus.plusieurs_lots` | Nouveau dépôt. Aujourd'hui, l'analyse empilerait ces lots comme des niveaux : la qualification les refuse (L6-02). Seul l'import promoteur découpe un PDF de plusieurs lots (C4, L10-02) (R17) | valeur `plusieurs_lots` **à ajouter** |
 | Perspective, croquis | Q | `depot.refus.perspective` | Nouveau dépôt | `plan_qualifie` (`pas_un_plan`) |
@@ -271,7 +271,7 @@ Sans cette phrase, « premier plan offert » peut se lire « visite offerte ». 
 
 **Cas limites.**
 - Visiteur pro sur l'accueil : lien « Vous vendez du neuf ? » dans l'en-tête et le pied de page (`MESSAGES.md` § 8.1 et § 8.2).
-- Visiteur qui a un plan à plusieurs niveaux : la limite est lue **avant** le dépôt.
+- Visiteur qui a un plan sur plus de deux niveaux : la limite est lue **avant** le dépôt.
 - Retour d'un visiteur dont le fichier est encore dans le navigateur : bandeau « Vous aviez déposé ‹nom du fichier›. [ Reprendre ] <Retirer> » (**à ajouter**).
 
 **Accessibilité et mobile.**
@@ -298,7 +298,8 @@ Maquette de l'accueil, sur ordinateur, après l'ouverture de la vente :
 |  2D coté et 2 photos. La visite s'ouvre ensuite pour 29 €. (proposit.) |
 |  Votre plan reste privé : ni publié ni transmis à votre promoteur.     |
 |  Rien n'est décompté si la visite ne peut pas être produite.           |
-|  Un seul niveau · logement vide, finitions supposées · non contractuel |
+|  Un ou deux niveaux (duplex) · logement vide, finitions supposées ·    |
+|  non contractuel                                                       |
 |                                                                        |
 |  ------------------   ------------------   ------------------          |
 |  PDF du promoteur     Capture ou photo     Vérifié avant livraison     |
@@ -328,8 +329,8 @@ Sur mobile :
 | Premier plan offert, sans carte :  |
 | vue du dessus 3D, plan coté et     |
 | 2 photos. La visite : 29 € ensuite.|
-| Un seul niveau · logement vide ·   |
-| non contractuel                    |
+| Un ou deux niveaux (duplex) ·      |
+| logement vide · non contractuel    |
 | <Où trouver le plan de vente ?>    |
 | <Visiter l'appartement témoin>     |
 +------------------------------------+
@@ -432,8 +433,8 @@ Sur mobile :
 |  La visite s'ouvre ensuite pour 29 €, sans nouvelle attente.           |
 |                                                                        |
 |  [[ Lancer mon plan offert ]]     <Changer de fichier>                 |
-|  Appartements sur un seul niveau · logement présenté vide,             |
-|  finitions supposées · illustration non contractuelle.                 |
+|  Appartements sur un ou deux niveaux (duplex) · logement présenté      |
+|  vide, finitions supposées · illustration non contractuelle.           |
 +------------------------------------------------------------------------+
 ```
 
@@ -608,6 +609,8 @@ C'est le chemin sûr quand le lien s'ouvre ailleurs : navigateur intégré, autr
   3. le **plan 2D coté** ;
   4. les **2 photos** : le séjour, puis la chambre principale ou, à défaut, la pièce principale suivante (R1, règle de choix : L4-09).
 
+  Duplex (`niveaux_max = 2`, L4-08) : une vue du dessus par niveau, avec son nom. Panoramas 360° pendant l'attente : à décider (L5-27, L6-03).
+
   Chaque image porte « Illustration non contractuelle ». L'aperçu est publié dès que la vue du dessus et le plan 2D sont prêts ; les photos s'y ajoutent. Une photo qui échoue après nouvelles tentatives est omise, sans emplacement vide et sans bloquer ; l'équipe est alertée (R2, L5-16). La page ne lit que l'état public et ses images : ni `plan.json`, ni moteur.
 - **Plus aucun détail technique** sous le message ni dans les avertissements (`recherche/audit-code.md` B9). « Chantier à l'arrêt. » est retiré.
 - **File d'attente** : `attente.file`, `attente.file_offert`. Ordre de passage : `OFFRES.md` § 1.
@@ -726,7 +729,7 @@ C'est le chemin sûr quand le lien s'ouvre ailleurs : navigateur intégré, autr
 
 **Tickets.** Page : L6-05. Publication « simple » : L5-12. Images : L4-09, L5-11. Mention incrustée : L4-07. Lien pour les proches : L6-08.
 
-**Ce qui est montré** (D6, R1 ; `OFFRES.md` § 2.2, textes `apercu.*` de `MESSAGES.md` § 7.5). Page privée du compte, rendue côté serveur, **images prises par le serveur**, avec la mention non contractuelle incrustée. **Ni le moteur ni `plan.json`** ne sont envoyés au navigateur (R4) ; les surfaces et les points à confirmer sont des textes filtrés, écrits dans la page par le serveur (L6-05). L'aperçu interactif est une idée à tester plus tard (L13-03).
+**Ce qui est montré** (D6, R1 ; `OFFRES.md` § 2.2, textes `apercu.*` de `MESSAGES.md` § 7.5). Page privée du compte, rendue côté serveur, **images prises par le serveur**, avec la mention non contractuelle incrustée. **Ni le moteur ni `plan.json`** ne sont envoyés au navigateur (R4) ; les surfaces et les points à confirmer sont des textes filtrés, écrits dans la page par le serveur (L6-05). La visite 360° d'arrêt en arrêt (images rendues par le serveur et liste des arrêts, ni moteur ni `plan.json`) y entre si l'utilisateur la confirme comme offre gratuite après la mesure de son coût (décision de principe n° 15, L1-16, L6-13). La vue du dessus manipulable reste une idée à tester (L13-03).
 1. Le **cartouche** : `apercu.badge`, `apercu.titre` (repli « Votre logement »), `apercu.sous_titre`.
 2. La **vue du dessus 3D découpée** et les **2 photos** : le séjour, puis la chambre principale ou, à défaut, la pièce principale suivante (R1, L4-09).
 3. Le **plan 2D coté**, en image capturée côté serveur (L4-09), agrandissable.
@@ -826,7 +829,7 @@ Sur mobile :
 **Objectif.** Rendre le déblocage évident et immédiat, sans pression.
 
 **Ce qui est verrouillé** (R1 ; `OFFRES.md` § 2.2), visible avec un cadenas et un texte (`verrou.onglet`, `verrou.telechargement`) ; la liste est lue dans la version d'offre du catalogue (L5-08) :
-- la visite : marche libre et arrêts par pièce ;
+- la visite 3D : marche libre et arrêts par pièce (le 360° d'arrêt en arrêt n'est pas verrouillé s'il devient l'offre gratuite) ;
 - la maquette 3D et le plan 2D interactifs ;
 - la fiche complète et le partage de la visite ;
 - l'hébergement au-delà de 6 mois (la visite reste en ligne 24 mois, R7) ;
@@ -924,9 +927,9 @@ Tout clic sur un de ces éléments ouvre le même **volet** (`MESSAGES.md` § 7.
 |  Visite complète de votre logement · 29,00 € TTC                       |
 |  Visite à hauteur d'yeux · maquette 3D et plan 2D interactifs ·        |
 |  fiche complète · liens privés · en ligne 24 mois                      |
-|  Appartements sur un seul niveau · logement présenté vide, finitions   |
-|  supposées · pas de mobilier ni de rendu photoréaliste · illustration  |
-|  non contractuelle.                                                    |
+|  Appartements sur un ou deux niveaux (duplex) · logement présenté      |
+|  vide, finitions supposées · pas de mobilier ni de rendu               |
+|  photoréaliste · illustration non contractuelle.                       |
 |                                                                        |
 |  [ ] J'ai compris que la visite et les photos sont des illustrations   |
 |      produites automatiquement à partir du plan de vente. (…)          |
@@ -949,11 +952,11 @@ Tout clic sur un de ces éléments ouvre le même **volet** (`MESSAGES.md` § 7.
 
 **Déroulé.**
 1. Webhook reçu : consommation d'un plan complet (`OFFRES.md` § 6.4), dans la même transaction que la publication (L8-02).
-2. La publication passe de « aperçu » à « complète », **sans nouvelle lecture** ni nouveau rendu (R2) : le moteur de la version validée par la visite de contrôle et le `plan.json` filtré sont servis. La visite se calcule dans le navigateur du client (D5).
+2. La publication passe de « aperçu » à « complète », **sans nouvelle lecture** ni nouveau rendu (R2) : le moteur de la version validée par la visite de contrôle et le `plan.json` filtré sont servis, avec les fichiers précalculés par le serveur (éclairage, maquette compressée, itinéraires) quand ils existent, prêts avant le déblocage (moment du précalcul à décider, L5-28) ; la qualité s'adapte à l'appareil (L4-12). La visite se calcule dans le navigateur du client (D5).
 3. La visite s'ouvre sur la galerie, avec « Lancer la visite 3D » (`g-cta`) désormais actif ; `verrou.ouvert` (« Votre visite est ouverte. »), **sans** annonce d'autres photos, réservée à `verrou.ouvert.galerie` [SI LIVRÉ : L13-02] (`MESSAGES.md` § 7.6, L8-02).
 4. **Aucune photo n'est rendue au déblocage** au lancement (D5, R1). La galerie montre les images déjà produites pour l'aperçu : la vue du dessus et les 2 photos, ou moins si une photo a été omise ; au pire, aucune photo (D5). Elle s'adapte de 0 à N images, sans emplacement vide (L4-09). `verrou.photos_pretes` n'est pas utilisé. La galerie complète viendra avec L13-02.
 
-**Ce qui s'ouvre** (R1) : marche libre, arrêts par pièce, maquette et plan 2D interactifs, fiche complète, partage de la visite (A13), bouton « Signaler un défaut » (L6-09), plus les mêmes images. Les téléchargements s'ajoutent quand L8-08 est livré.
+**Ce qui s'ouvre** (R1) : marche libre, arrêts par pièce, mode 360° (quand il existe, L4-16), maquette et plan 2D interactifs, fiche complète, partage de la visite (A13), bouton « Signaler un défaut » (L6-09), plus les mêmes images. Les téléchargements s'ajoutent quand L8-08 est livré.
 
 **Offre de base** (`OFFRES.md` § 1) : simple et très éclairée.
 - En mode `simple`, le moteur masque « Rendu photoréaliste de la vue » (option future payante, L13-05) et la superposition du plan du promoteur, réservée au propriétaire ou à l'accord du promoteur (R16, L4-11, avant la bêta fermée ; L10-06).
@@ -1138,7 +1141,7 @@ Les deux liens sont privés, en `noindex` (R20), révocables, sans traceur, **sa
 - Aperçu en une colonne, action collée en bas (A9).
 - Checkout avec Apple Pay ou Google Pay.
 - Visite avec la manette tactile et la visite guidée par pièces. Le paysage est suggéré, jamais imposé.
-- Appareil trop faible, sans WebGL, ou navigateur intégré qui perd le contexte 3D : galerie, plan et fiche restent disponibles (`erreur.3d`, L4-10).
+- Appareil modeste : la qualité baisse d'elle-même pour garder la visite fluide (L4-12, seuils de L1-14). Sans WebGL, ou navigateur intégré qui perd le contexte 3D : galerie, plan et fiche restent disponibles (`erreur.3d`, L4-10) ; le 360° comme repli est à décider.
 - **Proposition** : [ M'envoyer le lien par e-mail ] sur la page d'aperçu, pour finir sur ordinateur (levier L12).
 
 **Mesure.** `apercu_vu` et `visite_ouverte` (avec `appareil`).
@@ -1213,7 +1216,7 @@ Page pro --(essai)--> formulaire d'essai (SIREN) --> organisation créée
 |                                                                        |
 |  Solo 49 € HT/mois   Cabinet 99 € HT/mois   Équipe 199 € HT/mois       |
 |  5 plans · 1 util.   12 plans · 3 util.     30 plans · 10 util.        |
-|  Un seul niveau · logement vide · illustration non contractuelle       |
+|  Un ou deux niveaux (duplex) · logement vide · non contractuel         |
 +------------------------------------------------------------------------+
 ```
 
@@ -1326,7 +1329,7 @@ Page pro --(essai)--> formulaire d'essai (SIREN) --> organisation créée
 
 **Page prospect** (`visite.<domaine>/v/‹jeton›`, textes `prospect.*`), pensée pour le mobile :
 - en-tête du conseiller : logo, nom, cabinet, téléphone (lien `tel:`), e-mail, rendez-vous ;
-- cartouche du lot, message d'accueil, galerie, [[ Entrer dans la visite ]], fiche ;
+- cartouche du lot, message d'accueil, galerie, [[ Entrer dans la visite ]], mode 360° (quand il existe, L4-16), fiche ; visite fluide sur le téléphone du prospect (seuils de L1-14) ;
 - bouton collé en bas : « Je suis intéressé, prévenir mon conseiller » ;
 - **bandeau de consentement**, seulement si le suivi détaillé est proposé (`MESSAGES.md` § 7.13) : deux boutons identiques ; sans réponse, rien n'est suivi ;
 - `prospect.lien_perso`, `prospect.mention`, `prospect.signature`, mentions légales ;
@@ -1528,7 +1531,7 @@ Vente accompagnée : devis, contrat, virement. Les écrans servent l'import, le 
 3. Pour chaque lot : analyse sans IA et qualification (environ 0,02 $ par lot).
 4. Rapport, à l'écran et en PDF :
    - lots pris en charge ;
-   - lots non pris en charge, avec la raison : plusieurs niveaux, maison, plan illisible, plusieurs logements sur la page ;
+   - lots non pris en charge, avec la raison : plus de deux niveaux (`niveaux_max = 2`, L4-08), maison, plan illisible, plusieurs logements sur la page ;
    - le devis porte seulement sur les lots pris en charge, à prix ferme.
 
 **Mesure.** `import_cree` (S), `rapport_prise_en_charge_livre` (S), `devis_envoye` (S).
@@ -1540,7 +1543,7 @@ Vente accompagnée : devis, contrat, virement. Les écrans servent l'import, le 
 |  Lot   Typologie   Format           Prise en charge                    |
 |  A01   T2          PDF vectoriel    Oui                                |
 |  A02   T3          PDF vectoriel    Oui                                |
-|  B14   T4          PDF vectoriel    Non : plusieurs niveaux            |
+|  B14   T4          PDF vectoriel    Non : plus de deux niveaux         |
 |  C03   T2          Image            Oui, échelle à confirmer           |
 |  …                                                                     |
 |  Devis : 38 lots pris en charge.   [[ Demander le devis ]]             |
@@ -1711,8 +1714,8 @@ Le même écran sert aux **codes testeurs**, valables 60 jours (`OFFRES.md` § 2
 | et photos de votre logement neuf.  |
 | Code   [ ABCD-EFGH ]               |
 | [[ Utiliser mon code ]]            |
-| Un seul niveau · logement vide ·   |
-| illustration non contractuelle     |
+| Un ou deux niveaux (duplex) ·      |
+| logement vide · non contractuel    |
 | Visite réalisée avec Sur Pièce     |
 +------------------------------------+
 ```
@@ -1858,7 +1861,7 @@ Le même écran sert aux **codes testeurs**, valables 60 jours (`OFFRES.md` § 2
 | L2 | Code à 6 chiffres mis en avant | Le code évite l'abandon quand le lien s'ouvre dans un autre navigateur | A : lien, code en secours ; B : code d'abord | `compte_cree` ÷ `lien_magique_envoye`, par `meme_appareil` | Périodes | Garder B si le gain est net sur mobile |
 | L3 | Place de « Où en êtes-vous ? » | La poser pendant l'attente allège l'inscription sans perdre de réponses | A : à l'inscription (`MESSAGES.md` § 7.3) ; B : pendant l'attente | `compte_cree` ÷ `inscription_ouverte` ; taux de réponse à `situation_declaree` | Périodes | B si l'inscription gagne et que le taux de réponse reste utile pour T11 |
 | L4 | Visite témoin pendant l'attente | Voir ce que débloque la visite augmente le déblocage | A : bouton mis en avant ; B : simple lien | `achat_paye` (`depuis_apercu`) ÷ `apercu_pret` | Tirage par compte | Garder la meilleure |
-| L5 | Contenu de l'aperçu | Une maquette à faire tourner, en images, donne envie de la visite | A : vue du dessus, plan 2D et 2 photos (R1) ; B : plus une vue du dessus qui tourne ou des points de vue par pièce, en images, sans moteur ni `plan.json` (L13-03, après le lancement) | Conversion de l'aperçu | Tirage par compte | À coût égal, la meilleure (`OFFRES.md` § 9.1) |
+| L5 | Contenu de l'aperçu | Le 360° d'arrêt en arrêt, ou une vue du dessus qui tourne, donne envie de la visite | A : vue du dessus, plan 2D et 2 photos (R1) ; B : visite 360° en images, sans moteur ni `plan.json` (décision de principe n° 15, L6-13), ou vue du dessus qui tourne (L13-03). Sans objet pour le 360° si l'utilisateur en fait l'offre gratuite pour tous | Conversion de l'aperçu | Tirage par compte | À coût égal, la meilleure (`OFFRES.md` § 9.1) |
 | L6 | Ordre de l'aperçu | Mettre en tête ce qui protège l'acheteur renforce la confiance | A : images d'abord ; B : points à confirmer d'abord | Conversion de l'aperçu, `verrou_clique` | Tirage par compte | Garder la meilleure |
 | L7 | Forme du verrou | Le prix sur le bouton évite la surprise ; le volet sans prix attire plus de clics | A : `verrou.bouton` (« Débloquer la visite · 29 € ») ; B : « Débloquer la visite », prix dans le volet | `verrou_clique`, `volet_deblocage_ouvert`, `achat_paye` | Tirage par compte | Selon les achats, pas les clics (`OFFRES.md` T4) |
 | L8 | Prix de la visite | La marge par aperçu est plus haute à 39 € | 29 € puis 39 € ; 19 € si la conversion est très faible | Marge par aperçu = (ventes × marge − coût des aperçus) ÷ aperçus | Périodes (R8, L8-06) | Le prix qui maximise la marge par aperçu (`OFFRES.md` § 9.1) |
@@ -1936,7 +1939,8 @@ Les parcours utilisent le dictionnaire de `SUIVI.md` § 3. Il leur manque :
 | `MESSAGES.md` `pro.lien.compteur` | Ouvertures affichées par lien | `OFFRES.md` § 3.4 : compteur par lot par défaut, statut par lien après avis de l'avocat | Ouvert |
 | `MESSAGES.md` `erreur.pro.siren_essai` | Seule issue : choisir une formule | Ajouter l'invitation par un collègue déjà inscrit | Ouvert |
 | `SUIVI.md` `partage_cta_clique` | Valeur `prospect` de `type_page` : une invitation sur la page d'un conseiller | Sur la page d'un conseiller, seulement la signature vers `/pro/decouvrir` ; pas d'invitation « plan offert » | Ouvert |
-| `pipeline/accueil.html` | Étape « Visite de contrôle » ; promesse de notification onglet fermé ; détail technique affiché ; repères `#e33` ; pas de mouvement réduit | Textes de `MESSAGES.md` § 7.4 ; e-mail côté serveur ; catalogue ; Bleu plan ou Brique ; `prefers-reduced-motion` (relevés aussi par `MARQUE.md` § 12 et `recherche/audit-code.md`) | Ouvert : L1-05 (textes, promesse) ; le nouvel écran est L6-03, dans `service/`, sans modifier `accueil.html` |
+| `pipeline/accueil.html` | Étape « Visite de contrôle » ; promesse de notification onglet fermé ; détail technique affiché ; repères `#e33` ; pas de mouvement réduit (depuis le 27/09/2026, le détail technique n'est plus montré qu'avec `?debug=1`) | Textes de `MESSAGES.md` § 7.4 ; e-mail côté serveur ; catalogue ; Bleu plan ou Brique ; `prefers-reduced-motion` (relevés aussi par `MARQUE.md` § 12 et `recherche/audit-code.md`) | Ouvert : L1-05 (textes, promesse) ; le nouvel écran est L6-03, dans `service/`, sans modifier `accueil.html` |
+| `OFFRES.md`, `MESSAGES.md`, tickets L6-05, L8-01, L8-02 | Aperçu = images de R1 ; visite = moteur et `plan.json` seulement | 360° dans toutes les visites, probablement gratuit ; qualité adaptative et précalcul serveur ; rendu en direct sur le serveur écarté | Ouvert : décisions n° 12 à 15 du 27/09/2026, reportées dans `OFFRES.md` et `MESSAGES.md` (textes [SI LIVRÉ]) ; gratuité du 360° à confirmer (L1-16) |
 
 ### 8.3 Questions ouvertes
 
@@ -1962,5 +1966,10 @@ Les numéros ne changent pas : des tickets les citent (L6-01 : question 6 ; L6-1
 13. Réglages de soleil masqués aussi en mode simple, en plus de ce que fixe R16 (A12) ?
 14. Découpe de la vue du dessus : coupe horizontale à 1,20 m ou retrait des plafonds, à choisir sur les captures des références (L4-09).
 15. Texte du volet de déblocage pendant la bêta (A10), sans achat : écrit dans `MESSAGES.md` § 7.6 (`verrou.volet.beta`), à faire relire (L0-07).
+16. Visite 360° : devient-elle l'offre gratuite, à la place de l'aperçu de R1 ou en plus ? Réponse après la mesure de son coût de rendu (L1-16).
+17. Le 360° sert-il de repli quand la 3D ne démarre pas (sans WebGL, perte de contexte) ?
+18. Précalcul serveur : pour tout plan dès la chaîne (déblocage instantané, calcul payé aussi pour les plans offerts) ou au déblocage (attente) ?
+19. Seuils de fluidité et appareils de référence (L1-14), au vu du diagnostic chiffré de la navigation en cours.
+20. Plans à plusieurs niveaux pendant la bêta fermée : décidé le 27/09/2026 (décision 11) : duplex acceptés, comme en service ; au-delà de deux niveaux, refus.
 
 **À mesurer avant d'afficher un chiffre** (T0, R12) : `‹délai›`, la durée de l'analyse sans IA, et le temps d'apparition de chaque image d'aperçu (vue du dessus, plan 2D, chaque photo) en SwiftShader dans le conteneur (L4-09, L5-11).

@@ -2,43 +2,39 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 13 · Après lancement | P2 | S (jusqu'à 1 j) | L4-08 | `pipeline/` [P] | À faire |
+| 13 · Après lancement | P1 | M (1 à 3 j) | — | `pipeline/` [P] | Fait (27/09/2026) |
 
 ## Pourquoi
-Un autre agent travaille en ce moment sur les duplex (`pipeline/niveaux.py`, `extract.py`, `lire.py`, `murs.py`, `serveur.py`, `moteur/`). Tant que ce travail n'est pas validé plan par plan sur des plans réels, le service refuse tout plan à plusieurs niveaux (`niveaux_max = 1`, L4-08) et les textes n'en parlent pas (MARQUE.md § 3.4). Consigne de l'utilisateur : avancer plan par plan, sans généraliser à des cas inconnus. Ce ticket ouvre le service aux formats validés, et seulement à eux, puis met à jour textes et offres. Un format validé entre dans le prix de base : ce n'est pas une option (OFFRES.md § 7.1).
+L'utilisateur a levé la consigne « sans généraliser (duplex…) » (décision 11). Le travail est fait le 27/09/2026 (23 fichiers, non commité ; `HISTORIQUE.md`, entrée « Logements sur plusieurs niveaux »). Le même jour, l'utilisateur a confirmé : « oui le duplex on l'a géré c'est bon, c'était avant ça ». Les duplex sont donc acceptés en service : `niveaux_max = 2` (L4-08). Un format validé entre dans le prix de base : ce n'est pas une option (OFFRES.md § 7.1).
 
-## À faire
-1. **Critère d'ouverture écrit**, par format (duplex d'abord ; triplex seulement s'il est validé à part) :
-   - plans réels fournis par l'utilisateur, rejoués sans IA (L1-02) ; `evaluer.py` contre un relevé fait à la main ;
-   - visite de contrôle réussie (escaliers, trémies, dalles) ; photos au bon étage (`moteur/photos.mjs` refuse déjà une photo prise au mauvais niveau, l. 80-90) ;
-   - images d'aperçu par niveau (vue du dessus et plan 2D, comme `outils/vues.mjs`) ;
-   - zéro défaut visible relu par l'utilisateur ; décision consignée.
-2. **Réglage** : `ConfigProduit.niveaux_max` passé en service à la valeur validée (2 pour les duplex), jamais au-delà ; `niveaux_refus` (`pipeline/serveur.py:218`) inchangé pour les autres cas ; retour à 1 par simple réglage si un défaut apparaît.
-3. **Aperçu d'un duplex** : décider combien d'images (une vue du dessus par niveau ? une photo par niveau ?) et vérifier L4-09 et L6-05 en conséquence.
-4. **Textes et offres** : « appartements sur un seul niveau » à remplacer par le périmètre validé dans MESSAGES.md (§ 0.4, § 1.1, § 1.9 dont la question sur les duplex, § 3.5, § 3.10, § 5.5, § 6.4, § 7.1 `depot.reconnu.limites` et `depot.refus.niveaux`, § 7.7 `achat.limites`, § 8.4, § 9.9) ; OFFRES.md § 0.2 (règle 6), § 1, § 4.1 ; MARQUE.md § 3.4 et § 5.2 ; PARCOURS.md § 1.6 ; catalogue (L5-08) ; page tarifs (L2-08) ; motifs du rapport de prise en charge (L10-02). Libellés du catalogue de messages (L4-05) : petit diff `[P]`.
-5. **Prévenir ceux qui l'ont demandé** : un seul e-mail aux adresses laissées après un refus `plusieurs_niveaux` (table dédiée de `alerte_prise_en_charge_demandee`), puis purge de ces adresses.
+## Ce qui est fait (27/09/2026)
+- **Extraction** : zone et nom de chaque niveau (R+1, RDC, Niveau…) ; superposition par corrélation des murs (décalage du R+2 : 6,39 m, 91 % des murs superposés) ; escaliers dessinés reconnus (14 girons de 25 cm) ; pages d'un même logement empilées ; arrêt clair avant la lecture payante si les niveaux ne se séparent pas.
+- **Chaîne** (`pipeline/niveaux.py`) : chaque niveau assemblé avec le code d'un seul niveau, puis superposé ; escalier (dernière contremarche calée sur le bord de la trémie), trémie calée au nu des murs, garde-corps sur ses bords libres, palier d'arrivée ; dalles, plafonds et toits de chaque niveau ; arrêt « Escalier » dans la visite guidée, sauf à moins de 1,5 m d'un arrêt du même niveau : cet arrêt prend alors le rôle d'escalier (28/09/2026, duplex : l'Entrée) ; une vue d'ensemble par niveau. Un garde-corps lu sur une bande d'aplats de l'épaisseur des cloisons devient une cloison (`gc_en_cloison`, sauf mention « GC »). Fenêtres sur allège vitrée (`allege`) posées d'après la légende du plan.
+- **Moteur** : niveaux superposés, escalier plein avec main courante, visiteur qui monte et descend au clavier, itinéraires à travers l'escalier, onglets R+1 / R+2 dans le plan 2D et la maquette, fiche découpée par niveau.
+- **Contrôles automatiques nouveaux**, chacun vérifié en remettant le défaut : cage d'escalier sans ligne claire ni pointillés au raccord des niveaux, façade sans bande qui scintille, cloisons du dessus qui ne descendent plus sous le plafond du dessous (`pieds`, `joints`), caméra qui ne traverse plus l'escalier, aucun garde-corps de trémie sur un tracé de cloison (`garde-corps`), test d'immersion sur tous les plans (`etancheite`), baies recoupées avec le sigle de la légende de leur plan (`baie`). S'y ajoutent les contrôles des niveaux de la visite de contrôle (`escalier`, `vide`, `dalle`, `niveau`).
+- **Résultat** sur la duplex `plans/3081-613-ef700f1f` (R+1 et R+2 sur la même page, 60,7 m² habitables, deux loggias), avec une lecture préparée à la main, sans appel à l'IA : visite de contrôle réussie, 12 photos (une vue d'ensemble par niveau), montée et descente au clavier de 0 à 2,80 m, surfaces à 2 % près du tableau, 1 min 20 de réassemblage, contrôle et photos. Les 4 plans à un niveau sortent à l'identique (`plan.json`, photos).
+
+## Validation plan par plan, quand un plan est fourni
+Ce n'est pas du travail restant. Consigne du projet (`CLAUDE.md`) : on avance plan par plan avec les plans fournis. Un triplex, un escalier quart tournant, une entrée au niveau haut ou un plan en image à plusieurs niveaux se valide le jour où l'utilisateur en fournit un : rejeu sans IA, visite de contrôle, relecture « zéro défaut visible », chaque défaut trouvé devenu un contrôle automatique. Le triplex reste refusé en service par `niveaux_max = 2` tant qu'un plan réel de triplex n'a pas été validé ; la valeur se relève alors par simple réglage (L4-08). La lecture réelle par l'IA d'une duplex (L1-13) est une vérification utile, pas un préalable.
+
+## Suites dans d'autres tickets
+- Réglage `niveaux_max` et refus au-delà de 2 niveaux : L4-08.
+- Lecture réelle d'une duplex par l'IA, sur accord : L1-13.
+- Nombre d'images d'aperçu d'un duplex (une vue du dessus et un plan 2D par niveau, à confirmer) : L0-04, puis L4-09 et L6-05.
+- Textes du catalogue de messages (`texte_niveaux`, `depot.reconnu.niveaux`, `depot.refus.niveaux`) : L4-05.
+- Empreinte d'un plan sur plusieurs pages : L6-06 avec L5-23.
 
 ## Critères d'acceptation
-- [ ] Critère d'ouverture rempli et signé par l'utilisateur pour chaque format ouvert ; les autres restent refusés (test : plan à 3 niveaux refusé avec `niveaux_max = 2`).
-- [ ] Refus toujours avant tout appel payant pour un format non ouvert (test de L4-08).
-- [ ] Contrôle des textes (L1-04) et contrôle du site (L2-15) sans ancienne formule restante (recherche automatique de « un seul niveau »).
-- [ ] E-mail de prévenance envoyé une seule fois, adresses purgées ensuite.
-- [ ] Critère de fusion d'ARCHITECTURE.md § 8.1 ; aucune lecture payante pour valider (lectures gardées).
-
-## Mesure
-- `plan_analyse` (`motif_refus=plusieurs_niveaux` doit baisser), `plan_lance`, `plan_pret`.
-- `email_envoye` avec une valeur de `modele` à ajouter (prévenance) dans SUIVI.md § 3.8 et `mesure/evenements.json`.
+- [x] Duplex 3081-613 assemblée depuis sa lecture gardée : visite de contrôle réussie, 12 photos au bon étage.
+- [x] Les 4 plans à un niveau sortent à l'identique (`plan.json`, photos).
+- [x] Chaque défaut trouvé à l'inspection est devenu un contrôle automatique, vérifié en remettant le défaut (`HISTORIQUE.md`).
+- [x] Aucune lecture payante dépensée pour valider (lecture préparée à la main).
+- [x] Périmètre affiché aligné sur « un ou deux niveaux (duplex) » dans OFFRES.md, MESSAGES.md, MARQUE.md, PARCOURS.md et SUIVI.md (27/09/2026).
 
 ## Points d'attention
-- **Coordination** : ce ticket se fait avec l'agent des duplex ou après la fusion de son travail ; `niveaux.py` n'est pas touché par la migration (ARCHITECTURE.md § 8.1, règle 4).
-- La qualification demande déjà le nombre de niveaux à l'IA (`pipeline/serveur.py:272`) et le recoupe avec l'extraction : vérifier ce recoupement sur les duplex réels.
-- Coût : un duplex peut coûter plus cher à lire qu'un plan simple ; mesurer avant d'ouvrir (budget de 3 $ par plan, L5-09).
-- Photos : caméra au sol du niveau de la vue, une maquette par niveau (en-tête de `moteur/photos.mjs`) ; nombre d'images d'aperçu à fixer (point 3).
+- **Pas encore commité** : 23 fichiers ; les tickets `[P]` et `[M]` partent de ce commit (ARCHITECTURE.md § 8.1). `niveaux.py` n'est pas touché par la migration (règle 4).
+- La qualification demande déjà le nombre de niveaux à l'IA (`qualifier`, `pipeline/serveur.py:323`) et le recoupe avec l'extraction (L6-02).
 
 ## Références
-- CLAUDE.md (consignes de l'utilisateur) ; produit/ARCHITECTURE.md § 1 (principe 7), § 8.1, § 10, M1.9 ; produit/OFFRES.md § 0.2, § 1, § 4.1, § 7.1.
-- produit/MARQUE.md § 3.4, § 5.2 ; produit/MESSAGES.md § 7.1, § 7.7, § 8.4, § 12.1 ; produit/PARCOURS.md § 1.6 ; produit/SUIVI.md § 3.6.
-- `pipeline/serveur.py:164-176` (pages par niveau), `:218` (`niveaux_refus`), `:272` (qualification) ; `pipeline/niveaux.py` ; `moteur/photos.mjs:80-90` ; `outils/vues.mjs`.
-
-## Hors périmètre
-- Réglage `niveaux_max` et refus en service : L4-08. Travail sur les duplex lui-même : agent des duplex. Vue de la résidence : L13-07.
+- HISTORIQUE.md (« Logements sur plusieurs niveaux ») ; CLAUDE.md ; produit/PLAN.md § 2.1 (décision 11).
+- `pipeline/niveaux.py` ; `pipeline/serveur.py:166-205` (pages par niveau), `:243-261` (`texte_niveaux`, `fait_niveaux`), `:271` (`niveaux_refus`), relevés le 27/09/2026 ; `moteur/SCHEMA.md` § Plusieurs niveaux ; `moteur/controle.mjs` ; `moteur/photos.mjs:71-87` ; `outils/vues.mjs`.

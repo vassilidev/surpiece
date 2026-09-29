@@ -40,7 +40,7 @@ L'offre Programme se vend sur devis, puis se facture avec un paiement par vireme
 - `pilote_signe` et `commande_signee` alimentent la conversion Google « Contrat promoteur » quand un clic d'annonce est connu (L12-02).
 
 ## Points d'attention
-- **Règles à écrire au contrat (L10-01)** : palier appliqué à tous les lots de l'année ou seulement au-delà de chaque seuil ; effet de la date limite de contrôle (validation tacite ou non) sur la facturation ; contenu exact de l'export (le moteur n'est pas cédé : ce que couvre « les visites » est à préciser avec l'avocat).
+- **Règles à écrire au contrat (L10-01)** : palier appliqué à tous les lots de l'année ou seulement au-delà de chaque seuil ; effet de la date limite de contrôle (validation tacite ou non) sur la facturation ; contenu exact de l'export (le moteur n'est pas cédé : ce que couvre « les visites » est à préciser avec l'avocat) ; la maquette compressée précalculée (L4-14) et les panoramas 360° (L4-15) sont de nouveaux fichiers produits par le serveur : leur place dans l'export est à décider.
 - **Droits acquis** : la grille signée est celle qui s'applique pendant le contrat (décision 7) ; une nouvelle grille ne vaut que pour les nouveaux contrats ou à l'échéance prévue.
 - **Tranché : R14.** Un défaut de notre fait est toujours corrigé gratuitement ; les cycles de correction ne concernent que les demandes de modification, qui ne sont pas facturées dans la limite des 2 cycles.
 - **Facture électronique** : les grands promoteurs reçoivent déjà par plateforme agréée ; une entrée anticipée est possible (L9-10, point 4).

@@ -10,7 +10,7 @@ Un promoteur pourrait vouloir naviguer dans tout un programme : étages, façade
 ## À faire
 1. **Données d'entrée**, à obtenir d'un promoteur pilote avec son accord écrit (L10-01) : plans d'étage courant, niveaux, façades ou plan masse ; inventaire de ce qui est lisible sans IA (PDF vectoriels).
 2. **Prototype sur un immeuble fictif créé par nous** (même principe que le témoin, L1-03) : un plan d'étage fictif à plusieurs lots, dessiné exprès, versionné sans aucune donnée de promoteur, dans `references/` comme le témoin (R11 : `references/temoin/` ; emplacement exact proposé : `references/immeuble-temoin/`).
-3. **Assemblage** : placer chaque lot déjà produit (L10-02) sur son étage d'après le plan d'étage ; empiler les étages ; enveloppe extérieure simple. Le moteur a déjà un contexte d'immeuble générique (masses, palier, étages voisins, `moteur/engine.js:823`) : partir de là.
+3. **Assemblage** : placer chaque lot déjà produit (L10-02) sur son étage d'après le plan d'étage ; empiler les étages ; enveloppe extérieure simple. Le moteur a déjà un contexte d'immeuble générique (masses, palier, étages voisins, `moteur/engine.js:881`, relevé le 27/09/2026). Depuis le 27/09/2026, il empile aussi des niveaux dans un repère commun (`levels`, `y`, `offset`, onglets de niveau, `moteur/SCHEMA.md` § Plusieurs niveaux) : partir de là.
 4. **Navigation** : vue d'ensemble, choix d'un étage, choix d'un lot qui ouvre sa visite ; aucune donnée de visite d'un lot non publié.
 5. **Contrôles** à définir avec le prototype : lots sans chevauchement, étages alignés, rien qui flotte, zéro défaut visible.
 6. **Livrable** : note de R&D (faisabilité, données nécessaires, charge d'un vrai développement, coût) et démonstration sur l'immeuble fictif ; décision de l'utilisateur.
@@ -28,7 +28,7 @@ Un promoteur pourrait vouloir naviguer dans tout un programme : étages, façade
 
 ## Références
 - produit/OFFRES.md § 4.8, § 7.1, § 7.2 (option 5) ; produit/MESSAGES.md § 3.10 ; produit/recherche/marche.md § 5.2 (point 3).
-- produit/PARCOURS.md C2 (motif « plusieurs logements sur la page ») ; `moteur/engine.js:823` (contexte d'immeuble) ; `moteur/SCHEMA.md` (`context`).
+- produit/PARCOURS.md C2 (motif « plusieurs logements sur la page ») ; `moteur/engine.js:881` (contexte d'immeuble) ; `moteur/SCHEMA.md` (`context`).
 
 ## Hors périmètre
-- Import des lots : L10-02. Plans sur plusieurs niveaux : L13-08. Offre promoteur : L10-01.
+- Import des lots : L10-02. Plans sur plusieurs niveaux : L13-08 (fait). Offre promoteur : L10-01.

@@ -5,7 +5,7 @@
 | 5 · Socle en ligne | P0 | M (1 à 3 j) | L5-01 | `service/` | À faire |
 
 ## Pourquoi
-Aujourd'hui tout vit dans `plans/<id>/` sur le disque, et le serveur sert une liste de fichiers qui inclut le plan du promoteur (`servable`, `pipeline/serveur.py:461-464`, audit B2 et B7). Décision du 27/09/2026 : stockage S3. Ce ticket crée la seule porte d'accès aux fichiers : un espace privé (sources, intermédiaires, réponses de l'IA) jamais servi tel quel, un espace publié immuable derrière le CDN, des URL signées, et une liste blanche de publication. Les workers continuent de travailler sur un dossier local (ARCHITECTURE § 1, principe 2).
+Aujourd'hui tout vit dans `plans/<id>/` sur le disque, et le serveur sert une liste de fichiers qui inclut le plan du promoteur (`servable`, `pipeline/serveur.py:565-568`, audit B2 et B7). Décision du 27/09/2026 : stockage S3. Ce ticket crée la seule porte d'accès aux fichiers : un espace privé (sources, intermédiaires, réponses de l'IA) jamais servi tel quel, un espace publié immuable derrière le CDN, des URL signées, et une liste blanche de publication. Les workers continuent de travailler sur un dossier local (ARCHITECTURE § 1, principe 2).
 
 ## À faire
 1. `service/stockage.py` : une interface `Stockage` et une implémentation S3 (boto3, point d'accès configurable : MinIO en local, Scaleway ou tout S3 compatible ailleurs). Méthodes :
@@ -17,7 +17,7 @@ Aujourd'hui tout vit dans `plans/<id>/` sur le disque, et le serveur sert une li
    - `prive/depots/<plan_id>/<envoi_id>`, `prive/org/<organisation_id>/plans/<plan_id>/{source.*, analyse/, ia/, travaux/<travail_id>/, publications/<publication_id>/}` ;
    - `publie/moteur/v<N>/`, `publie/vendor/`, `publie/p/<prefixe>/photos/…` (préfixe de 128 bits aléatoires, `secrets.token_urlsafe(16)`).
    Une fonction par type de clé (`cle_source(plan)`, `cle_ia(plan, nom)`…), jamais de chemin construit à la main ailleurs ; les identifiants sont des UUID validés, le nom du fichier déposé n'entre jamais dans une clé (audit B3).
-3. Liste blanche de publication : `publier(source_privee, cle_publiee)` refuse tout nom hors de la liste explicite (photos marquées `<vue>-<moment>.jpg`, `vignette.jpg`, fichiers du moteur et de `vendor/`). Refus explicite, avec test, pour : `source.*`, `page.png`, `calibration.png`, `plan-*.png`, `reponse-*`, `relecture-ia.json`, `appels-ia.json`, `extract.json`, `rapport.json`, `controle.json`, `etat.json` (ARCHITECTURE § 5.3). Le filtrage des clés de `plan.json` est fait par L5-12.
+3. Liste blanche de publication : `publier(source_privee, cle_publiee)` refuse tout nom hors de la liste explicite (photos marquées `<vue>-<moment>.jpg`, `vignette.jpg`, fichiers du moteur et de `vendor/`). Les faces des panoramas (L5-27), la visionneuse 360° (L4-16) et les fichiers précalculés (L5-28) s'y ajoutent chacun par son ticket, nom par nom, jamais par un motif large. Refus explicite, avec test, pour : `source.*`, `page.png`, `calibration.png`, `plan-*.png`, `reponse-*`, `relecture-ia.json`, `appels-ia.json`, `extract.json`, `rapport.json`, `controle.json`, `etat.json` (ARCHITECTURE § 5.3). Le filtrage des clés de `plan.json` est fait par L5-12.
 4. En-têtes des objets publiés : `Cache-Control: public, max-age=31536000, immutable`, type de contenu exact, `X-Content-Type-Options: nosniff` via le CDN. Un objet publié n'est jamais réécrit : `publier` échoue si la clé existe avec un contenu différent.
 5. Identifiants S3 distincts par service (ARCHITECTURE § 6.7) :
    - web : signer les envois vers `prive/depots/` et les lectures courtes ; lire `publie/` ;
@@ -25,7 +25,7 @@ Aujourd'hui tout vit dans `plans/<id>/` sur le disque, et le serveur sert une li
    - rendu : **aucun** identifiant, seulement des URL signées.
    En local, trois utilisateurs MinIO avec leurs politiques ; en production, les clés équivalentes (création : L0-08, injection : L5-18).
 6. Configuration des seaux, par un script idempotent `service/outils/seaux.py` : `prive` sans accès public et avec CORS limité à l'origine `app.<domaine>` (méthodes POST et PUT, pour l'envoi direct) ; `publie` lisible par le CDN seulement ; en local, lisible directement.
-7. Écriture atomique, comme aujourd'hui (`ecrit`, `pipeline/lire.py:1058`) : on écrit puis on référence. Aucun objet n'est rendu visible avant d'être complet.
+7. Écriture atomique, comme aujourd'hui (`ecrit`, `pipeline/lire.py:1226`) : on écrit puis on référence. Aucun objet n'est rendu visible avant d'être complet.
 
 ## Critères d'acceptation
 - [ ] Test d'aller-retour : un dossier de plan de test (fichiers factices, ou le témoin fictif dès que L1-12 existe) est téléversé, relu, et redonne des octets identiques.
@@ -44,7 +44,7 @@ Aujourd'hui tout vit dans `plans/<id>/` sur le disque, et le serveur sert une li
 - produit/ARCHITECTURE.md § 1 (principes 2 et 3), § 5.1 à § 5.4, § 5.7 (40 Mo), § 6.7, M2.2.
 - produit/recherche/audit-code.md A3, B2, B3, B5, B7.
 - produit/recherche/hebergement.md § 3.4, § 8.
-- `pipeline/serveur.py:461-464` (`VISITE`, `servable`), `:596` (`depot`, lu en mémoire) ; `pipeline/lire.py:1058` (`ecrit`).
+- `pipeline/serveur.py:565-568` (`VISITE`, `servable`), `:701` (`depot`, lu en mémoire) ; `pipeline/lire.py:1226` (`ecrit`).
 
 ## Hors périmètre
 - Création des plans et routes d'envoi : L5-05. Publication d'une visite, `plan.json` filtré, `index.html` : L5-12. Moteur versionné sur le CDN : L5-12 avec L4-06.

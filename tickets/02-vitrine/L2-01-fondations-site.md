@@ -5,7 +5,7 @@
 | 2 · Vitrine | P0 | L (3 à 5 j) | — | `site/`, `outils/` | À faire |
 
 ## Pourquoi
-Toutes les pages du lot 2 (accueil, pros, tarifs, témoin, méthode, légal) partagent la même direction artistique « architecte new wave », les mêmes composants et les mêmes règles d'accessibilité. Aujourd'hui les jetons sont répartis entre `pipeline/accueil.html` et `moteur/visite.css`, les polices viennent de Google Fonts et il n'y a ni favicon ni règle de mouvement réduit (MARQUE.md § 12). Ce ticket pose un socle unique et statique, sans framework (R19) : des fichiers sources dans un nouveau dossier `site/` et un petit script d'assemblage Python sans dépendance, `outils/site.py`, sans toucher à `pipeline/` ni `moteur/` (travail en cours sur les duplex).
+Toutes les pages du lot 2 (accueil, pros, tarifs, témoin, méthode, légal) partagent la même direction artistique « architecte new wave », les mêmes composants et les mêmes règles d'accessibilité. Aujourd'hui les jetons sont répartis entre `pipeline/accueil.html` et `moteur/visite.css`, les polices viennent de Google Fonts et il n'y a ni favicon ni règle de mouvement réduit (MARQUE.md § 12). Ce ticket pose un socle unique et statique, sans framework (R19) : des fichiers sources dans un nouveau dossier `site/` et un petit script d'assemblage Python sans dépendance, `outils/site.py`, sans toucher à `pipeline/` ni `moteur/` (travail sur les duplex fini le 27/09/2026, pas encore commité).
 
 ## À faire
 1. **Arborescence des sources** (proposition ; adresses canoniques de MESSAGES.md, R9) :
@@ -51,5 +51,5 @@ Toutes les pages du lot 2 (accueil, pros, tarifs, témoin, méthode, légal) par
 ## Hors périmètre
 - Logo, favicon, images de partage : L2-02. Visuels du témoin : L2-03. Contenu des pages : L2-04 à L2-11.
 - Comportement réel de la zone de dépôt : L2-04 (mode liste d'attente) et L6-01 (dépôt réel).
-- Alignement de `moteur/visite.css` et `pipeline/accueil.html` sur `jetons.css` : après la fusion des duplex, avec L4-06.
+- Alignement de `moteur/visite.css` et `pipeline/accueil.html` sur `jetons.css` : après le commit du travail sur les niveaux (fini le 27/09/2026), avec L4-06.
 - Branchement des contrôles en CI : L2-15.

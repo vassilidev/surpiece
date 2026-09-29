@@ -13,7 +13,7 @@ L'outil local coupe ses journaux d'accès et écrit ses erreurs par `traceback.p
 3. **Better Stack gratuit** : sondes de disponibilité sur `app.`, `visite.` (un partage du témoin) et `cdn.` (un fichier du moteur) ; battements de cœur des workers lecture, rendu et tâches périodiques, alerte après 10 min d'absence.
 4. **Tâche périodique `service/supervision.py`** (toutes les 5 min, Procrastinate) :
    - âge du plus vieux travail en file, par file ;
-   - taux d'échec de la visite de contrôle sur 24 h (seuil à établir) ; toute image omise après nouvelles tentatives (R2, L5-11) ;
+   - taux d'échec de la visite de contrôle sur 24 h (seuil à établir) ; toute image omise après nouvelles tentatives (R2, L5-11) ; tout panorama omis (L5-27) ; précalcul en échec (L5-28) ;
    - coût IA d'un plan au-delà de 3 $ (`travaux.cout_usd`), et toute erreur 402 (`appels_ia.statut = refus_402`) ;
    - seuils de 50, 80 et 100 % de chaque clé OpenRouter, lus par L5-09 sur `GET /api/v1/key` ;
    - réservation de crédit orpheline et invariants du grand livre en échec (tâche horaire de L5-07) ; invariant C7 du journal (L5-15) ;

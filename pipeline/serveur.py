@@ -7,7 +7,7 @@ lecture et contrôle par Claude → photos (sans IA) → visite prête dans plan
 La clé API se lit dans ANTHROPIC_API_KEY ou dans le fichier .env à la racine (jamais commité), relu à chaque étape
 qui appelle l'IA. Une variable posée au lancement, même vide, n'est jamais remplacée par le .env.
 """
-import atexit, http.client, importlib.util, json, math, os, re, shutil, signal, subprocess, sys, threading, traceback, unicodedata, urllib.error, uuid
+import atexit, http.client, importlib.util, json, math, os, posixpath, re, shutil, signal, subprocess, sys, threading, traceback, unicodedata, urllib.error, uuid
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, unquote, quote
@@ -88,17 +88,51 @@ def _state(pid, **kw):
         if k == 'avertir':
             av = st.setdefault('avertissements', [])
             av += [a for a in (v if isinstance(v, list) else [v]) if a not in av]
-        elif k == 'fait':
-            st.setdefault('etapes', []).append(v)
+        elif k == 'fait':  # une étape refaite (relance) remplace son texte précédent ; l'analyse en a plusieurs, remises à zéro à son début
+            st['etapes'] = [x for x in st.get('etapes', []) if x.get('etape') != v.get('etape') or v.get('etape') == 'analyse'] + [v]
         else:
             st[k] = v
+    masquer(st)
     tmp = f.with_name('.etat.json.tmp')
     tmp.write_text(json.dumps(st, ensure_ascii=False, indent=1)); os.replace(tmp, f)
     return st
 
 
+# texte technique : ids (n1, n1-w3, p_sdb), coordonnées, décimales à point, noms de code, fichiers, erreurs Python, mots du schéma
+TECHNIQUE = re.compile(r'Traceback|\w+(?:Error|Exception)\b|\b[a-z]+_[a-z0-9_]+\b|\b[\w-]+\.(?:py|mjs|js|json|png|txt)\b|\(-?\d+[.,]\d+, ?-?\d+[.,]\d+\)'
+                       r'|\b\d+\.\d{2,}\b|\bn\d+\b|\bn\d+-\w+|\b(?:ids?|level|levels|void|voids|stairs|rooms|walls|openings|niveau \d+ \(n)\b|«\s*[a-z_]+\s*»', re.I)
+
+
+def montrable(t):
+    """texte que la page de dépôt peut montrer à l'acquéreur (aucun texte technique)"""
+    return isinstance(t, str) and not TECHNIQUE.search(t)
+
+
+def masquer(st):
+    """contrôle automatique à chaque écriture d'etat.json : un texte technique n'atteint jamais ce que la page affiche
+    (message, étapes, avertissements, pastilles). Il est rangé dans textes_masques pour le débogage."""
+    m = st.setdefault('textes_masques', []); vus = []
+    if st.get('message') is not None and not montrable(st['message']):
+        vus.append(st['message'])
+        st['message'] = {'refus': 'Ce plan n’a pas pu être traité. Le PDF d’origine du promoteur donne le meilleur résultat.',
+                         'erreur': 'Le traitement s’est arrêté. Vous pouvez le relancer.'}.get(st.get('statut'), 'Traitement en cours…')
+    vus += [a for a in st.get('avertissements', []) if not montrable(a)]
+    st['avertissements'] = [a for a in st.get('avertissements', []) if montrable(a)]
+    for x in st.get('etapes', []):
+        if x.get('texte') is not None and not montrable(x['texte']):
+            vus.append(x['texte']); x['texte'] = None
+    for p in st.get('pieces') or []:
+        if isinstance(p, list) and p and not montrable(p[0]):
+            vus.append(p[0]); p[0] = 'Pièce'
+    m += [t for t in vus if t not in m]
+    if vus:
+        print('Texte technique masqué :', ' / '.join(map(str, vus))[:300], file=sys.stderr)
+    if not m:
+        st.pop('textes_masques')
+
+
 def technique(err):
-    """détail technique affiché sous le message, sans les chemins du serveur"""
+    """détail technique gardé dans etat.json pour le débogage (page de dépôt : seulement avec ?debug=1), sans les chemins du serveur"""
     t = str(err) if isinstance(err, (RuntimeError, SystemExit)) else f'{type(err).__name__} : {err}'
     return t.replace(str(ROOT) + '/', '').replace(str(ROOT), '')[:800]
 
@@ -132,7 +166,8 @@ def choisir_page(doc):
 def analyse(pid):
     """sans IA : type de fichier, murs (tracés ou aplats de l'image), échelle"""
     d = PLANS / pid
-    state(pid, etape='analyse', statut='en_cours', message='Analyse du fichier…', pct=3)
+    # repart de zéro : une relance ne double ni les étapes faites ni les avertissements d'une analyse précédente
+    state(pid, etape='analyse', statut='en_cours', message='Analyse du fichier…', pct=3, etapes=[], avertissements=[])
     src = next(iter(sorted(d.glob('source.*'))), None)
     with open(src or os.devnull, 'rb') as fh:
         ext = format_fichier(fh.read(1024))
@@ -161,7 +196,14 @@ def analyse(pid):
         if len(doc) == 0:
             return refus(pid, 'Ce PDF ne contient aucune page lisible (fichier tronqué ?).')
         pdf = src
-        if len(doc) > 1:  # une seule page lue, la même pour l'extraction, la calibration et la lecture
+        from extract import pages_niveaux, empiler
+        pp = pages_niveaux(doc) if len(doc) > 1 else None
+        if pp:  # un niveau par page : pages empilées sur une seule page, la même pour l'extraction, la calibration et la lecture
+            empiler(doc, pp).save(d / 'source-page.pdf'); pdf = d / 'source-page.pdf'
+            state(pid, pages=[k + 1 for k in pp])
+            if len(pp) < len(doc):
+                state(pid, avertir=f"Le PDF compte {len(doc)} pages : les pages {', '.join(str(k + 1) for k in pp[:-1])} et {pp[-1] + 1}, une par niveau, sont lues.")
+        elif len(doc) > 1:  # une seule page lue, la même pour l'extraction, la calibration et la lecture
             k = choisir_page(doc)
             one = pymupdf.open(); one.insert_pdf(doc, from_page=k, to_page=k); one.save(d / 'source-page.pdf'); pdf = d / 'source-page.pdf'
             state(pid, page=k + 1, avertir=f'Le PDF compte {len(doc)} pages : seule la page {k + 1}, la plus détaillée, est lue.')
@@ -170,7 +212,7 @@ def analyse(pid):
         e = extract(pdf, d, pid)
     except SystemExit as err:
         if str(err) == 'ECHELLE':
-            return calibration_needed(pid, pdf, 'Aucune cote lisible pour caler l’échelle : indiquez une longueur connue.')
+            return calibration_needed(pid, pdf, AV_ECHELLE[1])
         return refus(pid, str(err))
     except ImportError:
         raise
@@ -178,10 +220,71 @@ def analyse(pid):
         return refus(pid, 'L’analyse automatique de ce plan a échoué : murs ou tracés non reconnus. Le PDF d’origine du promoteur donne le meilleur résultat.', err)
     c = e['echelle']; src_kind = 'image' if e.get('raster') else 'vectoriel'
     state(pid, source=src_kind, echelle=c, pdf=pdf.name,
-          fait={'etape': 'analyse', 'texte': 'Plan reconnu : murs et cotes lus directement dans le fichier.' if src_kind == 'vectoriel' else 'Plan reconnu : murs lus sur l’image, échelle retrouvée sur les cotes du plan.'})
+          fait={'etape': 'analyse', 'texte': texte_analyse(src_kind, c['confiance'] != 'faible')})
+    fait_niveaux(pid, e)
+    if niveaux_refus(pid, e):
+        return None
     if c['confiance'] == 'faible':
-        return calibration_needed(pid, pdf, 'Échelle incertaine : confirmez-la en indiquant une longueur connue sur le plan.')
+        return calibration_needed(pid, pdf, AV_ECHELLE[0])
     return 'lecture'
+
+
+# avertissements d'échelle : retirés dès que la calibration a réussi
+AV_ECHELLE = ('Échelle incertaine : confirmez-la en indiquant une longueur connue sur le plan.', 'Aucune cote lisible pour caler l’échelle : indiquez une longueur connue.')
+AV_FICHIER_LU = 'Fichier lu : il reste à caler l’échelle.'
+
+
+def texte_analyse(src_kind, echelle_lue=True):
+    if src_kind == 'vectoriel':
+        return 'Plan reconnu : murs et cotes lus directement dans le fichier.'
+    return 'Plan reconnu : murs lus sur l’image' + (', échelle retrouvée sur les cotes du plan.' if echelle_lue else '.')
+
+
+def texte_niveaux(e):
+    """« Duplex : 2 niveaux reconnus (R+1 et R+2). » avec les noms du plan, sinon Niveau 1, Niveau 2… du bas vers le haut ; None pour un seul niveau"""
+    nv = sorted(e.get('niveaux') or [], key=lambda x: x.get('ordre', 0))
+    if len(nv) < 2:
+        return None
+    noms = [nom_niveau(x.get('nom'), i) for i, x in enumerate(nv)]
+    genre = {2: 'Duplex', 3: 'Triplex'}.get(len(nv), 'Logement sur plusieurs niveaux')
+    return f"{genre} : {len(nv)} niveaux reconnus ({', '.join(noms[:-1])} et {noms[-1]})."
+
+
+def nom_niveau(nom, k):
+    """nom du niveau écrit sur le plan (R+1, RDC…), sinon Niveau 1, Niveau 2… du bas vers le haut ; jamais un id"""
+    nom = str(nom or '').strip()
+    return nom if nom and montrable(nom) else f'Niveau {k + 1}'
+
+
+def fait_niveaux(pid, e):
+    """étape faite décrivant les niveaux, juste après celles de l'analyse ; remplacée si l'extraction est refaite (calibration)"""
+    t = texte_niveaux(e)
+    with LOCK:
+        st = _state(pid); et = [x for x in st.get('etapes', []) if not x.get('niveaux')]
+        if t:
+            i = max((k + 1 for k, x in enumerate(et) if x.get('etape') == 'analyse'), default=0)
+            et.insert(i, {'etape': 'analyse', 'texte': t, 'niveaux': True})
+        if et != st.get('etapes', []):
+            _state(pid, etapes=et)
+
+
+def niveaux_refus(pid, e=None):
+    """avant toute lecture payante : niveaux superposés sans doute possible, et autant que la qualification en a vu.
+    Sinon arrêt définitif, sans détail technique. Rend True si le traitement s'arrête."""
+    if e is None:
+        try:
+            e = json.loads((PLANS / pid / 'extract.json').read_text())
+        except (OSError, ValueError):
+            return False
+    nv = e.get('niveaux') or []
+    q = state(pid).get('qualification'); nq = q.get('niveaux') if isinstance(q, dict) else None
+    nq = nq if isinstance(nq, int) and not isinstance(nq, bool) and nq >= 1 else None
+    rate = any(x.get('recouvrement') is not None and x['recouvrement'] < 0.6 for x in nv)
+    if rate or (nq and nq != max(1, len(nv))):
+        state(pid, statut='refus', etape='analyse', technique_erreur=None,
+              message="Les niveaux de ce plan n'ont pas pu être séparés et superposés automatiquement : la visite ne peut pas être construite. Le PDF d'origine du promoteur donne le meilleur résultat.")
+        return True
+    return False
 
 
 def calibration_needed(pid, pdf, msg):
@@ -191,11 +294,21 @@ def calibration_needed(pid, pdf, msg):
     page.get_pixmap(matrix=pymupdf.Matrix(z, z), alpha=False).save(d / 'calibration.png')
     st = state(pid, avertir=msg, calib_zoom=z, pdf=Path(pdf).name, source=state(pid).get('source') or 'image')
     if not any(x.get('etape') == 'analyse' for x in st.get('etapes', [])):
-        state(pid, fait={'etape': 'analyse', 'texte': 'Fichier lu : il reste à caler l’échelle.'})
-    if qualifier(pid) is False:
+        state(pid, fait={'etape': 'analyse', 'texte': AV_FICHIER_LU})
+    if qualifier(pid) is False or niveaux_refus(pid):  # niveaux non séparés : arrêt avant de demander la calibration
         return None
     state(pid, etape='calibration', statut='attente', message="Cliquez les deux extrémités d'une cote connue du plan, puis indiquez sa longueur.", image='calibration.png')
     return None
+
+
+def echelle_calee(pid, e, K):
+    """calibration réussie : K exact gardé (extract.json l'arrondit : une réextraction redonne les mêmes coordonnées),
+    échelle de l'extraction refaite, avertissements d'échelle retirés, « il reste à caler l'échelle » remplacé"""
+    with LOCK:
+        st = _state(pid); src_kind = 'image' if e.get('raster') else 'vectoriel'
+        et = [{**x, 'texte': texte_analyse(src_kind, False)} if x.get('etape') == 'analyse' and x.get('texte') == AV_FICHIER_LU else x for x in st.get('etapes', [])]
+        _state(pid, k_saisi=K, echelle=e.get('echelle'), source=src_kind, etapes=et,
+               avertissements=[a for a in st.get('avertissements', []) if a not in AV_ECHELLE])
 
 
 def ecarter_lecture(d):
@@ -225,30 +338,29 @@ def qualifier(pid):
             q = q if isinstance(q, dict) else {}
             state(pid, qualification=q, cout_qualif=log)
         except Exception as err:
-            state(pid, avertir=f'Qualification impossible : {technique(err)[:200]}')
+            state(pid, qualification_erreur=technique(err)[:200])  # contrôle silencieux : rien à montrer à l'acquéreur
             return True
     remarque = str(q.get('remarque') or '').strip()
-    niveaux = q.get('niveaux') if isinstance(q.get('niveaux'), int) and not isinstance(q.get('niveaux'), bool) else 1
     if q.get('plan') is False:
         refus(pid, ("Ce fichier ne ressemble pas à un plan d'appartement. " + remarque).strip())
         return False
     if q.get('lisible') is False:
         state(pid, avertir=('Plan peu lisible. ' + remarque).strip())
-    if niveaux > 1:
-        state(pid, avertir=f"{niveaux} niveaux détectés : cette version construit un seul niveau.")
-    return True
+    return True  # nombre de niveaux : recoupé avec l'extraction avant la lecture (niveaux_refus)
 
 
 def lecture(pid):
     d = PLANS / pid
+    if niveaux_refus(pid):
+        return None
     load_env()
     from lire import provider
     if not provider() and not os.environ.get('PLAN_MOCK'):
-        state(pid, statut='erreur', etape='lecture', message="Clé API absente : ajoutez ANTHROPIC_API_KEY (ou OPENROUTER_API_KEY) dans le fichier .env à la racine du projet, puis relancez.")
+        state(pid, statut='erreur', etape='lecture', message="Clé API absente : ajoutez-la dans le fichier .env à la racine du projet (voir pipeline/README.md), puis relancez.")
         return None
     state(pid, etape='lecture', statut='en_cours', message='Lecture du plan en cours…', pct=10)
     import importlib, lire
-    importlib.reload(lire.murs); importlib.reload(lire.apercu); importlib.reload(lire); read_plan = lire.read_plan
+    importlib.reload(lire.murs); importlib.reload(lire.apercu); importlib.reload(lire.niveaux); importlib.reload(lire); read_plan = lire.read_plan
     import time as _t
     t0 = _t.time(); info = {'n': 0, 'k': 0, 'fin': False}
     def ticker():  # pendant que le modèle réfléchit, rien n'arrive : on avance doucement
@@ -266,11 +378,54 @@ def lecture(pid):
     finally:
         info['fin'] = True
     rooms = [x for x in P['rooms'] if not x.get('hidden')]
-    ok = not r['avertissements']
-    state(pid, fait={'etape': 'lecture', 'texte': f"{len(rooms)} espaces reconnus (pièces, dégagements, loggia)" + (', surfaces conformes au plan.' if ok else '.')},
-          avertir=r['avertissements'], technique={'cout_eur': r['cout_eur'], 'murs': len(P['walls']), 'ouvertures': len(P['openings'])},
-          pieces=[[x['name'], x.get('area') or x.get('areaNote') or ''] for x in rooms])
+    ok = not any(SURFACE.fullmatch(a) for a in r['avertissements'])
+    lv = P.get('levels') or []
+    nom_lv = lambda x: nom_niveau((lv[x.get('level', 0)] if 0 <= x.get('level', 0) < len(lv) else {}).get('name'), x.get('level', 0))
+    noms = [x['name'] for x in rooms]  # deux pièces du même nom sur deux niveaux : « Loggia · R+1 », « Loggia · R+2 »
+    nom = lambda x: f"{x['name']} · {nom_lv(x)}" if len(lv) > 1 and noms.count(x['name']) > 1 else x['name']
+    state(pid, fait={'etape': 'lecture', 'texte': f"{len(rooms)} espaces reconnus (pièces, dégagements, loggia)" + (f' sur {len(lv)} niveaux' if len(lv) > 1 else '') + (', surfaces conformes au plan.' if ok else '.')},
+          avertir=avis_lecture(rooms, r['avertissements'], nom), avertissements_lecture=r['avertissements'],
+          technique={'cout_eur': r['cout_eur'], 'murs': len(P['walls']), 'ouvertures': len(P['openings'])},
+          pieces=[[nom(x), x.get('area') or x.get('areaNote') or ''] for x in rooms])
     return 'controle'
+
+
+SURFACE = re.compile(r'Pièce (.+) : (\d+\.\d+) m² mesurés \([^)]*\) pour (\d+\.\d+) m² annoncés\.')
+
+
+def avis_lecture(rooms, avs, nom):
+    """avertissements de la lecture montrés à l'acquéreur : écarts de surface (promis par la page de dépôt) et lecture sur image.
+    Les autres s'adressent à l'IA (ids, indices, coordonnées, consignes) : gardés dans etat.json (avertissements_lecture), jamais affichés."""
+    fr = lambda v: v.replace('.', ',')
+    def piece(n, a):  # la pièce par son nom et sa surface annoncée ; un id (pièce sans nom) n'est jamais montré
+        return next((x for x in rooms if x.get('name') == n and re.fullmatch(r'\d+(?:[.,]\d+)?', str(x.get('area') or '').strip())
+                     and f"{float(str(x['area']).replace(',', '.')):.2f}" == a), None)
+    out = []
+    for a in avs:
+        m = SURFACE.fullmatch(a); x = m and piece(m[1], m[3])
+        if x:
+            out.append(f'{nom(x)} : {fr(m[2])} m² mesurés sur le plan pour {fr(m[3])} m² au tableau des surfaces.')
+        elif a.startswith('Plan lu sur une image'):
+            out.append(a)
+        elif ARRET.fullmatch(a):
+            out.append(avis_arret(a))
+    return out
+
+
+ARRET = re.compile(r"La visite guidée n'a pas d'arrêt dans « (.+) » : aucun point de vue dégagé\.")  # lire.repare_moteur, lire.complete (rapport.json)
+
+
+def avis_arret(a):
+    """pièce laissée sans arrêt de la visite guidée, dite à l'acquéreur (le nom entre guillemets serait pris pour un texte technique)"""
+    return f"{ARRET.fullmatch(a)[1]} : pas d'arrêt dans la visite guidée, aucun point de vue assez dégagé."
+
+
+def arrets_retires(d):
+    """avertissements d'arrêt écrits dans rapport.json par la réparation de la visite de contrôle"""
+    try:
+        return [avis_arret(a) for a in json.loads((d / 'rapport.json').read_text()).get('avertissements', []) if ARRET.fullmatch(a)]
+    except (OSError, ValueError):
+        return []
 
 
 def enfant(pid, cmd, **kw):
@@ -296,7 +451,7 @@ def controle(pid):
     shutil.copy(ROOT / 'moteur' / 'modele.html', d / 'index.html')
     state(pid, etape='controle', statut='en_cours', message='Visite de contrôle…', pct=79)
     import importlib, lire
-    importlib.reload(lire.murs); importlib.reload(lire.apercu); importlib.reload(lire)
+    importlib.reload(lire.murs); importlib.reload(lire.apercu); importlib.reload(lire.niveaux); importlib.reload(lire)
     for k in range(6):
         (d / 'controle.json').unlink(missing_ok=True)  # jamais le verdict d'un passage précédent
         p = enfant(pid, ['node', str(ROOT / 'moteur' / 'controle.mjs'), f'plans/{pid}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -309,11 +464,15 @@ def controle(pid):
         except Exception:
             raise RuntimeError('Contrôle : ' + (err or out)[-400:])
         if res['ok']:
-            state(pid, fait={'etape': 'controle', 'texte': 'Visite contrôlée : toutes les pièces sont accessibles, les portes se franchissent, les baies sont dégagées.'})
+            esc = bool(json.loads((d / 'plan.json').read_text()).get('stairs'))
+            state(pid, fait={'etape': 'controle', 'texte': 'Visite contrôlée : toutes les pièces sont accessibles, les portes se franchissent, les baies sont dégagées'
+                             + (', l’escalier se monte et se descend.' if esc else '.')})
             return 'photos'
         if k == 5:
             break
-        if not lire.repare_moteur(d, res['problemes']):
+        repare = lire.repare_moteur(d, res['problemes'])
+        state(pid, avertir=arrets_retires(d))  # un arrêt retiré n'est jamais passé sous silence
+        if not repare:
             break
     state(pid, statut='erreur', message="La visite n'a pas passé le contrôle qualité. Elle n'est pas publiée.",
           technique_erreur=' / '.join(p['texte'] for p in res['problemes'])[:800])
@@ -330,11 +489,38 @@ def photos(pid):
     for line in p.stdout:
         tail = (tail + [line])[-8:]
         if '-jour ' in line:
-            done += 1; state(pid, pct=round(80 + 19 * done / total, 1))
+            done += 1; state(pid, pct=round(80 + 14 * done / total, 1))
     if p.wait() != 0:
         raise RuntimeError('Photos : ' + ''.join(tail)[-400:])
     n = len(list((d / 'photos').glob('*.jpg')))
     state(pid, fait={'etape': 'photos', 'texte': f'{n} photos prêtes.'})
+    return 'pano'
+
+
+def pano(pid):
+    """panoramas 360° de chaque arrêt (moteur/pano.mjs), contrôlés : la visite n'est pas publiée si le contrôle échoue"""
+    d = PLANS / pid
+    state(pid, etape='pano', statut='en_cours', message='Visite à 360°…', pct=94)
+    total = len(json.loads((d / 'plan.json').read_text()).get('stops', [])) or 1
+    (d / 'pano' / 'controle.json').unlink(missing_ok=True)  # jamais le verdict d'un passage précédent
+    p = enfant(pid, ['node', str(ROOT / 'moteur' / 'pano.mjs'), f'plans/{pid}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    done, tail = 0, []
+    for line in p.stdout:
+        tail = (tail + [line])[-8:]
+        if line.startswith('PANO '):
+            done += 1; state(pid, pct=round(94 + 5.5 * done / total, 1))
+    if p.wait() != 0:
+        raise RuntimeError('Panoramas : ' + ''.join(tail)[-400:])
+    try:
+        res = json.loads((d / 'pano' / 'controle.json').read_text())
+    except Exception:
+        raise RuntimeError('Panoramas : ' + ''.join(tail)[-400:])
+    if not res.get('ok'):
+        state(pid, statut='erreur', message="La visite à 360° n'a pas passé le contrôle qualité. Elle n'est pas publiée.",
+              technique_erreur=' / '.join(res.get('problemes', []))[:800])
+        return None
+    n = sum(1 for _ in (d / 'pano').glob('*-512.jpg'))
+    state(pid, fait={'etape': 'pano', 'texte': f'Visite à 360° prête : {n} points de vue, d’arrêt en arrêt.'})
     return 'fini'
 
 
@@ -342,7 +528,7 @@ def expliquer(etape, err):
     """message pour l'acquéreur selon la cause, et si une relance peut aboutir"""
     t = str(err); tl = t.lower(); code = getattr(err, 'status_code', None); nom = type(err).__name__
     if isinstance(err, ImportError):
-        return f'Installation incomplète : module « {err.name} » absent (voir pipeline/README.md). Installez-le, puis relancez.', True
+        return 'Installation incomplète du service : un module manque. Installez-le (voir le guide d’installation), puis relancez.', True
     if etape == 'lecture':
         if code in (401, 403) or t.startswith('Clé') or nom in ('AuthenticationError', 'PermissionDeniedError'):
             return 'Clé API refusée : vérifiez-la dans le fichier .env, puis relancez.', True
@@ -353,17 +539,19 @@ def expliquer(etape, err):
             return 'Le service de lecture est momentanément indisponible ou saturé. Relancez dans une minute.', True
         if t.startswith(('Réponse tronquée', 'La lecture a été refusée', 'Plan incohérent')):
             return t.split(' : ')[0] + '. Vous pouvez relancer la lecture.', True
-        return 'La lecture du plan a échoué (détail ci-dessous). Vous pouvez la relancer.', True
+        return 'La lecture du plan a échoué. Vous pouvez la relancer.', True
     if etape == 'controle':
-        return 'La visite de contrôle n’a pas pu tourner (Chrome sans écran). Vous pouvez la relancer.', True
+        return 'La visite de contrôle n’a pas pu tourner. Vous pouvez la relancer.', True
     if etape == 'photos':
         return 'Le calcul des photos s’est interrompu. Vous pouvez le relancer.', True
-    return 'L’analyse de ce fichier a échoué (détail ci-dessous). Déposez de préférence le PDF d’origine du promoteur.', False
+    if etape == 'pano':
+        return 'Le calcul de la visite à 360° s’est interrompu. Vous pouvez le relancer.', True
+    return 'L’analyse de ce fichier a échoué. Déposez de préférence le PDF d’origine du promoteur.', False
 
 
 def run(pid, start='analyse'):
     """enchaîne les étapes ; le plan a été réservé (RUNNING) par l'appelant et il est libéré à la fin, quoi qu'il arrive"""
-    steps = {'analyse': analyse, 'lecture': lecture, 'controle': controle, 'photos': photos}
+    steps = {'analyse': analyse, 'lecture': lecture, 'controle': controle, 'photos': photos, 'pano': pano}
     step = start
     try:
         if not SLOTS.acquire(blocking=False):
@@ -403,7 +591,14 @@ def liberer(pid):
         RUNNING.discard(pid)
 
 
-VISITE = re.compile(r'index\.html|plan\.json|plan-[a-z0-9-]+\.png|calibration\.png|page\.png')
+# page.png (page entière du PDF, logos du promoteur) et plan-src.png (plan recadré) ne sont lus que par le serveur : jamais servis ; le plan
+# de la visite est plan-<id>.png exactement (le motif plan-[a-z0-9-]+ laissait passer plan-src.png)
+VISITE = re.compile(r'index\.html|plan\.json|calibration\.png')
+PANO = re.compile(r'index\.html|visite\.json|visionneuse\.js|[a-z0-9_-]+-(?:512|2048|4096|8192)\.jpg|niveau-\d{1,2}\.png')
+
+
+CSP_PANO = ("default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; "
+            "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
 
 
 def servable(f):
@@ -417,11 +612,13 @@ def servable(f):
     if parts == ['pipeline', 'accueil.html']:
         return True
     if parts[0] == 'moteur':
-        return len(parts) == 2 and parts[1].endswith(('.js', '.css'))
+        # moteur (premier niveau) et three.js servi avec la visite (moteur/vendor/**.js, fiche C9 : l'import map de modele.html y pointe)
+        return (len(parts) == 2 and parts[1].endswith(('.js', '.css'))) or (len(parts) >= 3 and parts[1] == 'vendor' and parts[-1].endswith('.js'))
     if parts[0] == 'plans' and len(parts) == 3:
-        return bool(VISITE.fullmatch(parts[2]))
+        return bool(VISITE.fullmatch(parts[2])) or parts[2] == f'plan-{parts[1]}.png'
     if parts[0] == 'plans' and len(parts) == 4:
-        return parts[2] == 'photos' and parts[3].endswith('.jpg')
+        # visite à 360° : la page, visite.json et les images seulement (jamais controle.json)
+        return (parts[2] == 'photos' and parts[3].endswith('.jpg')) or (parts[2] == 'pano' and bool(PANO.fullmatch(parts[3])))
     return False
 
 
@@ -434,6 +631,17 @@ class H(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header('X-Content-Type-Options', 'nosniff')
+        # cache : pages, données et scripts revalidés à chaque fois (une correction republiée se voit tout de suite) ; images du 360°
+        # gardées un an, leur adresse change à chaque rendu (?v=<version>, écrit par moteur/pano.mjs)
+        p = urlparse(self.path)
+        if not self._headers_buffer or b'cache-control' not in b''.join(self._headers_buffer).lower():
+            if '/pano/' in p.path and p.path.endswith(('.jpg', '.png')) and 'v=' in p.query:
+                self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
+            else:
+                self.send_header('Cache-Control', 'no-cache')
+        if '/pano/' in p.path:  # le 360° ne demande rien hors de son dossier
+            self.send_header('Content-Security-Policy', CSP_PANO)
+            self.send_header('Referrer-Policy', 'no-referrer')
         super().end_headers()
 
     def send_json(self, obj, code=200):
@@ -533,7 +741,8 @@ class H(SimpleHTTPRequestHandler):
                                statut='en_cours', message='Reprise…', technique_erreur=None)
             if err:
                 return self.send_json({'erreur': err}, 409)
-            step = st.get('etape') if st.get('etape') in ('analyse', 'lecture', 'controle', 'photos') else 'analyse'
+            step = st.get('etape') if st.get('etape') in ('analyse', 'lecture', 'controle', 'photos', 'pano') else \
+                'lecture' if st.get('etape') == 'calibration' and st.get('k_saisi') else 'analyse'  # échelle déjà calée : pas de nouvelle cote à demander
             threading.Thread(target=run, args=(pid, step), daemon=True).start()
             return self.send_json({'ok': True, 'etape': step})
         return self.calibration(pid, body)
@@ -568,11 +777,11 @@ class H(SimpleHTTPRequestHandler):
             (d / ('source' + ext)).write_bytes(body)
             with LOCK:
                 RUNNING.add(pid); _state(pid, nom=name, statut='en_cours', etape='analyse', message='Fichier reçu.')
-        except Exception as err:
+        except Exception:
             traceback.print_exc()
             if d:
                 shutil.rmtree(d, ignore_errors=True); liberer(pid)
-            return self.send_json({'erreur': f'Enregistrement du fichier impossible ({technique(err)[:120]}).'}, 500)
+            return self.send_json({'erreur': 'Enregistrement du fichier impossible : réessayez dans un instant.'}, 500)
         threading.Thread(target=run, args=(pid,), daemon=True).start()
         return self.send_json({'id': pid})
 
@@ -602,13 +811,15 @@ class H(SimpleHTTPRequestHandler):
                 liberer(pid); return self.send_json({'erreur': 'Un des points est hors du plan : recommencez.'}, 400)
             z = st.get('calib_zoom', 1.0); K = (px / z) / m  # points de page par mètre
             from extract import extract
-            extract(d / st.get('pdf', 'source.pdf'), d, pid, K_force=K)
+            e = extract(d / st.get('pdf', 'source.pdf'), d, pid, K_force=K)
             ecarter_lecture(d)
+            echelle_calee(pid, e, K)
+            fait_niveaux(pid, e)
         except SystemExit as e:
             liberer(pid); return self.send_json({'erreur': f'Plan illisible : {e}'}, 400)
-        except Exception as e:  # le plan reste en attente : une autre cote peut réussir
+        except Exception:  # le plan reste en attente : une autre cote peut réussir
             traceback.print_exc(); liberer(pid)
-            return self.send_json({'erreur': f'Analyse impossible avec cette échelle : vérifiez les deux points et la longueur. Si cela persiste, les murs de ce plan ne sont pas reconnus ({technique(e)[:120]}).'}, 422)
+            return self.send_json({'erreur': 'Analyse impossible avec cette échelle : vérifiez les deux points et la longueur. Si cela persiste, les murs de ce plan ne sont pas reconnus.'}, 422)
         state(pid, fait={'etape': 'calibration', 'texte': f"Échelle calée sur votre cote de {fr(m)} m."}, statut='en_cours', message='Échelle calée.')
         threading.Thread(target=run, args=(pid, 'lecture'), daemon=True).start()
         return self.send_json({'ok': True})
@@ -628,12 +839,101 @@ def arreter_tout():
     arreter(procs)
 
 
+def test_liste_blanche():
+    """contrôle au démarrage (et python3 pipeline/serveur.py --test) : sur un serveur de ce code lancé à part, pour chaque plan publié,
+    rien d'interne n'est servi depuis l'adresse de son 360° (page du PDF, plan recadré, source, lecture, état, contrôles), sous toutes
+    les écritures (%2e%2e, majuscules, doubles barres) ; les images du 360° versionnées sont gardées en cache, le reste revalidé.
+    Renvoie la liste des fuites (vide si tout va bien)"""
+    srv = ThreadingHTTPServer(('127.0.0.1', 0), H); port = srv.server_address[1]
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    fuites = []
+
+    def get(chemin):
+        c = http.client.HTTPConnection('127.0.0.1', port, timeout=5)
+        try:
+            c.request('GET', chemin, headers={'Host': f'localhost:{port}'}); r = c.getresponse(); r.read()
+            return r.status, {k.lower(): v for k, v in r.getheaders()}
+        finally:
+            c.close()
+    try:
+        plans = [d for d in PLANS.iterdir() if d.is_dir() and not d.name.startswith(('_', '.')) and (d / 'pano' / 'visite.json').exists()] if PLANS.exists() else []
+        interdits = ['page.png', 'plan-src.png', 'source.pdf', 'extract.json', 'reponse-ia.json', 'etat.json', 'rapport.json', 'controle.json', 'relecture-ia.json', 'appels-ia.json']
+        for d in plans:
+            b = f'/plans/{quote(d.name)}/pano/'
+            for n in interdits:
+                for ch in (f'{b}../{n}', f'{b}%2e%2e/{n}', f'{b}%2E%2E/{n.upper()}', f'/plans/{quote(d.name)}//{n}', f'/plans/{quote(d.name)}/{n}'):
+                    if get(ch)[0] != 404:
+                        fuites.append(ch)
+            for ch in (f'{b}controle.json', f'{b}%63ontrole.json', f'{b}../../../pipeline/serveur.py', f'{b}../../../.env'):
+                if get(ch)[0] != 404:
+                    fuites.append(ch)
+            st, h = get(b)
+            if st != 200 or 'no-cache' not in h.get('cache-control', '') or "script-src 'self'" not in h.get('content-security-policy', ''):
+                fuites.append(f'{b} : en-têtes {h.get("cache-control")} / politique de contenu absente')
+            v = json.loads((d / 'pano' / 'visite.json').read_text()).get('version', '')
+            dep = json.loads((d / 'pano' / 'visite.json').read_text()).get('depart', '')
+            st, h = get(f'{b}{quote(dep)}-512.jpg?v={v}')
+            if st != 200 or 'immutable' not in h.get('cache-control', ''):
+                fuites.append(f'{b}{dep}-512.jpg : cache {h.get("cache-control")} ({st})')
+        # la visite 3D charge three.js par l'import map de moteur/modele.html (chemins relatifs à plans/<id>/), puis chaque module importe
+        # les siens : tout doit être servi, sinon la 3D ne démarre pas (constat du 28/09/2026 : moteur/vendor/** refusé, 404)
+        for ch in scripts_visite():
+            if get(ch)[0] != 200:
+                fuites.append(f'{ch} : script de la visite refusé')
+    finally:
+        srv.shutdown(); srv.server_close()
+    return fuites
+
+
+def scripts_visite(modele=None):
+    """adresses de tous les scripts que la page de visite charge : import map et scripts de moteur/modele.html, puis, de proche en
+    proche, les imports relatifs de chaque module (three/examples/jsm importe ../../../build/three.module.js, etc.)"""
+    html = (modele or ROOT / 'moteur' / 'modele.html').read_text()
+    base = '/plans/x/'
+    vus, file = set(), []
+    m = re.search(r'<script type="importmap">(.*?)</script>', html, re.S)
+    carte = json.loads(m.group(1)).get('imports', {}) if m else {}
+    for v in carte.values():
+        if v.endswith('.js'):
+            file.append(posixpath.normpath(posixpath.join(base, v)))
+    for v in re.findall(r'<script[^>]+src="([^"]+)"', html) + re.findall(r'''import\s*(?:[^'"]*?from\s*)?['"](\.[^'"]+)['"]''', html):
+        file.append(posixpath.normpath(posixpath.join(base, v)))
+    for pre, cible in carte.items():  # modules nommés importés par le moteur (three/addons/…)
+        if pre.endswith('/'):
+            for f in (ROOT / 'moteur').glob('*.js'):
+                for v in re.findall(r'''['"]%s([^'"]+\.js)['"]''' % re.escape(pre), f.read_text()):
+                    file.append(posixpath.normpath(posixpath.join(base, cible, v)))
+    while file:
+        ch = file.pop()
+        if ch in vus:
+            continue
+        vus.add(ch)
+        f = ROOT / ch.lstrip('/')
+        if not f.is_file():
+            continue
+        for v in re.findall(r'''(?:import|export)\s*(?:[^'";]*?from\s*)?['"](\.{1,2}/[^'"]+)['"]''', f.read_text(errors='ignore')):
+            file.append(posixpath.normpath(posixpath.join(posixpath.dirname(ch), v)))
+        for pre, cible in carte.items():
+            if pre.endswith('/'):
+                for v in re.findall(r'''from\s*['"]%s([^'"]+\.js)['"]''' % re.escape(pre), f.read_text(errors='ignore')):
+                    file.append(posixpath.normpath(posixpath.join(base, cible, v)))
+    return sorted(vus)
+
+
+if __name__ == '__main__' and '--test' in sys.argv:
+    f = test_liste_blanche()
+    print('\n'.join(f) if f else 'Liste blanche et cache : aucun problème.')
+    sys.exit(1 if f else 0)
+
 if __name__ == '__main__':
     pip = {'pymupdf': 'pymupdf', 'PIL': 'pillow', 'numpy': 'numpy', 'shapely': 'shapely', 'cv2': 'opencv-python-headless'}
     manque = [v for k, v in pip.items() if importlib.util.find_spec(k) is None]
     if manque:
         sys.exit('Modules Python absents. Installez-les : pip3 install ' + ' '.join(manque))
     PLANS.mkdir(exist_ok=True)
+    fuites = test_liste_blanche()
+    if fuites:  # un fichier interne servi : on ne démarre pas
+        sys.exit('Fichiers internes servis, serveur arrêté :\n' + '\n'.join(fuites))
     reprise_au_demarrage()
     atexit.register(arreter_tout)
     signal.signal(signal.SIGTERM, lambda *a: sys.exit(0))  # arrêt propre : les Chrome des traitements sont arrêtés aussi

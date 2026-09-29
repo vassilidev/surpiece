@@ -34,7 +34,7 @@ Posées selon L2-14 : page vue, `cta_depot_clique` (`emplacement` = `guide`, `pa
 - **Contradiction de liste** : le résumé du backlog cite « lire un plan de vente » comme cinquième guide ; MESSAGES.md § 11 prévoit « Transformer un plan 2D en 3D : trois façons de faire » (mot-clé principal de l'accueil), et le pied de page § 8.2 n'en liste que quatre. À trancher par l'utilisateur ; MESSAGES.md à aligner ensuite.
 - **Tranché : R20.** La vitrine, guides compris, est indexable dès sa mise en ligne (L2-16, une fois le nom déposé) : chaque guide est indexé dès sa publication, sans attendre l'ouverture publique (L8-07).
 - **Taille** : cinq guides avec relecture juridique dépassent facilement 5 jours ; découper en un ticket par guide si besoin, en commençant par la rétractation (hypothèse T11 : ce moment convertit le mieux).
-- Le mot « duplex » et les options futures (meublé, TMA dans l'outil) ne sont jamais évoqués comme disponibles.
+- Les options futures (meublé, TMA dans l'outil) ne sont jamais évoquées comme disponibles ; les plans à plusieurs niveaux, seulement pour le duplex (MARQUE.md § 3.4).
 
 ## Références
 - produit/MESSAGES.md § 0.6, § 1.7, § 8.2, § 11 ; produit/MARQUE.md § 4.1, § 5 ; produit/OFFRES.md § 9.2 (T11).

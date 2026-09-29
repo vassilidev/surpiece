@@ -35,6 +35,7 @@ SUIVI.md § 7.1 demande que les bases de la mesure soient posées « dès le lot
   - `section` n'a pas de valeur pour « Ce que vous obtenez », « Fidélité et contrôle », « Quand s'en servir », « Dernier appel » (propositions : `livrables`, `fidelite`, `moments`, `dernier_appel`) ;
   - `emplacement` n'a pas `pro` (PARCOURS.md B1) ; `intention` de `cta_promoteur_clique` n'a pas `demo` ; `onglet` n'a pas `professionnel` (voir L2-06, L2-08).
 - **Bascule du bouton** (L6-01) : garder `cta_depot_clique` avant et après ; noter la date de la bascule en annotation dans Umami (L7-05) plutôt que de créer un second nom.
+- Nouveaux écrans du moteur : onglets de niveau (plan 2D, maquette), et plus tard mode 360° (décision 15). `visite_mode_choisi` n'a pas de valeur pour eux : à ajouter par le propriétaire de SUIVI.md quand ils sont publiés.
 - Le fichier `mesure/evenements.json` et les tableaux de SUIVI.md § 3 doivent rester identiques (contrôle C2) : toute modification passe par les deux dans la même demande de fusion.
 
 ## Références

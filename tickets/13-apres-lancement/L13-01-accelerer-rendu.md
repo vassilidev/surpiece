@@ -5,10 +5,10 @@
 | 13 · Après lancement | P1 | M (1 à 3 j) | L5-10 | `moteur/` [M], `service/` | À faire |
 
 ## Pourquoi
-Décision n° 4 : le rendu doit fonctionner partout ; Chrome en SwiftShader dans un conteneur sans GPU est la base, par défaut et partout (VM en Docker Compose), et la rapidité sera améliorée **après** la mise en ligne. **Tranché : R3.** Serverless Jobs, GPU ou Mac mini ne sont que des accélérations optionnelles, jamais obligatoires ; aucun composant propre à un hébergeur n'est requis pour que le service fonctionne. Les mesures du 27/09/2026 (Mac M3) donnent l'ordre de grandeur : 11 photos en 684 s en SwiftShader contre 60 s en Metal (× 11,4), 3 images en 215 s ; sur des vCPU de serveur, 1,5 à 2 fois plus (estimation). Accélérer sert l'attente de l'aperçu (L5-11), la galerie complète (L13-02), les imports de promoteurs (L10-02) et, plus tard, le réalisme (L13-05). On mesure avant, on change une seule chose, on mesure après.
+Décision n° 4 : le rendu doit fonctionner partout ; Chrome en SwiftShader dans un conteneur sans GPU est la base, par défaut et partout (VM en Docker Compose), et la rapidité sera améliorée **après** la mise en ligne. **Tranché : R3.** Serverless Jobs, GPU ou Mac mini ne sont que des accélérations optionnelles, jamais obligatoires ; aucun composant propre à un hébergeur n'est requis pour que le service fonctionne. Les mesures du 27/09/2026 (Mac M3) donnent l'ordre de grandeur : 11 photos en 684 s en SwiftShader contre 60 s en Metal (× 11,4), 3 images en 215 s ; sur des vCPU de serveur, 1,5 à 2 fois plus (estimation). Accélérer sert l'attente de l'aperçu (L5-11), les panoramas 360° de chaque arrêt (L4-15, L5-27) et le précalcul d'éclairage (L4-13, L5-28), décidés le 27/09/2026, la galerie complète (L13-02), les imports de promoteurs (L10-02) et, plus tard, le réalisme (L13-05). Le rendu en direct sur le serveur (streaming vidéo de la visite) est écarté par l'utilisateur (coût) : aucune voie de ce ticket ne le rouvre. On mesure avant, on change une seule chose, on mesure après.
 
 ## À faire
-1. **Mesure avant** : protocole T0 de L5-11 (`outils/mesure_t0.sh`) sur la VM de production : durée par image (médiane et 9e décile), visite de contrôle, charge processeur et effet sur le temps de réponse du web (avec L5-22).
+1. **Mesure avant** : protocole T0 de L5-11 (`outils/mesure_t0.sh`) sur la VM de production : durée par image (médiane et 9e décile), par panorama (6 faces) et par précalcul d'éclairage d'un plan, visite de contrôle, charge processeur et effet sur le temps de réponse du web (avec L5-22).
 2. **Voie 1 : une tâche par image, en parallèle, sur l'exécutant en conteneur** (L5-10) :
    - `photos.mjs` accepte déjà une liste de vues (`moteur/photos.mjs:12`) : la tâche ordonnée est découpée en tâches d'une vue ;
    - chaque tâche dans son propre dossier de travail : `photos.mjs` réécrit `plan.json` quand une vue est écartée (`:112-116`), ce qui ne doit jamais se faire en concurrence ;
@@ -36,7 +36,7 @@ Décision n° 4 : le rendu doit fonctionner partout ; Chrome en SwiftShader dans
 - **Point de bascule estimé** : SwiftShader en Serverless Jobs est le moins cher jusqu'à 1 000 à 1 500 plans par mois ; au-delà, Mac mini ou GPU (recherche/hebergement.md § 2.3).
 - **Sécurité** : SwiftShader compile du code à la volée et `plan.json` contient des textes issus du plan déposé : conteneur isolé, sans secret (hebergement.md § 2.2).
 - **Tranché : R3.** ARCHITECTURE.md D3 est tranchée (SwiftShader en conteneur, par défaut et partout) ; l'essai M2.7a n'est plus qu'une mesure informative (L5-10). Ce ticket ne décide donc pas du rendu de base, seulement d'une accélération facultative.
-- Coordination avec le travail sur les duplex : `photos.mjs` a une logique propre aux plans à plusieurs niveaux (`:80-90`) ; ne pas la toucher.
+- Plusieurs niveaux (travail du 27/09/2026) : `photos.mjs` a une logique propre aux plans à plusieurs niveaux (`:28`, `:39`, `:71-87` : maquette par niveau, caméra au sol du niveau, refus d'une photo au mauvais étage). Une tâche par image garde ces règles et le niveau de chaque vue.
 
 ## Références
 - produit/ARCHITECTURE.md D3, § 2.1 (worker rendu), § 9.2, M2.7a, M2.7b ; produit/recherche/hebergement.md § 2.1 à § 2.3, § 6, § 11.

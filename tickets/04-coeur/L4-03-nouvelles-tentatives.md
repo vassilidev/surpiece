@@ -16,7 +16,7 @@ Côté OpenRouter, aucune nouvelle tentative n'est faite sur un 429 ou une erreu
 3. **Jamais de nouvelle tentative** pour : 400, 401, 402, 403, 404, 413, réponse tronquée (`finish_reason: length`, `:165`), refus du modèle, JSON illisible (déjà traité par `read_plan`). `error.metadata.limit_source` journalisé (L4-02).
 4. **Budget avant chaque tentative** : `budget.autoriser(...)` de L4-02 est appelé avant chaque essai ; chaque essai a sa propre entrée au journal (`statut`, numéro de tentative). Une erreur au milieu du flux peut avoir été facturée : le budget en tient compte.
 5. **SDK Anthropic** (`:170`) : une seule politique. Recommandation : `anthropic.Anthropic(max_retries=0)` et la même boucle, pour que chaque essai soit journalisé et passe par le budget.
-6. **Échec après les 3 tentatives** : exception passagère identifiable (attribut `code = 'service_indisponible'`), traduite par le catalogue en `erreur.indisponible` (L4-05) ; en attendant L4-05, `expliquer` (`serveur.py:396`) garde son comportement.
+6. **Échec après les 3 tentatives** : exception passagère identifiable (attribut `code = 'service_indisponible'`), traduite par le catalogue en `erreur.indisponible` (L4-05) ; en attendant L4-05, `expliquer` (`serveur.py:500`) garde son comportement.
 7. **Faux serveur de L4-02** complété par les scénarios : 429, 429 puis succès ; 500 trois fois ; coupure réseau puis succès ; 402 ; 403 ; 401 ; `Retry-After: 3` ; `Retry-After: 600` ; erreur dans le flux avec code 503.
 
 ## Critères d'acceptation
@@ -33,11 +33,11 @@ Côté OpenRouter, aucune nouvelle tentative n'est faite sur un 429 ou une erreu
 - **Coût** : une erreur au milieu du flux peut être facturée ; trois tentatives d'une lecture complète peuvent coûter jusqu'à 3 fois un appel de lecture. Le budget de L4-02 borne ce risque.
 - La qualification (`serveur.py:260`) passe par `call` et profite des tentatives sans changement.
 - **Ordre avec L4-01** : les deux tickets touchent `call` ; enchaîner sur la même branche ou rebaser proprement.
-- **Coordination avec le travail sur les duplex** : diff limité à `call` ; critère de fusion d'ARCHITECTURE.md § 8.1.
+- **Coordination avec le travail sur les niveaux** (terminé le 27/09/2026, pas encore commité : 23 fichiers, dont `pipeline/niveaux.py`) : partir de son commit ; diff limité à `call` ; critère de fusion d'ARCHITECTURE.md § 8.1.
 
 ## Références
 - produit/ARCHITECTURE.md § 6.5 (402 et 403), M1.3, § 8.1 ; produit/recherche/audit-code.md A2, B8 ; produit/recherche/hebergement.md § 10 ; produit/OFFRES.md § 6.7.
-- pipeline/lire.py:107 (`call`), :135-:139 (`urlopen`, erreurs HTTP), :152 (erreur dans le flux), :165 (réponse tronquée), :170 (client Anthropic) ; pipeline/serveur.py:260 (`qualifier`), :396 (`expliquer`).
+- pipeline/lire.py:107 (`call`), :135-:139 (`urlopen`, erreurs HTTP), :152 (erreur dans le flux), :165 (réponse tronquée), :170 (client Anthropic) ; pipeline/serveur.py:323 (`qualifier`), :500 (`expliquer`).
 
 ## Hors périmètre
 - Reprise automatique après l'arrêt d'un worker, relance payante unique : L5-06. Essai de charge avec le faux serveur : L5-22. Alertes sur les 402 : L5-09, L5-16.

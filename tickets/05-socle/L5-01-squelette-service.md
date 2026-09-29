@@ -49,7 +49,7 @@ Le serveur actuel (`pipeline/serveur.py`, `http.server`, dépôt lu en mémoire)
 - produit/ARCHITECTURE.md § 2.1 (services), M2.1, § 6.7 (secrets et filtre), § 9.1 (environnements), § 9.2 (CI, images).
 - produit/recherche/audit-code.md B5, A11, A13.
 - produit/recherche/hebergement.md § 4 (montage Docker Compose).
-- `pipeline/serveur.py:28` (`load_env`), `:698` (`ThreadingHTTPServer`).
+- `pipeline/serveur.py:28` (`load_env`), `:803` (`ThreadingHTTPServer`).
 
 ## Hors périmètre
 - Stockage et URL signées : L5-02. Comptes : L5-03. File de travaux : L5-06. Worker de rendu : L5-10.

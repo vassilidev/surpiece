@@ -25,7 +25,7 @@ Le conseiller doit devenir le premier client payant récurrent (`recherche/march
 ## Points d'attention
 - **Dépendances** : convertir suppose L9-01 (abonnement), L9-13 (coupon fondateurs) et L9-02 (essai), non déclarés. Les démonstrations peuvent commencer avant, dans la suite des entretiens de L2-18 (mêmes contacts, avec leur accord) : **Tranché : R21**, avant l'essai en ligne, les pages pros ne proposent qu'un entretien ou la bêta fondateurs.
 - **Marges** : toutes les formules restent en marge positive même remisées (37 % en Équipe, `OFFRES.md` § 8.4).
-- **Promesses** : ce qui n'existe pas encore (fiche PDF du lot, QR code, détail avec consentement avant l'avis de l'avocat) n'est jamais promis ni daté.
+- **Promesses** : ce qui n'existe pas encore (fiche PDF du lot, QR code, détail avec consentement avant l'avis de l'avocat, mode 360°, triplex) n'est jamais promis ni daté.
 - **Données** : le tableur des cibles contient des données personnelles de professionnels ; il figure au registre (L0-09) et n'est jamais versionné.
 
 ## Références

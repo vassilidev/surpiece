@@ -22,10 +22,11 @@ Les images du plan (adresse, lot, parfois noms en cartouche) partent chez OpenRo
 - [ ] Si l'utilisateur donne son accord : lecture de contrôle faite, durée et résultat d'`evaluer.py` notés et comparés à la ligne de base ; sinon, la mesure reste inscrite comme « à faire sur accord ».
 
 ## Points d'attention
-- Diff d'une ligne dans `lire.py`, fichier en cours de modification par l'agent des duplex : branche courte, fusion coordonnée.
+- Diff d'une ligne dans `lire.py`, fichier modifié par le travail sur les niveaux (fini le 27/09/2026, non commité) : branche courte, sur le commit qui l'intègre.
 - Effets possibles de la ZDR, non mesurés : latence, disponibilité (moins de fournisseurs), prise en charge du paramètre `reasoning.effort`, coût rapporté par `usage.cost`. La lecture de contrôle de l'étape 5 est le seul moyen de les voir ; pas de généralisation sans elle.
 - Par OpenRouter, notre contrat est avec OpenRouter, pas avec Anthropic : les garanties d'Anthropic (propriété intellectuelle) ne nous couvrent probablement pas (`recherche/juridique.md` § 3.3, question pour L0-07).
 - Mémoire du projet : ne pas payer de lecture vouée à l'échec ; la lecture de contrôle n'a lieu qu'une fois les vérifications gratuites passées.
+- Pour ne payer qu'une fois : la lecture réelle de la duplex (L1-13, 1,5 à 2 $ estimés) peut se faire après ce ticket, avec la ZDR, et servir aussi de mesure de son effet sur un plan à plusieurs niveaux (sur accord de l'utilisateur).
 
 ## Références
 - `produit/recherche/audit-code.md` A12

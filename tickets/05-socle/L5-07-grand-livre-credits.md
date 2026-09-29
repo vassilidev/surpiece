@@ -56,7 +56,7 @@ Règle d'OFFRES § 0.2 : un crédit n'est consommé qu'à la publication, après
 - produit/OFFRES.md § 0.2, § 6.1 à § 6.6, § 9.2 (T0) ; produit/PARCOURS.md A15.
 - produit/ARCHITECTURE.md § 2.3 (étapes 4, 9, 10), § 4.2 (`credit_lots`, `credit_mouvements`), § 4.3, M2.6b.
 - produit/recherche/auth-paiement.md § 2.3, § 3.1 à § 3.3.
-- `pipeline/serveur.py:444` (`reserver`, à remplacer côté service).
+- `pipeline/serveur.py:548` (`reserver`, à remplacer côté service).
 
 ## Hors périmètre
 - Crédit offert à l'inscription et anti-abus : L6-06. Achats et webhooks Stripe : L8-01. Déblocage : L8-02.

@@ -5,7 +5,7 @@
 | 5 · Socle en ligne | P0 | L (3 à 5 j) | L0-02, L5-01, L5-14, L5-15 | `service/` | À faire |
 
 ## Pourquoi
-Le serveur actuel n'a pas de comptes : quiconque connaît un identifiant voit un plan (audit B1, B2), et la protection se limite à `localhost` (`hote_ok`, `origine_ok`, `pipeline/serveur.py:499-510`, audit B4). Le choix du fournisseur n'est pas tranché : l'utilisateur penchait pour Auth0, la recherche recommande une auth maison (lien magique avec code, Google), Supabase Auth Paris en alternative. Quelle que soit la décision de L0-02, on construit une couche `FournisseurIdentite` interchangeable : le fournisseur dit seulement « qui est-ce », les comptes, organisations, rôles, crédits et sessions restent dans notre base. Ce ticket livre la couche d'identité, le lien magique avec code, les sessions et leurs protections ; la connexion Google est découpée dans L5-24.
+Le serveur actuel n'a pas de comptes : quiconque connaît un identifiant voit un plan (audit B1, B2), et la protection se limite à `localhost` (`hote_ok`, `origine_ok`, `pipeline/serveur.py:603-614`, audit B4). Le choix du fournisseur n'est pas tranché : l'utilisateur penchait pour Auth0, la recherche recommande une auth maison (lien magique avec code, Google), Supabase Auth Paris en alternative. Quelle que soit la décision de L0-02, on construit une couche `FournisseurIdentite` interchangeable : le fournisseur dit seulement « qui est-ce », les comptes, organisations, rôles, crédits et sessions restent dans notre base. Ce ticket livre la couche d'identité, le lien magique avec code, les sessions et leurs protections ; la connexion Google est découpée dans L5-24.
 
 ## À faire
 1. Lire la décision D1 consignée par L0-02 dans ARCHITECTURE § 3. Ce qui suit décrit l'option recommandée (auth maison) ; l'étape 9 donne l'écart pour les deux autres.
@@ -54,7 +54,7 @@ Le serveur actuel n'a pas de comptes : quiconque connaît un identifiant voit un
 - produit/ARCHITECTURE.md D1, § 2.5 (cookies par origine), § 4.2, § 6.3, § 6.4, § 6.8, M2.3.
 - produit/recherche/auth-paiement.md § 1.4, § 1.5.
 - produit/PARCOURS.md A4, A5 ; produit/MESSAGES.md § 7.3, § 7.12.
-- `pipeline/serveur.py:499-510` (`hote_ok`, `origine_ok`), `:596` (`depot`, en-tête `x-nom`).
+- `pipeline/serveur.py:603-614` (`hote_ok`, `origine_ok`), `:701` (`depot`, en-tête `x-nom`).
 
 ## Hors périmètre
 - Connexion Google : L5-24.

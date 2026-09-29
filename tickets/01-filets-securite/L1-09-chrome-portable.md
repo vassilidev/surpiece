@@ -15,7 +15,7 @@ Décision de l'utilisateur (27/09/2026) : le rendu doit fonctionner partout, et 
    - une valeur inconnue arrête le script avec un message clair.
    `headless`, `protocolTimeout` et la taille de fenêtre restent passés par l'appelant. `lancerChrome` passe toujours l'environnement filtré de L1-01 (`envSansSecret()`) : aucun appelant ne peut lancer Chrome avec une clé API.
 2. **Vérifier le moteur réellement utilisé**, à chaque lancement : créer un contexte WebGL dans la page, lire le nom du moteur (`WEBGL_debug_renderer_info`, `UNMASKED_RENDERER_WEBGL`) et échouer s'il ne correspond pas au choix (« SwiftShader » attendu pour `swiftshader`, « Metal » pour `metal` ; pour `vulkan`, « Vulkan » **sans** « SwiftShader », car le nom du moteur logiciel contient aussi « Vulkan 1.3.0 (SwiftShader Device…) ») ou si le contexte n'est pas créé. Jamais de repli silencieux d'un moteur à l'autre. Écrire le nom du moteur dans `controle.json` et dans la sortie de `photos.mjs`.
-3. **Brancher** `moteur/controle.mjs` et `moteur/photos.mjs` sur `lancerChrome` (remplacer leurs `puppeteer.launch(…)`). Puis `outils/vues.mjs`, `outils/marche.mjs`, `outils/trajets.mjs` et `outils/textes.mjs` (L1-04) s'ils existent. Signaler `moteur/_dbg.mjs` à l'agent des duplex.
+3. **Brancher** `moteur/controle.mjs` et `moteur/photos.mjs` sur `lancerChrome` (remplacer leurs `puppeteer.launch(…)`). Puis `outils/vues.mjs`, `outils/marche.mjs`, `outils/trajets.mjs` et `outils/textes.mjs` (L1-04) s'ils existent. Brancher aussi les scripts ajoutés depuis : banc de fluidité (L1-14), panoramas (L1-16).
 4. **Délais** : les attentes fixes (par exemple 9 s par vue dans `outils/vues.mjs`, attentes de lumière dans `photos.mjs`) supposent la vitesse d'un GPU. Les rendre dépendantes du moteur (facteur appliqué en SwiftShader) ou, mieux, attendre un nombre d'images rendues ; mesurer que les vues convergent.
 5. **Détecter une texture noire** : pour chaque image produite (photos et 3 vues), rejeter une image presque entièrement noire ou uniforme (luminance moyenne et écart déjà calculés par `grab` dans `photos.mjs`) ; ce contrôle vaut quel que soit le moteur.
 6. **Reproduire la mesure de la recherche sur le Mac**, sans payer : rejeu L1-02 des 4 références en `RENDU_CHROME=metal` puis `RENDU_CHROME=swiftshader` ; comparer verdicts de contrôle et 3 vues avec `outils/ecart_images.py` ; noter les durées.
@@ -24,16 +24,16 @@ Décision de l'utilisateur (27/09/2026) : le rendu doit fonctionner partout, et 
 
 ## Critères d'acceptation
 - [ ] En local sur le Mac, sans variable : comportement et images inchangés (rejeu L1-02 identique, écart des 3 vues sous 2/255).
-- [ ] En `RENDU_CHROME=swiftshader` sur le Mac : même verdict de contrôle, mot pour mot, sur les 4 références ; 3 vues à moins de 2/255 en moyenne et au plus 0,05 % des pixels au-delà de 16/255 des images Metal ; nom du moteur « SwiftShader » écrit dans `controle.json`.
+- [ ] En `RENDU_CHROME=swiftshader` sur le Mac : même verdict de contrôle, mot pour mot, sur les 5 références (duplex comprise) ; 3 vues à moins de 2/255 en moyenne et au plus 0,05 % des pixels au-delà de 16/255 des images Metal ; nom du moteur « SwiftShader » écrit dans `controle.json`.
 - [ ] Un lancement forcé sur un moteur indisponible (par exemple `vulkan` sur le Mac) échoue avec un message clair, sans produire d'image.
 - [ ] Une image noire provoquée (page qui masque le canevas) est rejetée par le contrôle de l'étape 5.
-- [ ] `grep -rn "use-angle" moteur/ outils/` ne trouve plus que `moteur/chrome.mjs` (hors `_dbg.mjs`).
+- [ ] `grep -rn "use-angle" moteur/ outils/` ne trouve plus que `moteur/chrome.mjs`.
 - [ ] Critère de fusion d'ARCHITECTURE.md § 8.1 ; aucune lecture payante ; tout écart trouvé devient un contrôle.
 
 ## Points d'attention
 - Chromium n'active plus SwiftShader par défaut pour WebGL et précise que `--enable-unsafe-swiftshader` n'est pas destiné à du contenu non fiable : le conteneur de rendu reste isolé et sans secret (`recherche/hebergement.md` § 2.2 ; L5-10).
-- Durées attendues en SwiftShader (Mac M3) : visite de contrôle 13 à 14 s, 3 photos 215 s, 11 photos 684 s. Les délais du serveur (`controle` : 15 min par passage dans `pipeline/serveur.py`) restent suffisants ; `photos` n'a pas de délai.
-- `moteur/` et `outils/` sont en cours de modification par l'agent des duplex : petits diffs (un appel remplacé par fichier), branche courte, fusion coordonnée ; `controle.mjs` porte aussi les contrôles des duplex.
+- Durées mesurées en SwiftShader (Mac M3) avant le 27/09/2026 : visite de contrôle 13 à 14 s, 3 photos 215 s, 11 photos 684 s. Depuis, la visite de contrôle ajoute le test d'immersion (grille de cubes de 2 cm, calculée par le processeur) et les contrôles des niveaux, et la galerie de la duplex compte 12 photos (une vue d'ensemble par niveau) : durées et mémoire de pointe à remesurer à l'étape 6. Les délais du serveur (`controle` : 15 min par passage dans `pipeline/serveur.py`) restent suffisants ; `photos` n'a pas de délai.
+- `moteur/` et `outils/` portent le travail sur les niveaux (fini le 27/09/2026, non commité) : petits diffs (un appel remplacé par fichier), branche courte, sur le commit qui l'intègre ; `controle.mjs` porte aussi les contrôles des niveaux et le test d'immersion.
 - Vulkan n'est pas validé visuellement : ne pas l'utiliser en production avant une comparaison d'images (L13-01).
 - Le lancer de rayons (option future « réalisme ») est inutilisable en SwiftShader : hors sujet ici.
 
@@ -41,7 +41,7 @@ Décision de l'utilisateur (27/09/2026) : le rendu doit fonctionner partout, et 
 - `produit/recherche/audit-code.md` B11
 - `produit/recherche/hebergement.md` § 2.1, § 2.2, § 2.3
 - `produit/ARCHITECTURE.md` § 3 D3, § 6.1 (B11), § 8.3 M1.6, § 9.5 (non-régression visuelle)
-- `moteur/photos.mjs` (`puppeteer.launch`, `grab`) ; `moteur/controle.mjs` (`puppeteer.launch`) ; `outils/vues.mjs`, `outils/marche.mjs`, `outils/trajets.mjs` ; `moteur/_dbg.mjs`
+- `moteur/photos.mjs` (`puppeteer.launch`, `grab`) ; `moteur/controle.mjs` (`puppeteer.launch`) ; `outils/vues.mjs`, `outils/marche.mjs`, `outils/trajets.mjs`
 - `CLAUDE.md` (options de capture actuelles)
 
 ## Hors périmètre

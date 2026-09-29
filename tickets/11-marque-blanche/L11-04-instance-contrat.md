@@ -22,7 +22,7 @@ Une instance en marque blanche est une vente accompagnée : un contrat qui fixe 
    5. bandeau de consentement du client, ou le nôtre à ses couleurs, configuré pour son domaine (SUIVI.md § 6.6) : présence vérifiée par un parcours automatisé ;
    6. mentions légales du client : lien présent et joignable sur chaque page ;
    7. domaines autorisés pour l'intégration : vérifiés (L10-04) ;
-   8. recette sur 3 plans d'essai du client : 3 visites de contrôle réussies, zéro défaut visible relu ;
+   8. recette sur 3 plans d'essai du client : 3 visites de contrôle réussies (test d'immersion et recoupement des baies avec la légende compris), zéro défaut visible relu, visite fluide sur un téléphone d'entrée de gamme (seuils de L1-14), aucun texte technique (L1-04) ;
    9. mise en service : `instance_creee`.
    Chaque ligne validée écrit `instance_etape_validee` ; l'instance ne s'ouvre qu'avec les 9 lignes.
 3. **Facturation** : offre `marque_blanche` au catalogue (L5-08, R5 : prix et quotas lus dans la version, droits acquis honorés) : mise en place facturée une fois ; abonnement mensuel sur 12 mois (Stripe Billing, prélèvement SEPA, L9-01) ; 50 plans par mois inclus puis recharges prépayées à 7 € HT (mécanique des recharges de L9-13) ; options : retrait de la signature 150 € HT par mois, réglage de lecture sur mesure 490 € HT (L9-07), SSO sur devis (L10-07). Chaque ligne du journal porte `instance` (SUIVI.md § 3.14).

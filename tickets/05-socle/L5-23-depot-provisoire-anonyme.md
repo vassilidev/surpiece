@@ -11,7 +11,7 @@ Le parcours du particulier montre avant de demander : le plan est déposé et an
 1. **Table `depots_provisoires`** : `id`, `jeton_reprise_hash` (256 bits, jeton gardé par le navigateur avec le fichier), `source_sha256`, `page_empreinte` (page retenue rendue à résolution fixe, calculée par l'analyse, R22), `taille`, `format`, `ip_prefixe`, `statut` (`attente_envoi`, `recu`, `analyse`, `reconnu`, `a_calibrer`, `refuse`), `resultat` (codes seulement : motif de refus, pages, page retenue, vectoriel, échelle, niveaux), `email_normalise_hash` (posé à la demande de lien), `cree_le`, `expire_le` (= création + 24 h), `rattache_plan_id`, `rattache_le`. Jamais le nom du fichier.
 2. **API sans session** (`app.<domaine>`) :
    - `POST /api/depots` : taille (40 Mo au plus) et format annoncés ; limite de débit ; pendant la bêta fermée, code d'invitation valide exigé, vérifié côté serveur (R13 ; codes émis par L6-10, saisie par L6-01) ; renvoie l'identifiant, le jeton de reprise et une URL signée d'envoi (PUT, 15 min, 40 Mo, type imposé) vers `prive/depots/anonymes/<depot_id>/source` ;
-   - `POST /api/depots/<id>/analyser` (jeton de reprise) : vérifie l'objet, recalcule l'empreinte côté serveur, met en file `analyse` (sous-processus limité en temps et en mémoire, L5-06) : format aux premiers octets, refus motivés, choix de page, extraction, échelle, niveaux avec `niveaux_max = 1` (logique d'`analyse`, `pipeline/serveur.py:132`, appelée par les étapes de L4-04, jamais modifiée ici). **Aucune qualification IA, aucune clé IA dans ce conteneur** ;
+   - `POST /api/depots/<id>/analyser` (jeton de reprise) : vérifie l'objet, recalcule l'empreinte côté serveur, met en file `analyse` (sous-processus limité en temps et en mémoire, L5-06) : format aux premiers octets, refus motivés, choix de page, extraction, échelle, niveaux avec la valeur de service de `niveaux_max` (2, L4-08) (logique d'`analyse`, `pipeline/serveur.py:166`, appelée par les étapes de L4-04, jamais modifiée ici). **Aucune qualification IA, aucune clé IA dans ce conteneur** ;
    - `GET /api/depots/<id>` : statut et codes du catalogue (`depot.reconnu.*`, `depot.refus.*`), pages, vignette de la page lue par URL signée courte (le plan de l'utilisateur, montré à lui seul), état de l'échelle ;
    - `POST /api/depots/<id>/page` : autre page choisie, nouvelle analyse (comptée dans la limite) ;
    - `DELETE /api/depots/<id>` : « Retirer ce plan ».
@@ -41,14 +41,14 @@ Le parcours du particulier montre avant de demander : le plan est déposé et an
 - Garder l'empreinte d'un dépôt jamais rattaché au-delà de 24 h (anti-abus) revient à garder une donnée liée à un plan identifiable : seulement si le registre (L0-09) le prévoit.
 - L'analyse sans IA consomme du CPU pour des anonymes : limite par IP, plafond de file (L5-22), et Turnstile au dépôt en réserve si des abus apparaissent (`PARCOURS.md` ne le met qu'à l'inscription).
 - `ARCHITECTURE.md` § 2.3 et § 5.1 sont à compléter (chemin `depots/anonymes/<depot_id>/` au lieu de `depots/<plan_id>/<envoi_id>`).
-- **PDF de plusieurs lots** (R17) : l'analyse sans IA empile aujourd'hui leurs pages comme des niveaux ; le refus « plusieurs lots » vient de la qualification (L6-02), après le compte. Vérifier sur un fichier généré quel message l'analyse anonyme affiche pour un tel PDF (avec `niveaux_max = 1`, `niveaux_refus` peut le refuser comme « niveaux ») ; seul l'import promoteur (L10-02) découpe un PDF de plusieurs lots.
-- Travail sur les duplex : `analyse`, `extract.py` et `niveaux.py` bougent ; les appeler par `pipeline/etapes.py` (L4-04), ne rien y modifier.
+- **PDF de plusieurs lots** (R17) : l'analyse sans IA n'empile plus que des pages aux noms de niveau différents et du même lot quand le numéro est écrit (`pages_niveaux`, `numeros_lot`) ; un PDF de plusieurs lots sans numéro lisible peut encore être empilé comme des niveaux ; le refus « plusieurs lots » vient de la qualification (L6-02), après le compte. Vérifier sur un fichier généré quel message l'analyse anonyme affiche pour un tel PDF (avec `niveaux_max = 2`, deux pages empilées passent l'analyse et seule la qualification l'arrête ; au-delà, `niveaux_refus` peut le refuser comme « niveaux ») ; seul l'import promoteur (L10-02) découpe un PDF de plusieurs lots.
+- Travail sur les niveaux (terminé le 27/09/2026, pas encore commité) : `analyse`, `extract.py` et `niveaux.py` ont changé ; les appeler par `pipeline/etapes.py` (L4-04), ne rien y modifier.
 - Doublon signalé avec L6-01 : ici l'API et le stockage, là-bas le navigateur et les écrans.
 
 ## Références
 - `produit/PARCOURS.md` A2, A3, A5, A6, § 1.6, § 8.2, § 8.3 ; `produit/OFFRES.md` § 9.2 (T5) ; `produit/SUIVI.md` § 3.6.
 - `produit/ARCHITECTURE.md` § 2.3, § 5.1, § 5.7, § 6.4 ; `produit/recherche/audit-code.md` A10 ; `produit/recherche/auth-paiement.md` § 3.5.
-- `pipeline/serveur.py:52` (`format_fichier`), `:126` (`choisir_page`), `:132` (`analyse`), `:218` (`niveaux_refus`).
+- `pipeline/serveur.py:52` (`format_fichier`), `:160` (`choisir_page`), `:166` (`analyse`), `:271` (`niveaux_refus`), relevés le 27/09/2026.
 
 ## Hors périmètre
 - IndexedDB, zone de dépôt, écran « Plan reconnu », volet de compte : L6-01. Création de compte et code : L5-03.

@@ -2,7 +2,7 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 1 · Filets de sécurité et correctifs immédiats | P0 | M (1 à 3 j) | L1-04 | `pipeline/` [P], `moteur/` [M] | À faire |
+| 1 · Filets de sécurité et correctifs immédiats | P0 | M (1 à 3 j) | L1-04 | `pipeline/` [P], `moteur/` [M] | En cours |
 
 ## Pourquoi
 L'outil actuel montre à l'utilisateur des détails d'exception, des consignes pour l'exploitant (« .env », « Chrome sans écran »), des avertissements rédigés pour l'IA et le nom du CDN de la 3D. La page de dépôt promet aussi une notification « onglet fermé » qui ne marche pas, et une « précision au centimètre » que MARQUE.md interdit. La bêta express (L3) réutilise cet outil : ces textes doivent disparaître avant tout testeur (M0.5). Le contrôle de L1-04 dit quand c'est fini.
@@ -11,7 +11,7 @@ L'outil actuel montre à l'utilisateur des détails d'exception, des consignes p
 1. **Page de dépôt** (`pipeline/accueil.html`) :
    - ligne 85 environ : « Précision au centimètre. » → « Murs, cotes et échelle lus directement dans le fichier. » (MARQUE.md § 12, `recherche/juridique.md` § 5.2) ;
    - ligne 93 environ (`#notifTxt`) : remplacer « Vous pouvez fermer cet onglet … on vous prévient » par un texte vrai, par exemple « Gardez cet onglet ouvert : vous serez prévenu ici dès que la visite est prête, même si vous faites autre chose. » ; aucune promesse d'e-mail (l'outil local n'en envoie pas) ;
-   - `#detail` (ligne 205 environ) : ne plus afficher `technique_erreur`, jamais.
+   - `#detail` : **fait le 27/09/2026**, `technique_erreur` n'est plus affiché qu'avec `?debug=1` (`accueil.html` l. 121 et 207). Reste à garantir que `?debug=1` n'a aucun effet pour un testeur ou un client (liste blanche des clés d'état, L3-03). « Précision au centimètre » (l. 85) et `#notifTxt` (l. 93) sont toujours là : les deux points précédents restent à faire.
 2. **Détail technique au journal** (`pipeline/serveur.py`) : dans `run` (bloc `except`), `controle` (échec) et `refus`, ajouter la ligne technique (`technique(err)`) à `plans/<id>/journal.txt` (fichier non servi : absent de la liste blanche de `servable`) et à la console du serveur, en plus d'`etat.json`.
 3. **Messages de `expliquer`** (`pipeline/serveur.py`) : un texte pour l'utilisateur par cause, repris de MESSAGES.md § 7.12 **sans les promesses que l'outil local ne tient pas** (e-mail, équipe, « sous 2 jours ouvrés »). Proposition :
    - module absent, clé absente ou refusée, crédit insuffisant (401, 402, 403) : « Le service est momentanément indisponible. Votre plan est gardé : vous pourrez relancer. » ; la cause exacte (nom du module, `.env`, crédit) va à la console et à `journal.txt` ;
@@ -19,8 +19,8 @@ L'outil actuel montre à l'utilisateur des détails d'exception, des consignes p
    - réponse tronquée, refusée, plan incohérent, autre échec de lecture : « La lecture de votre plan n'a pas abouti. Vous pouvez la relancer. » ;
    - visite de contrôle impossible : « La vérification de la visite n'a pas pu se faire. Vous pouvez la relancer. » ;
    - analyse : retirer « (détail ci-dessous) ».
-   Le message de `lecture` « Clé API absente : ajoutez … .env » devient le message « indisponible » ; au démarrage de `serveur.py`, un avertissement en console signale l'absence de clé.
-4. **Avertissements** (`#warns`) : filtrer **dans `serveur.py`** (fonction `lecture`, avant `state(pid, avertir=…)`) ce qui vient de `r['avertissements']`, sans toucher aux textes de `lire.py` (fonction `check`), qui servent aussi de consignes de correction envoyées à l'IA :
+   Relevé du 27/09/2026 : « Clé API refusée : vérifiez-la dans le fichier .env » et « Crédit API insuffisant : rechargez le compte » (`expliquer`), et « Clé API absente : ajoutez-la dans le fichier .env … » (`lecture`) sont toujours affichés ; le filtre `masquer` ne les arrête pas. Le message de `lecture` « Clé API absente : ajoutez … .env » devient le message « indisponible » ; au démarrage de `serveur.py`, un avertissement en console signale l'absence de clé.
+4. **Avertissements** (`#warns`) : un filtre générique est **fait depuis le 27/09/2026** (`masquer`, à chaque écriture d'`etat.json`), mais il laisse passer un type anglais entre parenthèses (« (shower) »). Garder le filtre ciblé : filtrer **dans `serveur.py`** (fonction `lecture`, avant `state(pid, avertir=…)`) ce qui vient de `r['avertissements']`, sans toucher aux textes de `lire.py` (fonction `check`), qui servent aussi de consignes de correction envoyées à l'IA :
    - « Équipement … » et tout message qui contient un identifiant ou un type anglais : journal seulement ;
    - écarts de surface « Pièce X : a m² mesurés (gaines déduites …) pour b m² annoncés » : réécrits pour l'acquéreur, virgule décimale, sans jargon (« Séjour : 27,1 m² mesurés pour 27,5 m² annoncés au tableau. ») ;
    - « Qualification impossible : … » (`qualifier`) : journal seulement.
@@ -39,9 +39,10 @@ L'outil actuel montre à l'utilisateur des détails d'exception, des consignes p
 - [ ] `controle.json` d'un moteur qui ne démarre pas contient toujours la cause technique.
 - [ ] Critère de fusion d'ARCHITECTURE.md § 8.1 : rejeu L1-02 avec `plan.json` identiques (sauf `titre` et `cartouche` par défaut, écart voulu), visite de contrôle réussie, contrôle des textes réussi, fumée de l'outil local réussie ; aucune lecture payante.
 - [ ] Chaque texte technique trouvé en cours de route ajoute un motif à `outils/textes-interdits.json`.
+- [ ] `textes_masques` (textes retirés par `masquer`) n'est jamais renvoyé à un testeur ni à un client ; le filtre de `serveur.py` et la liste de L1-04 ne font qu'un.
 
 ## Points d'attention
-- Coordination : `serveur.py`, `lire.py`, `accueil.html`, `ui.js`, `engine.js` et `controle.mjs` sont en cours de modification par l'agent des duplex. Petits diffs isolés sur une branche courte ; `lire.py` ne change que dans `complete`, jamais dans les prompts ni dans `check`.
+- Coordination : `serveur.py`, `lire.py`, `accueil.html`, `ui.js`, `engine.js` et `controle.mjs` portent le travail sur les niveaux (fini le 27/09/2026, non commité). Partir du commit qui l'intègre ; petits diffs isolés sur une branche courte ; `lire.py` ne change que dans `complete`, jamais dans les prompts ni dans `check`.
 - Ne pas changer le texte des avertissements de `check` : ils sont renvoyés à l'IA (« Contrôle automatique : … ») et leur changement modifierait la lecture sans évaluation payante.
 - `etat.json` reste lisible par `/api/etat/<id>` pour qui connaît l'identifiant (B2) : ce ticket règle l'écran ; la vue publique de l'état vient avec L3-03 (bêta) et L4-05 (catalogue).
 - Les textes choisis ici sont provisoires : L4-05 les remplace par le catalogue (clés `erreur.*` de MESSAGES.md § 7.12) ; garder une correspondance cause → clé en commentaire pour faciliter la reprise.
