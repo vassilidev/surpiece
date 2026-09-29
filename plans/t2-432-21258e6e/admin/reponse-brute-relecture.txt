@@ -1,0 +1,3 @@
+```json
+{"ok":false,"ecarts":["WC mal orienté : le réservoir est dessiné contre le mur nord (cuvette vers le sud), la lecture le place contre la gaine à l'est (cuvette vers l'ouest)","WC légèrement décalé : centré vers x≈2.80, contre le mur nord y=0.20"],"corrections":{"fixtures":[{"type":"shower","x":[0.2,1.1],"z":[0.82,2.02],"drain":[0.4,1.05]},{"type":"wc","p":[2.8,0.2],"dir":[0,1]},{"type":"vanity","x":[3.35,3.81],"z":[0.91,1.71],"dir":[-1,0]},{"type":"towel","x":[1.3,1.8],"z":[0.22,0.29],"dir":[0,1]},{"type":"placard","x":[2.47,3.81],"z":[1.77,2.42],"face":"s"},{"type":"placard","x":[3.86,4.46],"z":[2.12,2.37],"face":"s"},{"type":"tableau","x":[3.86,4.46],"z":[2.12,2.37]}]}}
+```

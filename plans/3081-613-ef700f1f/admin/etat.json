@@ -1,0 +1,120 @@
+{
+ "id": "3081-613-ef700f1f",
+ "etapes": [
+  {
+   "etape": "analyse",
+   "texte": "Plan reconnu : murs et cotes lus directement dans le fichier."
+  },
+  {
+   "etape": "analyse",
+   "texte": "Duplex : 2 niveaux reconnus (R+1 et R+2).",
+   "niveaux": true
+  },
+  {
+   "etape": "calibration",
+   "texte": "Échelle calée sur votre cote de 3,00 m."
+  },
+  {
+   "etape": "lecture",
+   "texte": "10 espaces reconnus (pièces, dégagements, loggia) sur 2 niveaux, surfaces conformes au plan."
+  },
+  {
+   "etape": "controle",
+   "texte": "Visite contrôlée : toutes les pièces sont accessibles, les portes se franchissent, les baies sont dégagées, l’escalier se monte et se descend."
+  },
+  {
+   "etape": "photos",
+   "texte": "12 photos prêtes."
+  }
+ ],
+ "avertissements": [],
+ "nom": "3081_613.pdf",
+ "statut": "fini",
+ "etape": "fini",
+ "message": "Visite prête.",
+ "pct": 100,
+ "source": "vectoriel",
+ "echelle": {
+  "pt_par_m": 37.8645,
+  "ech": "1/75",
+  "controle": "échelle calée sur la cote saisie par l'utilisateur",
+  "confiance": "saisie"
+ },
+ "pdf": "source.pdf",
+ "calib_zoom": 2.183864510827761,
+ "qualification": {
+  "plan": true,
+  "lisible": true,
+  "niveaux": 2,
+  "cotes_visibles": [
+   "LOGGIA 2.35x2.45",
+   "Ch 02 3.28x2.85",
+   "Ch 01 2.78x4.75",
+   "Sdb 2.50x2.14",
+   "Dgt 3.28x0.90",
+   "Séjour / Cuisine 4.37x3.85",
+   "Cel. 1.22x1.00",
+   "WC 1.34x1.30",
+   "Entrée 1.68x2.34"
+  ],
+  "tableau_surfaces": true,
+  "remarque": "Plan de réservation d'un appartement duplex 3 pièces (lot 613, bâtiment 4) sur deux niveaux R+1 et R+2, lisible avec cotes et tableau de surfaces indiquant 60,7 m² habitables et 73,1 m² au total."
+ },
+ "cout_qualif": [
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1957,
+   "sortie": 297,
+   "reflexion": 0,
+   "cout_usd": 0.017,
+   "duree_s": 7
+  }
+ ],
+ "image": "calibration.png",
+ "pieces": [
+  [
+   "Séjour / Cuisine",
+   "23,5"
+  ],
+  [
+   "Entrée",
+   "4,0"
+  ],
+  [
+   "WC",
+   "2,0"
+  ],
+  [
+   "Cellier",
+   "1,2"
+  ],
+  [
+   "Loggia · R+1",
+   "6,3"
+  ],
+  [
+   "Chambre 1",
+   "12,5"
+  ],
+  [
+   "Chambre 2",
+   "9,4"
+  ],
+  [
+   "Salle de bains",
+   "5,1"
+  ],
+  [
+   "Dégagement",
+   "3,0"
+  ],
+  [
+   "Loggia · R+2",
+   "6,1"
+  ]
+ ],
+ "lien": "/plans/3081-613-ef700f1f/",
+ "technique_erreur": null
+}

@@ -1,0 +1,69 @@
+{
+ "id": "plan-du-lot-c02f7fc8",
+ "etapes": [
+  {
+   "etape": "analyse",
+   "texte": "Plan reconnu : murs et cotes lus directement dans le fichier."
+  },
+  {
+   "etape": "lecture",
+   "texte": "6 espaces reconnus (pièces, dégagements, loggia), surfaces conformes au plan."
+  },
+  {
+   "etape": "controle",
+   "texte": "Visite contrôlée : toutes les pièces sont accessibles, les portes se franchissent, les baies sont dégagées."
+  },
+  {
+   "etape": "photos",
+   "texte": "8 photos prêtes."
+  }
+ ],
+ "avertissements": [],
+ "nom": "Plan du lot.pdf",
+ "statut": "fini",
+ "etape": "fini",
+ "message": "Visite prête.",
+ "pct": 100,
+ "source": "vectoriel",
+ "echelle": {
+  "pt_par_m": 56.6929,
+  "ech": "1/50",
+  "controle": "12 indices concordants sur 18 (ligne de cote, murs, échelle graphique), 1 pour la meilleure autre valeur",
+  "confiance": "haute"
+ },
+ "pdf": "source.pdf",
+ "phase": "correction",
+ "technique": {
+  "cout_eur": 0.99,
+  "murs": 36,
+  "ouvertures": 8
+ },
+ "pieces": [
+  [
+   "Séjour - cuisine",
+   "27,08"
+  ],
+  [
+   "Rangement",
+   "1,17"
+  ],
+  [
+   "Salle de bain - WC",
+   "7,62"
+  ],
+  [
+   "Chambre 1",
+   "12,49"
+  ],
+  [
+   "Chambre 2",
+   "10,92"
+  ],
+  [
+   "Balcon",
+   "5,47"
+  ]
+ ],
+ "lien": "/plans/plan-du-lot-c02f7fc8/",
+ "technique_erreur": null
+}

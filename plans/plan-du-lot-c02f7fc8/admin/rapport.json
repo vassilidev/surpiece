@@ -1,0 +1,68 @@
+{
+ "modele": "claude-opus-5",
+ "fournisseur": null,
+ "appels": [
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 21976,
+   "sortie": 24502,
+   "reflexion": 21678,
+   "cout_usd": 0.722,
+   "duree_s": 289
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 16961,
+   "sortie": 11589,
+   "reflexion": 11559,
+   "cout_usd": 0.375,
+   "duree_s": 184
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 25427,
+   "sortie": 2916,
+   "reflexion": 86,
+   "cout_usd": 0.2,
+   "duree_s": 29
+  }
+ ],
+ "avertissements": [],
+ "erreurs": [],
+ "notes_lecture": "réponse IA réutilisée",
+ "murs": [
+  "porte du tableau électrique ajoutée d'après son arc (charnière (2.62 ; 6.01), vantail de 0.50 m)",
+  "fentes refermées le long des pièces : 1.39 m²",
+  "murs béton : 5.15 m² lus, 6.53 m² retenus",
+  "4 jointure(s) entre murs refermée(s)",
+  "2 cloison(s) interrompue(s) entre deux pièces refermée(s) (0.042 m², 0.043 m²)",
+  "coffret du tableau électrique fermé côté n : cloison entre les deux traits du plan (z 5.395-5.465)",
+  "tableau électrique ramené au nu des murs de son compartiment (x 2.750-2.983, z 5.466-6.000)",
+  "baie pe recalée entre ses jambages (10 cm)",
+  "baie d_sdb recalée entre ses jambages (9 cm)",
+  "baie d_ch1 recalée entre ses jambages (13 cm)",
+  "baie d_ch2 recalée entre ses jambages (11 cm)",
+  "baie pf_sej recalée entre ses jambages (7 cm)",
+  "baie p_tableau recalée entre ses jambages (11 cm)",
+  "porte d_sdb calée sur son arc : charnière s1→s1, sens 1→1, largeur 0.78→0.86 m",
+  "porte d_rang calée sur son arc : charnière s1→s1, sens -1→-1, largeur 0.7→0.78 m",
+  "porte d_ch1 calée sur son arc : charnière s1→s1, sens 1→1, largeur 0.78→0.86 m",
+  "porte d_ch2 calée sur son arc : charnière s1→s1, sens 1→1, largeur 0.78→0.86 m",
+  "fenêtre f_ch2 : charnière s0→s0 (arc du plan)",
+  "« Séjour - cuisine » passait derrière la porte p_tableau (0.17 m²) : niche retirée de la pièce",
+  "mur ajouté pour fermer « sejour » sur 0.45 m",
+  "bath recalé sur son dessin : x 3.83-4.53 → 3.78-4.53, z 0.72-2.33 → 0.66-2.25",
+  "towel recollé au mur (2 cm)"
+ ],
+ "notes": [
+  "Vues de la galerie calculées automatiquement."
+ ],
+ "cout_usd": 1.297,
+ "cout_eur": 1.17
+}

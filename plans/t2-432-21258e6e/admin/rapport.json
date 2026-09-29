@@ -1,0 +1,71 @@
+{
+ "modele": "claude-opus-5",
+ "fournisseur": null,
+ "appels": [
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 21727,
+   "sortie": 35777,
+   "reflexion": 33124,
+   "cout_usd": 1.003,
+   "duree_s": 426
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 12516,
+   "sortie": 4478,
+   "reflexion": 4073,
+   "cout_usd": 0.175,
+   "duree_s": 68
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1606,
+   "sortie": 72,
+   "reflexion": 0,
+   "cout_usd": 0.01,
+   "duree_s": 4
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1606,
+   "sortie": 142,
+   "reflexion": 81,
+   "cout_usd": 0.012,
+   "duree_s": 9
+  }
+ ],
+ "avertissements": [],
+ "erreurs": [],
+ "notes_lecture": "réponse IA réutilisée",
+ "murs": [
+  "murs béton : 7.73 m² lus, 7.73 m² retenus",
+  "2 jointure(s) dans le coffret du tableau électrique laissée(s) vide(s)",
+  "5 jointure(s) entre murs refermée(s)",
+  "descente d'eaux pluviales ajoutée (4.90 ; 4.42, 10 cm) : texte « DEP » et son cercle sur le plan",
+  "baie entree recalée entre ses jambages (8 cm)",
+  "baie p_ch1 recalée entre ses jambages (10 cm)",
+  "baie p_sdb recalée entre ses jambages (14 cm)",
+  "baie p_te : façade de niche, posée contre le bout de ses jambages (5 cm), jambages prolongés",
+  "baie p_te recalée entre ses jambages (10 cm)",
+  "porte p_ch1 calée sur son arc : charnière s0→s0, sens -1→-1, largeur 0.85→0.93 m",
+  "porte p_sdb calée sur son arc : charnière s1→s1, sens 1→1, largeur 0.85→0.93 m",
+  "porte p_te calée sur son arc : charnière s0→s1, sens 1→1, largeur 0.6→0.6 m",
+  "placard lu sur le tableau électrique (3.86-4.46 ; 2.12-2.37) : doublon écarté",
+  "towel recollé au mur (2 cm)"
+ ],
+ "notes": [
+  "poche d'air hors de toute pièce comblée (2.42 ; 1.77)",
+  "Vues de la galerie calculées automatiquement."
+ ],
+ "cout_usd": 1.2,
+ "cout_eur": 1.08
+}

@@ -1,0 +1,73 @@
+{
+ "id": "plans-du-lot-3124-6e1a90c9",
+ "etapes": [
+  {
+   "etape": "analyse",
+   "texte": "Plan reconnu : murs lus sur l’image, échelle retrouvée sur les cotes du plan."
+  },
+  {
+   "etape": "lecture",
+   "texte": "7 espaces reconnus (pièces, dégagements, loggia), surfaces conformes au plan."
+  },
+  {
+   "etape": "controle",
+   "texte": "Visite contrôlée : toutes les pièces sont accessibles, les portes se franchissent, les baies sont dégagées."
+  },
+  {
+   "etape": "photos",
+   "texte": "9 photos prêtes."
+  }
+ ],
+ "avertissements": [],
+ "nom": "Plans du lot 3124.pdf",
+ "statut": "fini",
+ "etape": "fini",
+ "message": "Visite prête.",
+ "pct": 100,
+ "source": "image",
+ "echelle": {
+  "pt_par_m": 56.5849,
+  "ech": "1/50",
+  "controle": "7 indices concordants sur 8 (murs, échelle graphique), 1 pour la meilleure autre valeur",
+  "confiance": "haute"
+ },
+ "pdf": "source.pdf",
+ "phase": "correction",
+ "technique": {
+  "cout_eur": 1.67,
+  "murs": 107,
+  "ouvertures": 11
+ },
+ "pieces": [
+  [
+   "Entrée",
+   "8,3"
+  ],
+  [
+   "WC",
+   "2,3"
+  ],
+  [
+   "Chambre 1",
+   "12,4"
+  ],
+  [
+   "Chambre 2",
+   "9,5"
+  ],
+  [
+   "Salle de bain",
+   "4,8"
+  ],
+  [
+   "Séjour/cuisine",
+   "27,9"
+  ],
+  [
+   "Loggia",
+   "6,5"
+  ]
+ ],
+ "lien": "/plans/plans-du-lot-3124-6e1a90c9/",
+ "technique_erreur": null
+}

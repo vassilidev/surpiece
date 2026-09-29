@@ -1,0 +1,117 @@
+{
+ "modele": "claude-opus-5",
+ "fournisseur": null,
+ "appels": [
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 13765,
+   "sortie": 29109,
+   "reflexion": 25769,
+   "cout_usd": 0.797,
+   "duree_s": 361
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 17241,
+   "sortie": 5833,
+   "reflexion": 2475,
+   "cout_usd": 0.232,
+   "duree_s": 59
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 19488,
+   "sortie": 26314,
+   "reflexion": 24986,
+   "cout_usd": 0.755,
+   "duree_s": 362
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1319,
+   "sortie": 200,
+   "reflexion": 161,
+   "cout_usd": 0.012,
+   "duree_s": 8
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1319,
+   "sortie": 308,
+   "reflexion": 253,
+   "cout_usd": 0.014,
+   "duree_s": 10
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1376,
+   "sortie": 159,
+   "reflexion": 97,
+   "cout_usd": 0.011,
+   "duree_s": 5
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1376,
+   "sortie": 52,
+   "reflexion": 0,
+   "cout_usd": 0.008,
+   "duree_s": 5
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1439,
+   "sortie": 127,
+   "reflexion": 72,
+   "cout_usd": 0.01,
+   "duree_s": 5
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1439,
+   "sortie": 191,
+   "reflexion": 136,
+   "cout_usd": 0.012,
+   "duree_s": 6
+  }
+ ],
+ "avertissements": [],
+ "erreurs": [],
+ "notes_lecture": "réponse IA réutilisée",
+ "murs": [
+  "porte du tableau électrique ajoutée d'après son vantail dessiné (charnière (1.19 ; 4.18), 0.60 m, ouvert à 19°)",
+  "fentes refermées le long des pièces : 0.12 m²",
+  "murs béton : 9.48 m² lus, 9.60 m² retenus",
+  "1 jointure(s) dans le coffret du tableau électrique laissée(s) vide(s)",
+  "20 jointure(s) entre murs refermée(s)",
+  "1 cloison(s) interrompue(s) entre deux pièces refermée(s) (0.001 m²)",
+  "descente d'eaux pluviales ajoutée (7.07 ; 9.01, 10 cm) : disque gris au bord de la loggia sur le plan",
+  "baie p_ch2 recalée entre ses jambages (7 cm)",
+  "porte p_ch1 lue sur le dessin (arc de débattement) : charnière s0→s1, sens -1→-1",
+  "8 lame(s) de mur de moins de 9 mm doublant un autre mur retirée(s)",
+  "vanity recollé au mur (0 cm)"
+ ],
+ "notes": [
+  "Vues de la galerie calculées automatiquement."
+ ],
+ "cout_usd": 1.851,
+ "cout_eur": 1.67
+}

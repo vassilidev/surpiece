@@ -1,0 +1,13 @@
+{
+ "ecarts": [
+  "Porte palière p_entree : charnière lue au sud, alors que sur le plan le vantail ouvert est au nord (pivot à l'extrémité nord de la baie)",
+  "Porte p_sdb : charnière lue à gauche (ouest), alors que le vantail dessiné pivote sur l'extrémité est de la baie (ouverture vers l'entrée)",
+  "Porte p_ch2 : charnière lue à l'extrémité sud, alors que le vantail dessiné pivote sur l'extrémité nord (côté mur ch1/ch2)"
+ ],
+ "applique": true,
+ "arbitrage": [
+  "p_ch2 : correction gardée — Charnière en haut comme l'original ; A place le pivot en bas.",
+  "p_entree : correction gardée — Charnière au jambage haut comme l'origine, vantail le long du mur haut et arc vers le bas ; A place le pivot en bas.",
+  "p_sdb : lecture initiale confirmée — Charnière au jambage gauche comme l'origine, vantail ouvrant vers le haut; B pivote à droite."
+ ]
+}

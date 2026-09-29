@@ -1,0 +1,61 @@
+{
+ "id": "t2-432-21258e6e",
+ "etapes": [
+  {
+   "etape": "analyse",
+   "texte": "Plan reconnu : murs et cotes lus directement dans le fichier."
+  },
+  {
+   "etape": "lecture",
+   "texte": "4 espaces reconnus (pièces, dégagements, loggia), surfaces conformes au plan."
+  },
+  {
+   "etape": "controle",
+   "texte": "Visite contrôlée : toutes les pièces sont accessibles, les portes se franchissent, les baies sont dégagées."
+  },
+  {
+   "etape": "photos",
+   "texte": "6 photos prêtes."
+  }
+ ],
+ "avertissements": [],
+ "nom": "t2-432.pdf",
+ "statut": "fini",
+ "etape": "fini",
+ "message": "Visite prête.",
+ "pct": 100,
+ "source": "vectoriel",
+ "echelle": {
+  "pt_par_m": 56.693,
+  "ech": "1/50",
+  "controle": "12 indices concordants sur 22 (ligne de cote, murs, échelle graphique), 2 pour la meilleure autre valeur",
+  "confiance": "haute"
+ },
+ "pdf": "source.pdf",
+ "phase": "correction",
+ "technique": {
+  "cout_eur": 1.08,
+  "murs": 40,
+  "ouvertures": 6
+ },
+ "pieces": [
+  [
+   "SALON / CUISINE",
+   "26,6"
+  ],
+  [
+   "CHAMBRE 1",
+   "11,9"
+  ],
+  [
+   "SDB / WC",
+   "5,1"
+  ],
+  [
+   "LOGGIA",
+   "5,7"
+  ]
+ ],
+ "lien": "/plans/t2-432-21258e6e/",
+ "technique_erreur": null
+}

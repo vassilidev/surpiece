@@ -1,0 +1,76 @@
+{
+ "modele": "claude-opus-5",
+ "fournisseur": null,
+ "appels": [
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 28716,
+   "sortie": 48840,
+   "reflexion": 45943,
+   "cout_usd": 1.365,
+   "duree_s": 615
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "medium",
+   "entree": 15197,
+   "sortie": 5547,
+   "reflexion": 5259,
+   "cout_usd": 0.215,
+   "duree_s": 83
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1590,
+   "sortie": 51,
+   "reflexion": 0,
+   "cout_usd": 0.009,
+   "duree_s": 3
+  },
+  {
+   "fournisseur": "openrouter",
+   "modele": "anthropic/claude-opus-5",
+   "effort": "low",
+   "entree": 1590,
+   "sortie": 58,
+   "reflexion": 0,
+   "cout_usd": 0.009,
+   "duree_s": 3
+  }
+ ],
+ "avertissements": [],
+ "erreurs": [],
+ "notes_lecture": "réponse IA réutilisée",
+ "murs": [
+  "fentes refermées le long des pièces : 0.61 m²",
+  "murs béton : 9.12 m² lus, 9.63 m² retenus",
+  "3 jointure(s) entre murs refermée(s)",
+  "2 cloison(s) interrompue(s) entre deux pièces refermée(s) (0.002 m², 0.014 m²)",
+  "gaine « GTL » posée sur un équipement, écartée",
+  "gaine technique ajoutée d'après son symbole sur le plan (0.20 ; 3.67 à 0.85 ; 4.32)",
+  "coffret du tableau électrique ouvert côté w : façade en trait fin sur le plan (x 3.574-3.624), cloison lue retirée devant lui (ca0)",
+  "coffret du tableau électrique fermé côté n : cloison entre les deux traits du plan (z 1.563-1.634)",
+  "coffret du tableau électrique fermé côté e : cloison entre les deux traits du plan (x 3.825-3.934)",
+  "tableau électrique ramené au nu des murs de son compartiment (x 3.574-3.823, z 1.636-2.228)",
+  "baie entree recalée entre ses jambages (74 cm)",
+  "baie p_wc recalée entre ses jambages (15 cm)",
+  "baie p_sdb recalée entre ses jambages (15 cm)",
+  "fenêtre fen_entree : charnière s0→s1 (arc du plan)",
+  "6 lame(s) de mur de moins de 9 mm doublant un autre mur retirée(s)",
+  "vanity recalé sur son dessin : x 4.95-5.54 → 4.95-5.75, z 5.12-5.59 → 5.15-5.60",
+  "towel recalé sur son dessin : x 3.64-3.74 → 3.64-3.74, z 4.31-4.71 → 4.10-4.60",
+  "« Entrée » : plafond abaissé sur 100 % de la pièce (hauteur 2.20)",
+  "« Salle de bain » : plafond abaissé sur 74 % de la pièce (hauteur 2.20)",
+  "emplacement indicatif « LL » ajouté d'après ses pointillés (4.60 ; 2.30 à 5.25 ; 2.90)"
+ ],
+ "notes": [
+  "Vues de la galerie calculées automatiquement."
+ ],
+ "cout_usd": 1.598,
+ "cout_eur": 1.44
+}

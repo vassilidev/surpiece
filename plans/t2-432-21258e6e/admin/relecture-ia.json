@@ -1,0 +1,10 @@
+{
+ "ecarts": [
+  "WC mal orienté : le réservoir est dessiné contre le mur nord (cuvette vers le sud), la lecture le place contre la gaine à l'est (cuvette vers l'ouest)",
+  "WC légèrement décalé : centré vers x≈2.80, contre le mur nord y=0.20"
+ ],
+ "applique": true,
+ "arbitrage": [
+  "wc : lecture initiale confirmée — Réservoir contre le mur droit et cuvette à l'horizontale, comme l'origine ; B oriente le WC verticalement avec réservoir au mur du haut."
+ ]
+}
