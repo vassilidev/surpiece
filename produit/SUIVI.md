@@ -2,12 +2,15 @@
 
 Version du 27/09/2026. **Proposition à valider par l'utilisateur.**
 
-**Alignement du 27/09/2026.** Ce document suit les décisions de l'utilisateur (D1 à D10) et les arbitrages du coordinateur (R1 à R23), qui priment sur lui. Pour ne pas les confondre avec les scénarios de recette R1 à R17 (§ 7.5), ils sont toujours écrits ici « arbitrage Rn ». Quand deux documents divergent, l'ordre est : décisions de l'utilisateur, arbitrages, `OFFRES.md` (offres, crédits), `ARCHITECTURE.md` (technique), `MESSAGES.md` (textes), `PARCOURS.md`, puis ce document, qui ne fait foi que pour le dictionnaire d'événements. Points les plus touchés :
+**Alignement du 27/09/2026.** Ce document suit les décisions de l'utilisateur (D1 à D10, puis D11 à D15 du 27/09/2026 : plusieurs niveaux, fluidité, qualité adaptative, précalcul côté serveur, mode 360°) et les arbitrages du coordinateur (R1 à R24), qui priment sur lui. Pour ne pas les confondre avec les scénarios de recette R1 à R17 (§ 7.5), ils sont toujours écrits ici « arbitrage Rn ». Quand deux documents divergent, l'ordre est : décisions de l'utilisateur, arbitrages, `OFFRES.md` (offres, crédits), `ARCHITECTURE.md` (technique), `MESSAGES.md` (textes), `PARCOURS.md`, puis ce document, qui ne fait foi que pour le dictionnaire d'événements. Points les plus touchés :
 - D5 et arbitrage R2 : l'aperçu est publié dès que la vue du dessus et le plan 2D sont prêts (`apercu_pret`), les 2 photos s'ajoutent ensuite (`photos_pretes`), une photo en échec est omise sans rien bloquer ;
 - D9 : Umami auto-hébergé dans l'UE ; Meta, Google et le paiement viennent plus tard ;
 - arbitrage R8 : les prix se testent seulement par périodes ;
 - arbitrage R9 : les adresses de la vitrine sont celles de `MESSAGES.md` ;
-- arbitrage R18 : aucun bandeau tant qu'Umami reste en réglage minimal exempté.
+- arbitrage R18 : aucun bandeau tant qu'Umami reste en réglage minimal exempté ;
+- D12 et D13 : visite fluide sur un appareil modeste, qualité adaptative : mesure de la fluidité proposée (§ 3.5, § 5.6), à décider ;
+- D15 : mode 360° à chaque arrêt, peut-être offre gratuite, à confirmer (§ 3.2, § 3.8, § 3.9, § 5.5) ;
+- D11 : plans à plusieurs niveaux gérés (L13-08, fait) ; l'utilisateur a confirmé le 27/09/2026 : « oui le duplex on l'a géré c'est bon, c'était avant ça ». En service, `niveaux_max = 2` : duplex acceptés, refus au-delà (L4-08) (§ 3.2, § 3.6).
 
 **Objet.** Mesurer tout ce qui sert à décider : conversions, entonnoirs, coûts, qualité. Chaque mesure est placée là où elle est fiable et permise :
 - Umami pour l'audience anonyme ;
@@ -62,7 +65,7 @@ Aucun repère extérieur n'est cité, faute de source.
 - **Aucun script de mesure** sur les liens de visite partagés, les liens prospects ni les intégrations chez les promoteurs. Seuls des compteurs agrégés côté serveur y fonctionnent, plus le détail pour un prospect qui l'accepte.
 - **Nommage** : français sans accent, `objet_action`, 50 caractères au plus. Vérifié par script sur tous les noms du § 3 (§ 3.1).
 - **Dictionnaire** de 143 événements nommés au § 3 (plus la page vue d'Umami), chacun avec son scénario de recette.
-- **Génération en deux temps** (D5, arbitrage R2) : `controle_termine`, puis `apercu_pret` (aperçu publié : vue du dessus et plan 2D) ou `plan_pret` (visite publiée), puis `photos_pretes` (photos publiées ou omises).
+- **Génération en deux temps** (D5, arbitrage R2) : `controle_termine`, puis `apercu_pret` (aperçu publié : vue du dessus et plan 2D) ou `plan_pret` (visite publiée), puis `photos_pretes` (photos publiées ou omises). Avec le mode 360° en service (L5-27) : `panoramas_prets` (panoramas publiés ou omis).
 - **Tests** (arbitrage R8) : les prix, seulement par périodes successives, jamais tirés au sort par personne ; les textes, par périodes pour les anonymes, ou par tirage côté serveur pour les comptes connectés, noté au journal et jamais dans Umami (§ 4.8).
 - **Entonnoirs** au § 4 : particulier, conseiller, promoteur, partenaires, liste d'attente de la bêta.
 - **Tableaux de bord** au § 5 : acquisition, activation, revenu, coûts IA et marge par offre, qualité.
@@ -364,7 +367,7 @@ Umami voit ainsi le bouche-à-oreille sans identifiant de campagne.
 
 ### 2.7 Le moteur émet, la page choisit la destination
 
-La même visite sert à la démonstration, au propriétaire, aux liens et aux intégrations. Le moteur ne doit donc rien savoir des outils de mesure. Le changement se fait dans `moteur/` et **n'est pas fait ici**, puisqu'un autre agent y travaille.
+La même visite sert à la démonstration, au propriétaire, aux liens et aux intégrations. Le moteur ne doit donc rien savoir des outils de mesure. Le changement se fait dans `moteur/` et **n'est pas fait ici** (L7-04), sur le commit qui intègre le travail sur les niveaux (fini le 27/09/2026, non commité).
 
 - **Côté moteur** : il émet un seul type d'événement, `window.dispatchEvent(new CustomEvent('visite:evenement', { detail: { nom, props } }))`. Les noms sont ceux du § 3.5, par exemple `visite_mode_choisi` ou `visite_piece_vue`.
 - **Côté page** (`index.html` de la visite, rendu par le serveur), un adaptateur choisit la destination :
@@ -591,7 +594,7 @@ Toute valeur hors de ces listes est retirée en production et fait échouer les 
 | `formulaire` | `liste_attente` (bêta, L2-12), `essai_pro`, `rdv_pro`, `contact_promoteur`, `contact_partenaire`, `alerte_prise_en_charge`, `signaler_defaut`, `contact_support` (L6-11) |
 | `champ` | nom du champ, jamais sa valeur : `email`, `siren`, `telephone`, `message`, `lots`, `case_autorisation`, `autre` |
 | `format_fichier` | navigateur : `pdf`, `png`, `jpg`, `webp`, `autre` ; serveur : `pdf_vectoriel`, `pdf_image`, `image` |
-| `motif_refus` | analyse et navigateur : `format_inconnu`, `fichier_vide`, `trop_lourd`, `image_illisible`, `image_trop_petite`, `pdf_endommage`, `pdf_protege`, `pdf_sans_page`, `trace_non_reconnu`, `plusieurs_niveaux`, `pas_un_plan` (repris des refus de `pipeline/serveur.py`) ; navigateur seulement : `plusieurs_fichiers`, `heic` (`PARCOURS.md` § 1.6) ; qualification : `maison`, `plusieurs_lots`. En service, un PDF de plusieurs lots est refusé avec `plusieurs_lots` ; seul l'import promoteur (L10-02) le découpe (arbitrage R17) |
+| `motif_refus` | analyse et navigateur : `format_inconnu`, `fichier_vide`, `trop_lourd`, `image_illisible`, `image_trop_petite`, `pdf_endommage`, `pdf_protege`, `pdf_sans_page`, `trace_non_reconnu`, `plusieurs_niveaux` (en service : au-delà de `niveaux_max = 2`, L4-08 ; l'outil local accepte les plans à plusieurs niveaux depuis le 27/09/2026 et refuse ceux dont les niveaux ne se séparent pas), `pas_un_plan` (repris des refus de `pipeline/serveur.py`) ; navigateur seulement : `plusieurs_fichiers`, `heic` (`PARCOURS.md` § 1.6) ; qualification : `maison`, `plusieurs_lots`. En service, un PDF de plusieurs lots est refusé avec `plusieurs_lots` ; seul l'import promoteur (L10-02) le découpe (arbitrage R17) |
 | `cause` (échec) | `lecture_illisible`, `reponse_tronquee`, `plan_incoherent`, `budget_depasse` (plafond de 3 $ par plan atteint, toutes passes et relances confondues, arbitrage R6), `refus_402`, `refus_403`, `controle_bloquant`, `rendu_images` (vue du dessus ou plan 2D d'un aperçu impossibles après nouvelles tentatives ; une photo manquante n'est jamais une cause d'échec, arbitrage R2), `delai_depasse`, `file_saturee`, `erreur_interne` |
 | `type_plan` | `apercu`, `complet` |
 | `source_lot` | `offert_inscription`, `testeur`, `achat`, `abonnement`, `essai`, `recharge`, `code`, `geste_commercial`, `programme` (sources du grand livre, `OFFRES.md` § 6.2, qui fait foi, arbitrage R7). Pendant la bêta fermée, les invités reçoivent un lot `testeur` tiré de la variante « bêta » du catalogue, en plan complet ou en aperçu selon L0-04 (arbitrage R13) |
@@ -601,8 +604,11 @@ Toute valeur hors de ces listes est retirée en production et fait échouer les 
 | `periode_prix` | identifiant de la période de test de prix (`p1`, `p2`…), porté par la version d'offre du catalogue et noté en annotation dans Umami. Un prix ne change que d'une période à l'autre, jamais selon la personne (arbitrage R8) |
 | `experience` | code du test dans le registre des tests (L12-05). Journal seulement, jamais dans Umami (§ 4.8) |
 | `variante` | `a`, `b`. Journal seulement, pour un test tiré côté serveur sur un compte connecté (§ 4.8) |
-| `mode` | `plan_2d`, `maquette`, `visite` (modes `plan`, `orbit`, `walk` du moteur) ; `apercu` pour un défaut signalé sur une image de l'aperçu (`defaut_signale` seulement, L6-09) |
-| `piece` | `sejour`, `cuisine`, `chambre`, `salle_de_bain`, `wc`, `entree`, `degagement`, `rangement`, `loggia`, `balcon`, `terrasse`, `autre` |
+| `mode` | `plan_2d`, `maquette`, `visite` (modes `plan`, `orbit`, `walk` du moteur), `visite_360` (panoramas d'arrêt en arrêt, dès L4-16) ; `apercu` pour un défaut signalé sur une image de l'aperçu (`defaut_signale` seulement, L6-09) |
+| `piece` | `sejour`, `cuisine`, `chambre`, `salle_de_bain`, `wc`, `entree`, `degagement`, `rangement`, `loggia`, `balcon`, `terrasse`, `autre` (l'escalier et le palier d'un plan à plusieurs niveaux vont dans `degagement`) |
+| `qualite` | proposition, avec L4-12 : niveau de qualité retenu par la qualité adaptative, `haute`, `moyenne`, `basse` (liste fixée avec L4-12) |
+| `controles` (visite de contrôle) | proposition : types de problèmes de `moteur/controle.mjs`, en snake_case : `etancheite`, `baie`, `garde_corps`, `cloison`, `maquette`, `lumiere`, `menuiserie`, `rebord`, `dalle`, `escalier`, `vide`, `niveau`, `texte`… Liste reprise de `controle.mjs` ; un contrôle ajouté y entre par la même modification |
+| Classes d'images par seconde | proposition, à fixer avec les seuils de L1-14 : `moins_20`, `20_30`, `30_50`, `plus_50` |
 | `type_defaut` | un code par choix de `defaut.choix` (`MESSAGES.md` § 7.10), dans le même ordre : `trou_ou_fente` (« Un trou ou une fente dans un mur »), `zone_noire` (« Une zone noire ou sans texture »), `objet_flottant`, `mur_mal_place`, `porte_inversee` (« Une porte à l'envers »), `equipement_oublie_ou_mal_oriente`, `cote_differente` (« Une cote qui ne correspond pas au plan »), `autre` (« Autre chose »). Même liste pour les demandes de correction des promoteurs (L10-03) |
 | `defauts` (visite de contrôle) | liste de valeurs de `type_defaut`, plus `texte_technique`, que seul le contrôle automatique des textes relève (L1-04) |
 | `element` (verrou) | `bouton_visite`, `onglet_visite`, `onglet_maquette`, `onglet_plan`, `telechargement`, `partage_visite`. `photo` n'existe qu'avec la galerie complète (L13-02) : au lancement, aucune photo verrouillée n'est montrée ni promise (arbitrage R1) |
@@ -656,7 +662,7 @@ Côté serveur, les nombres restent bruts (`duree_s`, `cout_usd`, `montant_ht_ce
 
 ### 3.5 Démonstration et moteur de visite
 
-Ces événements sont émis par le moteur (§ 2.7). Ils n'existent que pour la démonstration (l'appartement témoin fictif) et pour la vue propriétaire, **jamais pour un lien**. La visite se calcule dans le navigateur du client (D5) : ces événements mesurent donc aussi si elle s'affiche sur les appareils réels.
+Ces événements sont émis par le moteur (§ 2.7). Ils n'existent que pour la démonstration (l'appartement témoin fictif) et pour la vue propriétaire, **jamais pour un lien**. La visite se calcule dans le navigateur du client (D5) : ces événements mesurent donc aussi si elle s'affiche, et si elle est fluide, sur les appareils réels (D12 : fluide sur un portable d'entrée de gamme et un téléphone).
 
 | Nom | Déclencheur exact | Côté | Propriétés | Page ou écran | Meta · Google | Recette |
 |---|---|---|---|---|---|---|
@@ -667,6 +673,7 @@ Ces événements sont émis par le moteur (§ 2.7). Ils n'existent que pour la d
 | `visite_photo_ouverte` | Ouverture d'une photo en grand dans la galerie | N (moteur) | `contexte`, `piece` | idem | — | R2 |
 | `visite_plein_ecran` | Passage en plein écran | N (moteur) | `contexte` | idem | — | R2 |
 | `visite_quittee` | Départ de la page (`pagehide`) après un premier rendu | N (moteur) | `contexte`, `duree` (classe), `modes_vus` (`1`, `2`, `3`) | idem | — | R2 |
+| `visite_fluidite_mesuree` | **Proposition, à décider** (D12) : une fois par ouverture, 20 s après le premier rendu en mode visite ou 360° | N (moteur) | `contexte`, `mode`, `ips` (classe, médiane), `ips_bas` (classe, 1er décile), `qualite` (niveau retenu par L4-12), `appareil` (`mobile`, `tablette`, `ordinateur`) ; jamais d'identifiant d'appareil | démonstration, vue propriétaire | — | R2, R6 |
 
 `visite_quittee` part au moment où la page se ferme. S'il n'arrive pas de façon fiable en recette, on s'en passe : `visite_mode_choisi` suffit à mesurer l'engagement.
 
@@ -680,7 +687,7 @@ Ces événements sont émis par le moteur (§ 2.7). Ils n'existent que pour la d
 | `depot_envoi_echoue` | Envoi interrompu ou refusé | N (script) | `motif` (`reseau`, `delai`, `serveur`) | idem | — | R3 |
 | `depot_provisoire_recu` | Fichier reçu dans le dépôt provisoire anonyme de 24 h, **avant tout compte** (ligne `depots_provisoires` au statut `recu`, L5-23). Aucun identifiant n'est écrit : ni compte, ni plan, ni dépôt | S | `format_fichier`, `taille_ko`, `page_type` | — | — | R3 |
 | `plan_depose` | Ligne `plans` créée dans une organisation, avec son fichier dans l'espace privé : dépôt fait en étant connecté, import, API, ou **rattachement d'un dépôt provisoire** à la vérification de l'e-mail. Un dépôt provisoire rattaché n'est donc compté qu'une fois ici, sans nouvel envoi | S | `format_fichier`, `taille_ko`, `canal_depot` (`unitaire`, `import`, `api`), `connecte` (booléen : faux pour un dépôt provisoire rattaché), `page_type` | — | — | R3, R4 |
-| `plan_analyse` | Fin de l'analyse sans IA. Pour un dépôt provisoire, elle a lieu avant le compte : la ligne n'a pas de `plan_id` et n'est pas réécrite au rattachement | S | `resultat` (`reconnu`, `a_calibrer`, `refuse`), `motif_refus`, `vectoriel` (booléen), `echelle` (`lue`, `a_caler`), `provisoire` (booléen), `duree_ms` | — | — | R3 |
+| `plan_analyse` | Fin de l'analyse sans IA. Pour un dépôt provisoire, elle a lieu avant le compte : la ligne n'a pas de `plan_id` et n'est pas réécrite au rattachement | S | `resultat` (`reconnu`, `a_calibrer`, `refuse`), `motif_refus`, `vectoriel` (booléen), `echelle` (`lue`, `a_caler`), `provisoire` (booléen), `niveaux` (`1`, `2`, `3_et_plus` : niveaux détectés par l'extraction ; proposition, pour mesurer la part des duplex et la demande au-delà de deux niveaux), `duree_ms` | — | — | R3 |
 | `page_pdf_changee` | Autre page choisie dans un PDF de plusieurs pages (« Choisir une autre page », `PARCOURS.md` A3) | N (script) | `page_type` | écran « Plan reconnu » | — | R3 |
 | `depot_doublon` | Plan déjà présent dans la même organisation (même empreinte) : aucune seconde lecture, message « Vous avez déjà déposé ce plan » (`PARCOURS.md` § 1.6) | S | `cible` | écran « Plan reconnu » | — | R3 |
 | `plan_calibre` | Cote connue validée par l'utilisateur | S | `essais` (nombre de tentatives) | écran de calibration | — | R3 |
@@ -709,10 +716,11 @@ Ces événements sont émis par le moteur (§ 2.7). Ils n'existent que pour la d
 |---|---|---|---|---|---|---|
 | `plan_qualifie` | Réponse de la qualification par l'IA (environ 0,02 $) | S | `resultat` (`accepte`, `refuse`, `peu_lisible` : alerte, l'utilisateur choisit de continuer ou de déposer un meilleur fichier, `PARCOURS.md` § 1.6), `motif_refus` (dont `maison`, `plusieurs_lots`, `plusieurs_niveaux`, `pas_un_plan`), `cout_usd` | — | — | R5 |
 | `plan_lance` | Réservation au grand livre et création du travail, dans la même transaction | S | `type_plan`, `source_lot`, `format_fichier`, `calibre` (booléen), `premier_plan` (booléen), `periode_prix` | écran de lancement | Meta `StartTrial` si `source_lot=offert_inscription` · Google « Premier plan offert » (secondaire) | R5 |
-| `controle_termine` | Fin de la visite de contrôle, réparations comprises. Sans contrôle réussi, rien n'est publié ni montré (arbitrage R2) | S | `resultat` (`ok`, `repare`, `bloque`), `passages` (1 à 6), `defauts` (liste, § 3.2) | — | — | R5 |
+| `controle_termine` | Fin de la visite de contrôle, réparations comprises. Sans contrôle réussi, rien n'est publié ni montré (arbitrage R2) | S | `resultat` (`ok`, `repare`, `bloque`), `passages` (1 à 6), `defauts` (liste, § 3.2), `controles` (proposition : types de `controle.mjs` en échec avant réparation, § 3.2) | — | — | R5 |
 | `apercu_pret` | **Aperçu publié** (plan offert, `type_plan=apercu`) : vue du dessus 3D découpée et plan 2D coté marqués et listés ; ligne `publications`, puis consommation du crédit aperçu, dans la même transaction. Les photos ne sont pas attendues (D5, arbitrage R2) | S | `source_lot`, `duree_s` (du lancement à la publication de l'aperçu), `cout_ia_usd`, `relance` (booléen), `version_moteur` | — | — | R5 |
 | `plan_pret` | **Visite publiée** (plan complet, `type_plan=complet`) dès le contrôle réussi : `index.html` et `plan.json` filtré publiés, puis consommation du crédit complet, dans la même transaction. Les images s'ajoutent ensuite. Ne sert plus pour l'aperçu | S | `source_lot`, `duree_s` (du lancement à la publication), `cout_ia_usd`, `relance` (booléen), `version_moteur` | — | — | R5 |
 | `photos_pretes` | Fin des images d'un travail publié : les 2 photos (séjour, puis chambre principale ou à défaut la pièce principale suivante) sont publiées, ou omises après nouvelles tentatives, ou le délai maximal des images est atteint. Une image omise ne bloque rien et déclenche une alerte à l'équipe (arbitrage R2) | S | `type_plan`, `photos` (nombre publié : `0`, `1`, `2`), `omises` (nombre d'images omises, toutes sortes), `duree_s` (du contrôle réussi à la dernière image) | — | — | R5 |
+| `panoramas_prets` | Dès L5-27 : fin du rendu des panoramas 360° d'un travail publié ; panoramas publiés, ou omis après nouvelles tentatives (arrêt retiré du 360°, alerte) | S | `type_plan`, `panoramas` (nombre publié), `omis`, `duree_s` (du contrôle réussi au dernier panorama) | — | — | R5 |
 | `plan_echoue` | Travail arrêté sans publication ; message du catalogue affiché | S | `etape` (`qualification`, `lecture`, `murs`, `complement`, `controle`, `images`, `publication`), `cause`, `cout_ia_usd`, `relance` (booléen), `source_lot`. `images` ne vaut que pour un aperçu dont la vue du dessus ou le plan 2D n'ont pas pu être rendus | écran d'échec | — | R5, R13 |
 | `credit_rendu` | Mouvement de libération au grand livre | S | `motif` (`echec`, `delai_depasse`, `file_saturee`, `refus_402_403`), `source_lot` | — | — | R5 |
 | `photos_completees` | **Après le lancement seulement** (galerie complète, L13-02) : photos supplémentaires rendues après un déblocage. Au lancement, un déblocage ne rend aucune image de plus (arbitrage R1) | S | `photos`, `duree_s`, `retard` (booléen) | — | — | (L13-02) |
@@ -738,7 +746,7 @@ Ces événements sont émis par le moteur (§ 2.7). Ils n'existent que pour la d
 | E13 Conseillers : essai démarré | `essai_debut` | L9-02 |
 | E14 Conseillers : fin d'essai dans 3 jours | `essai_fin_proche` | L9-02 |
 | E15 Conseillers : un prospect est intéressé | `interet_prospect` | L9-04 |
-| « Me prévenir si cela change » (`MESSAGES.md` § 7.1), e-mail unique | `alerte_prise_en_charge` | L13-08 |
+| « Me prévenir si cela change » (`MESSAGES.md` § 7.1), e-mail unique | `alerte_prise_en_charge` | à établir (ouverture d'un format refusé aujourd'hui, par exemple le triplex) |
 | Liste d'attente : confirmation d'inscription (texte à ajouter à `MESSAGES.md`, L2-12) | `liste_attente_confirmation` | L2-12 |
 | Bêta fermée : invitation (texte à ajouter, L6-10) | `invitation_beta` | L6-10 |
 | Invitation d'un collègue (texte à ajouter, `PARCOURS.md` B8) | `invitation_membre` | L5-04 |
@@ -754,6 +762,7 @@ Ces événements sont émis par le moteur (§ 2.7). Ils n'existent que pour la d
 | `volet_deblocage_ouvert` | Ouverture du volet « Débloquer la visite » | N (script) | `origine` (valeur d'`element`) | `app_apercu` | — | R6 |
 | `offre_choisie` | Clic sur « Ce logement » ou « Comparer 3 lots » dans le volet | N (script) | `offre`, `periode_prix` | volet | — | R6 |
 | `apercu_debloque` | Déblocage d'un aperçu : consommation directe d'un crédit complet et publication de la visite déjà contrôlée, sans lecture ni rendu (arbitrage R2) | S | `delai_depuis_apercu` (classe), `source_lot` | — | — | R7 |
+| `apercu_arret_vu` | [SI LIVRÉ : L6-13] Changement d'arrêt dans la visionneuse 360° de l'aperçu gratuit ; une fois par arrêt et par page vue. La page ne reçoit que des images (D6) | N (script) | `piece` (catégorie), `rang` | `app_apercu` | — | R6 |
 | `fichier_telecharge` | URL signée de téléchargement émise par l'application | S | `fichier` (`photos_hd`, `plan_pdf`, `fiche_pdf`, `archive`), `cible` | galerie, espace pro | — | R6 |
 
 Pendant la bêta fermée (lot 6), aucun achat n'est possible et aucun message ne propose 29 € (arbitrage R13) : `volet_deblocage_ouvert`, `offre_choisie` et `apercu_debloque` n'apparaissent qu'avec le lot 8 (ouverture à tous en L8-07).
@@ -899,7 +908,7 @@ Ils sont repris d'`ARCHITECTURE.md` (M5.2). Ce ne sont pas nos mesures : le prom
 | Message `postMessage` | Quand | Contenu |
 |---|---|---|
 | `visite:ouverte` | premier rendu de la visite intégrée | référence du lot chez le promoteur |
-| `visite:piece` | entrée dans une pièce | catégorie de pièce |
+| `visite:piece` | entrée dans une pièce ; en mode 360°, arrêt atteint (L4-16) | catégorie de pièce |
 
 Envoi limité à l'origine parente déclarée (`domaines.usage = 'parent_integration'`). Aucun script de mesure dans l'iframe.
 
@@ -1057,6 +1066,8 @@ La fenêtre est le délai maximal entre deux étapes (`suivi.md` § 1.1). Les du
 | T9 Codes et marque blanche | premier partenaire, lettre d'intention | § 4.5 |
 | T10 Bouche-à-oreille | partages et arrivées | § 4.6 |
 | T11 Moments clés | conversion selon la situation | `situation_declaree`, `achat_paye` |
+| Fluidité de la visite (D12 ; numéro de test à attribuer dans `OFFRES.md` § 9.2) | images par seconde par classe d'appareil et niveau de qualité ; seuils de L1-14 | `visite_fluidite_mesuree` (si retenu) ; banc `outils/fluidite.mjs` en recette |
+| Coût du 360° (D15) | temps de rendu SwiftShader des panoramas par plan, coût d'un aperçu offert en 360° | `panoramas_prets.duree_s`, table `etapes` ; mesure de L1-16 |
 
 **Règles des tests (arbitrage R8, `OFFRES.md` § 9.1, `PARCOURS.md` § 7.1).**
 - **Prix : seulement par périodes successives**, avec le même prix pour tous pendant une période (3 semaines ou environ 150 aperçus). Jamais un prix différent tiré au sort par personne, connectée ou non (L221-5). La période est portée par la version d'offre du catalogue (`periode_prix`) et notée en annotation dans Umami (L8-06).
@@ -1139,7 +1150,7 @@ Désinscriptions : `liste_attente_quittee`.
 | Plans arrêtés au plafond de 3 $ | nombre et part ; le plafond compte toutes les passes et relances d'un plan (arbitrage R6) |
 | Coût par compte et par organisation | `appels_ia` rapporté au compte qui a lancé : on sait qui consomme quoi (D3) |
 | Coût des échecs | coût IA des travaux `plan_echoue`, imputé à la source du lot |
-| Coût d'un aperçu offert | coût IA des aperçus (réussis et échoués) + rendu des 4 images (vue du dessus, plan 2D, 2 photos), divisé par les aperçus livrés (`apercu_pret`) |
+| Coût d'un aperçu offert | coût IA des aperçus (réussis et échoués) + rendu des 4 images (vue du dessus, plan 2D, 2 photos) et, si le 360° devient l'offre gratuite (à confirmer, L1-16), rendu des panoramas (environ 10 par plan), divisé par les aperçus livrés (`apercu_pret`) |
 | Seuil de perte de l'aperçu, recalculé | coût réel d'un aperçu ÷ marge réelle d'un déblocage, comparé à la conversion réelle à 30 jours (`OFFRES.md` § 8.8) |
 | Budget de la clé `prod-gratuit` | dépense du jour ÷ plafond du jour ; jours où le plafond est atteint. Cette clé ne sert qu'aux plans offerts des particuliers ; les essais pros passent par la clé `prod-payant` et le budget de leur organisation (arbitrage R23) |
 | Marge brute par offre | CA HT − frais Stripe réels − coût IA réel des plans consommés par l'offre (échecs compris) − rendu et stockage |
@@ -1148,7 +1159,7 @@ Désinscriptions : `liste_attente_quittee`.
 
 Conventions de calcul :
 - **Frais Stripe** : lus dans les transactions de solde.
-- **Rendu et stockage** : 0,15 € et 0,05 € par plan tant qu'ils ne sont pas mesurés (`OFFRES.md` § 8.1).
+- **Rendu et stockage** : 0,15 € et 0,05 € par plan tant qu'ils ne sont pas mesurés (`OFFRES.md` § 8.1) ; panoramas et précalculs compris dès qu'ils existent (mesures de L1-16, L4-13, L4-14).
 - **Change** : on affiche deux colonnes, au taux réel du mois et à 1 $ = 1 € (cas prudent).
 
 ### 5.6 Qualité
@@ -1167,6 +1178,10 @@ Conventions de calcul :
 | Erreurs affichées, par code | `erreur_affichee` (Umami) | à établir |
 | Visites qui ne s'affichent pas | `visite_chargement_echoue`, Sentry | à établir |
 | Liens expirés ouverts | `lien_expire_ouvert` | à établir |
+| Fluidité : images par seconde (médiane et 1er décile) par classe d'appareil, niveau de qualité retenu | `visite_fluidite_mesuree` (Umami, si retenu) | seuils de L1-14 (D12 : fluide sur appareil modeste) |
+| Contrôles bloquants en échec avant réparation, par type (`etancheite`, `baie`, `garde_corps`…) | `controle_termine.controles` | à établir |
+| Plans refusés au-delà de deux niveaux, par nombre de niveaux | `plan_analyse` (`motif_refus=plusieurs_niveaux`, `niveaux`) | à établir ; sert à décider l'ouverture du triplex |
+| Panoramas omis | `panoramas_prets.omis` | à établir ; chaque omission alerte l'équipe |
 
 ### 5.7 Anti-abus et santé de la mesure
 
@@ -1412,7 +1427,7 @@ Selon la règle « tout défaut trouvé devient un contrôle automatique » (`CL
 | C4 | Tests du filtre `avantEnvoi` : jetons, UUID et identifiants remplacés ; requête retirée sans consentement ; UTM seuls avec consentement ; aucun identifiant de clic ; titre générique hors de la vitrine ; rien si GPC ou opposition | chaque modification | oui |
 | C5 | Parcours automatisés (puppeteer, comme `moteur/controle.mjs`) qui interceptent chaque envoi à Umami. Ils vérifient : nom au dictionnaire, propriétés et valeurs prévues, aucune valeur qui ressemble à un e-mail, un UUID, un jeton, un numéro de téléphone, un SIREN ou un titre de plan de test, aucune chaîne de requête sans consentement | chaque modification ; chaque déploiement | oui |
 | C6 | Aucune requête vers Umami, ni aucun script de mesure, sur `/v/`, `/a/` et `/i/` ; la CSP de `visite.<domaine>` n'autorise pas `m.<domaine>` hors de la vue propriétaire | chaque publication (avec la visite de contrôle) | oui |
-| C7 | Invariants de mesure : chaque `plan_lance` se termine par `apercu_pret` (aperçu) ou `plan_pret` (plan complet), ou par `plan_echoue` et `credit_rendu`, dans les délais d'`OFFRES.md` § 6.4 ; chaque `apercu_pret` et chaque `plan_pret` sont suivis d'un `photos_pretes` avant le délai maximal des images (L5-11) ; aucun `apercu_pret` ni `plan_pret` sans `controle_termine` réussi ; chaque `achat_paye` a son lot de crédits ; chaque envoi a un `consentement_id` valide (lot 12) | toutes les heures en production | alerte |
+| C7 | Invariants de mesure : chaque `plan_lance` se termine par `apercu_pret` (aperçu) ou `plan_pret` (plan complet), ou par `plan_echoue` et `credit_rendu`, dans les délais d'`OFFRES.md` § 6.4 ; chaque `apercu_pret` et chaque `plan_pret` sont suivis d'un `photos_pretes` avant le délai maximal des images (L5-11), et, dès que le 360° est en service (L5-27), d'un `panoramas_prets` ; aucun `apercu_pret` ni `plan_pret` sans `controle_termine` réussi ; chaque `achat_paye` a son lot de crédits ; chaque envoi a un `consentement_id` valide (lot 12) | toutes les heures en production | alerte |
 | C8 | Aucun envoi publicitaire pour un compte sans accord « publicité » actif au moment du fait | chaque modification ; chaque jour en production | oui ; alerte |
 
 ### 7.5 Scénarios de recette
@@ -1422,10 +1437,10 @@ Chaque événement du § 3 renvoie à au moins un scénario.
 | # | Scénario | Événements attendus | Vérification |
 |---|---|---|---|
 | R1 | Vitrine, sans bandeau (réglage minimal) : accueil, défilement jusqu'en bas, chaque section, deux questions de FAQ, chaque bouton d'appel à chaque emplacement, onglets des tarifs, formulaire pro envoyé vide puis rempli, sur les adresses de `MESSAGES.md` (`/appartement-temoin`, `/marque-blanche`…). Même parcours de `<domaine>` vers `app.<domaine>` | page vue, `cta_*_clique`, `section_vue` (une fois), `page_defilee` (4 seuils, une fois chacun), `faq_ouverte`, `tarifs_onglet_choisi`, `formulaire_commence`, `formulaire_refuse`, `formulaire_envoye` | Interception par le parcours automatisé (C5) et vue en temps réel d'Umami. Vérifier que le lien suit toujours après un clic marqué par attribut (§ 2.5), et que la session continue entre les deux hôtes (§ 2.6) |
-| R2 | Démonstration ouverte depuis l'accueil puis depuis le volet ; trois modes ; deux pièces ; une photo ; plein écran ; fermeture de l'onglet | `demo_ouverte` (bon `emplacement`), `visite_mode_choisi` (une fois par mode), `visite_piece_vue`, `visite_photo_ouverte`, `visite_plein_ecran`, `visite_quittee` | Interception ; `visite_quittee` reçu à la fermeture (sinon, le retirer du dictionnaire) |
+| R2 | Démonstration ouverte depuis l'accueil puis depuis le volet ; trois modes (quatre avec le 360°, L4-16) ; deux pièces ; une photo ; plein écran ; si `visite_fluidite_mesuree` est retenu, 20 s en mode visite avec le processeur ralenti ×4 (`qualite` descendue) ; fermeture de l'onglet | `demo_ouverte` (bon `emplacement`), `visite_mode_choisi` (une fois par mode), `visite_piece_vue`, `visite_photo_ouverte`, `visite_plein_ecran`, `visite_quittee` | Interception ; `visite_quittee` reçu à la fermeture (sinon, le retirer du dictionnaire) |
 | R3 | Dépôts, sans compte puis connecté : PDF de référence, image PNG, fichier `.docx`, fichier vide, deux fichiers d'un coup, photo HEIC, fichier de 45 Mo, envoi coupé (hors ligne), image non plan, PDF protégé, PDF de plusieurs pages avec changement de page, même plan déposé deux fois dans un compte, cote de calibration, alerte laissée après un refus | `depot_fichier_choisi`, `depot_fichier_refuse` (chaque motif), `depot_envoi_termine`, `depot_envoi_echoue`, `depot_provisoire_recu` (sans compte), `plan_depose` (connecté), `plan_analyse` (chaque `motif_refus`, `provisoire`), `page_pdf_changee`, `depot_doublon`, `plan_calibre`, `alerte_prise_en_charge_demandee` | Interception ; requête SQL sur `evenements` ; l'analyse est sans IA, donc sans coût |
 | R4 | Compte : lien magique (e-mails capturés localement, par exemple avec Mailpit), code ouvert sur un autre appareil que celui du dépôt, Google (compte de test), lien expiré, domaine jetable, même e-mail normalisé deux fois, même plan offert depuis un autre compte, quatrième plan offert depuis la même IP, questions de source et de situation, suppression du compte | `inscription_ouverte`, `inscription_methode_choisie`, `lien_magique_envoye`, `lien_magique_refuse`, `compte_cree` (`meme_appareil`), `plan_depose` (`connecte` = faux, au rattachement du dépôt provisoire), `session_ouverte`, `credit_offert_attribue`, `credit_offert_refuse` (chaque motif), `source_declaree`, `situation_declaree`, `compte_supprime`, `email_envoye` (`bienvenue`) | SQL ; après suppression, vérifier que les identifiants sont à `null` |
-| R5 | Génération sans payer, en rendu logiciel : lecture rejouée à partir de `reponse-ia.json` (`outils/finalise.sh`, `PLAN_MOCK`, chaîne sans IA de la CI), en aperçu puis en plan complet ; échecs simulés (budget à 0, refus 402 simulé, contrôle bloquant sur un plan de test abîmé exprès, tâche orpheline, vue du dessus impossible, une photo en échec) ; rejeu par l'équipe | `plan_qualifie` (réponse gardée, dont `peu_lisible`), `plan_lance`, `controle_termine` (`ok`, `repare`, `bloque`), `apercu_pret`, `plan_pret`, `photos_pretes` (`omises` = 1 pour la photo en échec, sans échec du travail), `plan_echoue` (chaque cause simulée, dont `rendu_images`), `credit_rendu`, `plan_rejoue`, `email_envoye` (`apercu_pret`, `visite_prete`, `echec`) | SQL ; invariants C7 ; aucune ligne `appels_ia` payante |
+| R5 | Génération sans payer, en rendu logiciel : lecture rejouée à partir de `reponse-ia.json` (`outils/finalise.sh`, `PLAN_MOCK`, chaîne sans IA de la CI), en aperçu puis en plan complet ; échecs simulés (budget à 0, refus 402 simulé, contrôle bloquant sur un plan de test abîmé exprès, tâche orpheline, vue du dessus impossible, une photo en échec ; dès L5-27, un panorama en échec, `omis` = 1, sans échec du travail) ; rejeu par l'équipe | `plan_qualifie` (réponse gardée, dont `peu_lisible`), `plan_lance`, `controle_termine` (`ok`, `repare`, `bloque`), `apercu_pret`, `plan_pret`, `photos_pretes` (`omises` = 1 pour la photo en échec, sans échec du travail), `plan_echoue` (chaque cause simulée, dont `rendu_images`), `credit_rendu`, `plan_rejoue`, `email_envoye` (`apercu_pret`, `visite_prete`, `echec`) | SQL ; invariants C7 ; aucune ligne `appels_ia` payante |
 | R6 | Aperçu : ouverture, clic sur chaque élément verrouillé, volet, choix des deux offres ; vue propriétaire d'une visite ; téléchargements | `apercu_vu`, `verrou_clique` (chaque `element`), `volet_deblocage_ouvert`, `offre_choisie`, `visite_ouverte`, `visite_chargee`, `visite_mode_choisi`, `fichier_telecharge` | Interception et SQL ; le contrôle existant confirme que la page d'aperçu ne charge ni `engine.js` ni `plan.json` |
 | R7 | Paiement Stripe en mode test (lot 8) : réussite, carte refusée, session expirée, déblocage, pack, remboursement, litige (carte de test prévue par Stripe), « Renoncer au contrat ici », lot expiré (horloge de test), bouton « Être remboursé » s'il est retenu | `paiement_ouvert`, `renonciation_acceptee`, `paiement_abandonne`, `achat_paye`, `apercu_debloque` (sans nouvelle lecture ni nouveau rendu), `achat_rembourse`, `remboursement_demande`, `litige_ouvert`, `retractation_demandee`, `credit_expire`, `erreur_affichee` (`erreur.paiement_refuse`), `email_envoye` (`recu`, `ouverture_immediate`, `accuse_renonciation`, `rappel_expiration_30j`) | Stripe CLI (`stripe listen`, `stripe trigger`) ; webhook rejoué deux fois → une seule ligne (`cle_idempotence`) ; rapprochement avec Stripe |
 | R8 | Partage : lien d'aperçu (`/a/`) et de visite (`/v/`), chaque canal, ouverture dans une fenêtre privée, clic sur les deux boutons de la page de destinataire, révocation, ouverture du lien révoqué et d'un lien expiré ; signalement d'un défaut (chaque choix de `defaut.choix`, depuis la visite et depuis l'aperçu) puis clôture | `partage_cree`, `partage_canal_choisi`, compteur `partage_ouvert` +1, compteur `partage_cta_clique`, `partage_revoque`, compteur `lien_expire_ouvert`, `defaut_signale`, `defaut_traite`, `email_envoye` (`defaut_recu`, `defaut_corrige`, `defaut_non_retrouve`) | SQL sur les compteurs ; **zéro requête vers Umami sur `/v/` et `/a/`** (C6) ; arrivée sur `/offert` vue par Umami |
@@ -1433,7 +1448,7 @@ Chaque événement du § 3 renvoie à au moins un scénario.
 | R10 | Liens prospects : case d'autorisation du promoteur, création (dont un lien sur le témoin), copie, ouverture par le prospect sans choix, avec refus, avec accord ; « Je suis intéressé » ; tableau de suivi ouvert et exporté ; révocation | `autorisation_promoteur_declaree`, `lien_prospect_cree` (`temoin`), `lien_prospect_copie`, `partage_ouvert`, `prospect_consentement_choisi`, `prospect_interesse`, `conseiller_notifie`, `email_envoye` (`interet_prospect`), `suivi_consulte`, `suivi_exporte`, `lien_prospect_revoque` | Sans accord : aucune ligne dans `vues_visite_detail`. Avec accord : durée et pièces écrites. Aucun script de mesure sur la page |
 | R11 | Promoteur (lot 10) : formulaire, import des plans de référence et d'un plan non pris en charge, rapport, devis, pilote, livraison, validation d'un lot, demande de correction (un défaut, puis une modification), validation du programme, domaine ajouté puis vérifié, publication, code d'intégration copié, commande et factures (administration), arrêt simulé d'un import, intégration sur une page parente de test, clé d'API | `contact_promoteur_recu`, `import_cree`, `import_termine`, `rapport_prise_en_charge_livre`, `devis_envoye`, `pilote_signe`, `pilote_livre`, `lot_valide`, `lot_correction_demandee` (`nature`), `lot_corrige`, `programme_valide`, `domaine_ajoute`, `programme_publie`, `integration_copiee`, `commande_signee`, `facture_emise`, `facture_payee`, `import_arrete`, `lien_acquereur_cree`, compteur `integration_ouverte`, `cle_api_creee`, `distributeur_autorise` | La page parente reçoit `visite:ouverte` et `visite:piece` ; aucun script de mesure dans l'iframe |
 | R12 | Codes et marque blanche (lot 11) : achat de codes en mode test, code utilisé, code inconnu, déjà utilisé et expiré, instance sur un domaine de test et chaque étape de sa mise en service, domaine vérifié, couleur ajustée, retrait de la mention | `contact_partenaire_recu`, `codes_achetes`, `code_utilise`, `code_refuse` (chaque motif), `lettre_intention_signee`, `instance_etape_validee`, `instance_creee`, `domaine_verifie`, `couleur_ajustee`, `mention_retrait_active` | SQL ; colonne `instance` renseignée |
-| R13 | Erreurs : chaque clé du tableau du § 3.15 déclenchée ; page introuvable ; visite sans WebGL (Chrome lancé sans les API 3D), qui se replie sur les images et le plan 2D | `erreur_affichee` (chaque `code`, dont `erreur.404` et `erreur.3d`), `visite_chargement_echoue` ; côté serveur, les événements d'erreur des R3 à R12 | Interception ; aucun texte technique à l'écran (contrôle existant) |
+| R13 | Erreurs : chaque clé du tableau du § 3.15 déclenchée ; page introuvable ; visite sans WebGL (Chrome lancé sans les API 3D), qui se replie sur les images et le plan 2D (repli sur la visionneuse 360° : à décider) | `erreur_affichee` (chaque `code`, dont `erreur.404` et `erreur.3d`), `visite_chargement_echoue` ; côté serveur, les événements d'erreur des R3 à R12 | Interception ; aucun texte technique à l'écran (contrôle existant) |
 | R14 | Consentement et attribution, **dès que le bandeau existe** (§ 6.0) : arrivée avec UTM, gclid et fbclid ; refus → pas de `attr`, URL sans requête dans Umami ; acceptation → `attr` rempli, UTM seuls dans Umami ; inscription par Google, puis par lien magique ouvert dans un autre navigateur ; retrait | `consentement_enregistre`, `compte_cree` (`attribution=avec`), ligne `attribution` (premier et dernier contact, `fbc` bien formé, casse du fbclid intacte), identifiants de clic effacés au retrait | Outils de développement du navigateur (cookies), interception, SQL |
 | R15 | Envois (phase 3) : chaque conversion du § 3.17 en mode test ; compte sans accord ; plateforme indisponible (simulée) ; fait de plus de 7 jours | Lignes `envois_publicitaires` : `envoye`, `ignore_sans_consentement`, `erreur` puis `envoye`, `ignore_hors_delai` | Meta : « Tester les événements » avec `test_event_code`, qualité de correspondance. Google : mode de validation de la Data Manager API (champ `validateOnly`, à confirmer dans la référence), puis diagnostic des conversions importées |
 | R16 | Confidentialité, automatique | C1 à C8 | CI et production |
@@ -1463,6 +1478,12 @@ Aucune recette de la mesure ne demande de lecture payante (règle du projet).
 3. **Outil des tableaux de bord** : Metabase auto-hébergé, ou vues SQL et page d'administration (§ 5.1).
 4. **Respect de GPC** en plus de DNT (recommandé ; coût nul).
 5. **Bouton « Être remboursé »** en un clic, ou réponse à l'e-mail E6 : il décide si `remboursement_demande` existe (§ 3.10).
+
+**Décisions de l'utilisateur liées au 27/09/2026 :**
+6. **Mesure de la fluidité en production** (`visite_fluidite_mesuree`, `qualite`, classes d'images par seconde) : oui ou non ; seuils et appareils de référence (L1-14).
+7. **Offre gratuite en 360°** : remplace, enrichit ou non l'aperçu de R1, sur le coût de rendu mesuré (L1-16). Selon la réponse, `apercu_arret_vu` entre ou non au dictionnaire.
+8. **Repli sans WebGL** sur la visionneuse 360° (scénario R13).
+9. **Propriétés `niveaux` et `controles`** proposées pour `plan_analyse` et `controle_termine`.
 
 **À valider par l'avocat :**
 - l'analyse d'exemption d'Umami (écran Sessions, arrondi) ;
@@ -1557,4 +1578,4 @@ Les faits externes (Umami, CNIL, Meta, Google, CMP, prix) viennent de `produit/r
 - les tickets `tickets/`, lus le 27/09/2026 pour leurs sections « Mesure » et leurs demandes d'ajout au dictionnaire ;
 - les décisions de l'utilisateur et les arbitrages du coordinateur du 27/09/2026 ;
 - `CLAUDE.md` ;
-- code relevé le 27/09/2026 : motifs de refus (`pipeline/serveur.py`) et modes de la visite (`moteur/ui.js`). Un autre agent modifie ces fichiers.
+- code relevé le 27/09/2026 : motifs de refus (`pipeline/serveur.py`) et modes de la visite (`moteur/ui.js`). Le travail sur les niveaux (fini le 27/09/2026, non commité) a modifié ces fichiers : onglets de niveau, arrêt « Escalier ».

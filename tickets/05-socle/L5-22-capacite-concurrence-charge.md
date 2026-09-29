@@ -37,13 +37,13 @@ Aujourd'hui, un même créneau couvre la lecture IA (8 à 14 min d'attente rése
 - **Textes** : `MESSAGES.md` § 7.4 a `attente.file` (sans délai) et `attente.file_estime` (« Il devrait démarrer dans {attente} ») ; `{attente}` est calculé à partir des durées mesurées, jamais écrit en dur (R12).
 - Un travail non démarré sous 24 h libère le crédit (`OFFRES.md` § 6.4, invariant de L5-07) : le plafond global doit rester cohérent avec ce délai.
 - Essai de charge avec le témoin seulement ; les 4 plans réels ne servent qu'en local.
-- Coordination : le rendu par image (L5-11) change le profil de charge ; refaire l'essai après L5-11.
+- Coordination : le rendu par image (L5-11) change le profil de charge ; refaire l'essai après L5-11, puis après les panoramas et le précalcul (L1-16, L5-27, L5-28), qui multiplient le rendu par plan.
 
 ## Références
 - Décisions de l'utilisateur du 27/09/2026, n° 2 et n° 4.
 - `produit/recherche/hebergement.md` § 1, § 2.1, § 4, § 6 ; `produit/recherche/audit-code.md` A1 ; `produit/OFFRES.md` § 1, § 6.4, § 10 (risque 3).
 - `produit/ARCHITECTURE.md` § 2.1, § 4.2 (`travaux_simultanes_max`), § 6.4, § 10 ; `produit/MESSAGES.md` § 7.4, § 7.12 (`erreur.pro.simultanes`).
-- `pipeline/serveur.py:23-24` (`RUNNING`, `SLOTS`), `:419` (`run`).
+- `pipeline/serveur.py:23-24` (`RUNNING`, `SLOTS`), `:523` (`run`).
 
 ## Hors périmètre
 - Accélération du rendu, une tâche par image : L13-01. File des imports de promoteurs : L10-02.

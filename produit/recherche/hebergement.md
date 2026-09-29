@@ -119,6 +119,8 @@ La franchise mensuelle (200 000 vCPU·s et 400 000 Go·s) couvre environ 25 plan
 
 **Point de bascule** (estimation) : SwiftShader en Serverless Jobs coûte le moins cher jusqu'à environ 1 000 à 1 500 plans par mois. Au-delà, un Mac mini à 149 € puis un GPU L4 à 575 € deviennent moins chers, et beaucoup plus rapides. Ils deviennent de toute façon nécessaires dès qu'on vend l'option « réalisme ».
 
+> **Mise à jour du 27/09/2026** (décisions de l'utilisateur n° 14 et 15, `PLAN.md` § 2.1) : le rendu en direct sur le serveur (streaming vidéo de la visite) est écarté, pour son coût. Le serveur rendra en plus des panoramas 360° à chaque arrêt (environ 10 par plan) et précalculera l'éclairage « peint » sur les murs, la maquette compressée et les itinéraires. Leur temps en SwiftShader n'est pas mesuré (tickets L1-16, L4-13, L4-14). Depuis la même date, la visite de contrôle ajoute un test d'immersion (grille de cubes de 2 cm, calculée par le processeur) : les 13 à 14 s mesurées plus haut sont à refaire.
+
 ---
 
 ## 3. Comparatif des hébergeurs
@@ -367,6 +369,7 @@ Réglage recommandé :
 5. Prix et hébergement de Brevo. Prix actuels de l'Object Storage Hetzner et du GEX45.
 6. Supplément exact de la haute disponibilité sur les bases Scaleway (l'outil de lecture a donné « environ 50 à 65 % du nœud principal »).
 7. Conditions d'Edge Services : ce que couvrent les « 100GB » ou « 1TB » (cache ou transfert) et le nombre de domaines personnalisés par pipeline.
+8. **Panoramas 360° et précalculs en SwiftShader** dans le conteneur, sur la VM cible : temps et processeur pour environ 10 arrêts par plan, puis pour le précalcul d'un plan ; effet sur les aperçus en file (L1-16, L4-13, L4-14, L5-22).
 
 ---
 

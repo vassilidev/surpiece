@@ -143,6 +143,8 @@ C'est contraire à la consigne « aucun texte technique montré à l'utilisateur
 - le détail technique envoyé au journal et à l'alerte de l'exploitant, jamais à l'écran ;
 - un contrôle automatique qui échoue si un message affiché contient `.env`, `Error`, `json`, un identifiant ou une coordonnée. C'est la règle du projet : un défaut trouvé devient un contrôle.
 
+> **En partie traité le 27/09/2026 dans l'outil local** : la page de dépôt ne montre plus le détail technique (`technique_erreur` seulement avec `?debug=1`), et un filtre automatique des textes techniques (`masquer`, `montrable`) passe à chaque écriture d'`etat.json` dans `serveur.py`. Il laisse encore passer des messages qui citent « .env » ou « API », un type anglais entre parenthèses et les textes du moteur. Restent à faire : le contrôle des textes (L1-04), le retrait des textes (L1-05, « En cours ») et, en service, le catalogue de messages (L4-05). Numéros de ligne ci-dessus : ceux du commit `fdc073e`.
+
 ### B10. Configuration globale au processus, rechargement de modules à chaud
 
 - `serveur.py:28-40` (`load_env`) réécrit `os.environ` avant chaque étape IA. `lire.py:18`, `:94-104`, `:109`, `:127` et `:575` lisent modèle, fournisseur, effort et clé dans les variables d'environnement.

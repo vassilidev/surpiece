@@ -16,7 +16,7 @@ Le promoteur veut les visites de ses lots sur son propre site, sans rien ouvrir 
 3. **En-têtes** (ARCHITECTURE.md § 6.2) : pour un partage `integration`, `frame-ancestors` = origines `https://` vérifiées de l'organisation, calculées à chaque réponse ; `X-Frame-Options: DENY` seulement quand la liste est vide ; jamais `*` ni `http:`. Domaine non vérifié : la visite refuse de s'afficher, message « Cette visite ne peut pas s'afficher sur ce site. » (C6).
 4. **Événements `postMessage`** (SUIVI.md § 3.16) : l'`index.html` servi pour `/i/` contient un adaptateur qui écoute `visite:evenement` (émis par le moteur, L7-04) et envoie :
    - `visite:ouverte` (référence du lot chez le promoteur) au premier rendu ;
-   - `visite:piece` (catégorie de pièce seulement) à l'entrée dans une pièce (changement de pièce repéré par `updateHud`, `moteur/engine.js`, l. 1240) ;
+   - `visite:piece` (catégorie de pièce seulement) à l'entrée dans une pièce (changement de pièce repéré par `updateHud`, `moteur/engine.js:1297`), et à chaque arrêt atteint en mode 360° une fois qu'il existe (L4-16) ;
    - un envoi par origine déclarée, avec cette origine en `targetOrigin`, **jamais `'*'`** : le navigateur ne livre qu'à l'origine réelle de la page. Aucun identifiant de visiteur, aucun jeton.
 5. **Aucune mesure chez nous dans l'iframe** : ni Umami ni script de mesure (contrôle C6), aucun bandeau de notre part (SUIVI.md § 6.6). Seul un compteur agrégé `vues_visite` est tenu côté serveur.
 6. **Code à copier**, par lot et par programme : `<iframe src="https://visite.<domaine>/i/‹jeton›" allow="fullscreen" loading="lazy" title="Visite du lot ‹référence›"></iframe>` ; options de vue d'accueil, de logo et de couleurs (réglages de L9-06 s'ils sont livrés). Page « Voir l'aperçu » qui montre le rendu dans une iframe. Page de documentation des deux messages, sans jargon.
@@ -32,6 +32,7 @@ Le promoteur veut les visites de ses lots sur son propre site, sans rien ouvrir 
 - [ ] Clé absente, révoquée ou de portée insuffisante : refus ; 61e requête dans la minute : 429 ; aucune clé ni jeton dans les journaux.
 - [ ] Enregistrement TXT retiré : domaine suspendu à la revérification suivante.
 - [ ] Aucun texte technique (L1-04) ; tests sur le témoin seulement, sans lecture payante ; outil local inchangé.
+- [ ] Visite intégrée ouverte sur un téléphone d'entrée de gamme (matrice de L4-10) : qualité adaptative active dans l'iframe (L4-12), images par seconde au-dessus des seuils de L1-14, aucun défaut visible.
 
 ## Mesure
 - `integration_ouverte` (C : `vues_visite`, par lot et par jour), `lien_acquereur_cree`, `cle_api_creee` (`portee`), `domaine_verifie` (`usage=parent_integration`).
@@ -50,7 +51,7 @@ Le promoteur veut les visites de ses lots sur son propre site, sans rien ouvrir 
 - produit/ARCHITECTURE.md § 2.4, § 2.5, § 4.2 (`partages`, `domaines`, `cles_api`), § 6.2, § 6.3, § 6.4, M5.2.
 - produit/OFFRES.md § 4.4, § 4.10 ; produit/PARCOURS.md C6 ; produit/MESSAGES.md § 3.3, § 3.10.
 - produit/SUIVI.md § 2.6, § 2.7, § 3.13, § 3.16, § 6.6, § 7.4 (C6), § 7.5 (R11) ; produit/recherche/suivi.md § 7.7.
-- `moteur/engine.js:1240` (`updateHud`) ; `moteur/ui.js:449`, `:463` (stockage local protégé).
+- `moteur/engine.js:1297` (`updateHud`) ; `moteur/ui.js:457`, `:471` (stockage local protégé), relevés le 27/09/2026.
 
 ## Hors périmètre
 - Émission des événements par le moteur : L7-04. Domaines de visite en CNAME et certificats : L11-01.

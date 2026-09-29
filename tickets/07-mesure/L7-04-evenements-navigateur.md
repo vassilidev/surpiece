@@ -11,13 +11,13 @@ Les clics sur le verrou, le volet, les onglets ou la démonstration n'atteignent
 1. **Dictionnaire complet** dans `mesure/evenements.json` (fichier unique lu par `mesure()`, `avantEnvoi` et `journal.ecrire()`, SUIVI.md § 2.8) : noms, propriétés et valeurs de SUIVI.md § 3, plus les ajouts de PARCOURS.md § 8.1 utiles aux lots 6 et 7 (`page_pdf_changee`, `depot_doublon`, propriété `meme_appareil` de `compte_cree`, valeurs `plusieurs_fichiers`, `heic`, `maison`, `plusieurs_lots`, `peu_lisible`, `mes_plans`, `contact_support`). SUIVI.md est mis à jour **dans le même changement** (contrôle C2).
 2. **Application** (pages des lots 6 : dépôt, compte, attente, calibration, aperçu, Mes plans, partage) : brancher les événements « N » des § 3.6, § 3.7, § 3.9, § 3.11 et § 3.15 par `mesure()` ou `mesureUneFois()`. Règle de SUIVI.md § 2.5 : `data-umami-event` seulement sur un lien ou un bouton sans comportement JavaScript propre ; `mesure()` partout ailleurs (zone de dépôt, volets, onglets, sections, défilement). `body[data-page]` porte le `page_type`.
 3. **Moteur** : un seul type d'événement, `window.dispatchEvent(new CustomEvent('visite:evenement', { detail: { nom, props } }))`, émis aux endroits suivants de `moteur/ui.js` et `moteur/engine.js` :
-   - premier rendu (`visite_chargee`, avec la classe de chargement ; la page le renomme `demo_ouverte` en démonstration) ;
-   - changement de mode (`visite_mode_choisi`, une fois par mode et par ouverture : `plan` → `plan_2d`, `orbit` → `maquette`, `walk` → `visite`, avec `rang`) ;
+   - premier rendu (`visite_chargee`, avec la classe de chargement ; la page le renomme `demo_ouverte` en démonstration). **Proposition, à décider** : une mesure de fluidité en production (niveau de qualité retenu par la qualité adaptative, L4-12, et classe d'images par seconde mesurée sur les premières secondes de marche ; événement proposé `visite_fluidite_mesuree`, SUIVI.md § 3.5), sans identifiant d'appareil ; décision 12 ;
+   - changement de mode (`visite_mode_choisi`, une fois par mode et par ouverture : `plan` → `plan_2d`, `orbit` → `maquette`, `walk` → `visite`, et `visite_360` quand le mode existe (L4-16, valeur à ajouter à SUIVI.md § 3.2), avec `rang`) ; la visionneuse 360° émet le même `visite:evenement` ;
    - entrée dans une pièce en visite ou clic sur sa puce (`visite_piece_vue`, identifiant de pièce seulement ; une fois par pièce) ;
    - photo ouverte en grand (`visite_photo_ouverte`), plein écran (`visite_plein_ecran`) ;
    - départ (`visite_quittee` sur `pagehide`, durée en classe, nombre de modes vus) ;
    - échec d'affichage (`visite_chargement_echoue` : `webgl_absent`, `contexte_perdu`, `delai`, `fichier`).
-4. **Adaptateur de page** (dans l'`index.html` produit à la publication, L5-12, et dans la page de démonstration, L2-09) : ajoute `contexte`, remplace l'identifiant de pièce par sa **catégorie** (`sejour`, `cuisine`, `chambre`, `salle_de_bain`, `wc`, `entree`, `degagement`, `rangement`, `loggia`, `balcon`, `terrasse`, `autre`), déduite du nom de la pièce par une table fermée, jamais le nom ni l'identifiant ; puis choisit la destination :
+4. **Adaptateur de page** (dans l'`index.html` produit à la publication, L5-12, et dans la page de démonstration, L2-09) : ajoute `contexte`, remplace l'identifiant de pièce par sa **catégorie** (`sejour`, `cuisine`, `chambre`, `salle_de_bain`, `wc`, `entree`, `degagement`, `rangement`, `loggia`, `balcon`, `terrasse`, `autre` ; l'escalier et le palier d'un plan à plusieurs niveaux vont dans `degagement`), déduite du nom de la pièce par une table fermée, jamais le nom ni l'identifiant ; puis choisit la destination :
    - démonstration, vue propriétaire → `mesure()` (Umami anonyme) ;
    - tout lien `/v/`, intégration, prospect → **rien** (les destinations `postMessage` et suivi consenti des prospects sont faites par L10-04 et L9-04).
 5. **Erreurs visibles** : `erreur_affichee` avec la clé du catalogue, jamais le texte (SUIVI.md § 3.15).
@@ -36,7 +36,7 @@ Les clics sur le verrou, le volet, les onglets ou la démonstration n'atteignent
 - N (application) : `depot_fichier_choisi`, `depot_fichier_refuse`, `depot_envoi_termine`, `depot_envoi_echoue`, `inscription_ouverte`, `inscription_methode_choisie`, `verrou_clique`, `volet_deblocage_ouvert`, `offre_choisie`, `partage_canal_choisi`, `section_vue`, `formulaire_commence`, `formulaire_refuse`, `formulaire_envoye`, `erreur_affichee`, `cta_depot_clique`, `cta_demo_clique`.
 
 ## Points d'attention
-- **Ticket `[M]`** : un autre agent modifie `moteur/ui.js` et `moteur/engine.js` (duplex). Diff petit et isolé (quelques appels d'une fonction `emettre(nom, props)`), sur une branche courte, après accord avec cet agent ; aucun changement de rendu.
+- **Ticket `[M]`** : `moteur/ui.js` et `moteur/engine.js` ont été largement modifiés le 27/09/2026 (niveaux empilés, non commités) et le seront encore (corrections de navigation L1-15, qualité adaptative L4-12). Diff petit et isolé (quelques appels d'une fonction `emettre(nom, props)`), sur une branche courte, après le commit de ces travaux ; références à relever à nouveau (`moteur/ui.js:855` `leaveGallery`, `moteur/engine.js:1746` `window.__v`, relevés le 27/09/2026) ; aucun changement de rendu.
 - `visite_quittee` part à la fermeture de la page : s'il n'arrive pas de façon fiable en recette (R2), le retirer du dictionnaire (SUIVI.md § 3.5).
 - Avec plusieurs niveaux, une pièce peut exister sur deux niveaux : la catégorie suffit, le niveau n'est pas transmis.
 - À vérifier sur la version installée d'Umami : un élément marqué par `data-umami-event` bloque-t-il ses autres écouteurs (SUIVI.md § 2.5) ?
@@ -44,7 +44,7 @@ Les clics sur le verrou, le volet, les onglets ou la démonstration n'atteignent
 
 ## Références
 - SUIVI.md § 2.5, § 2.6, § 2.7, § 2.8, § 3 (tous les tableaux), § 7.1, § 7.4 (C1 à C6), § 7.5 ; PARCOURS.md § 8.1.
-- ARCHITECTURE.md § 5.5 (moteur versionné), § 8.1 ; `moteur/ui.js:460` (`App.set`), `:815` (`leaveGallery`), `:719` (puces des pièces) ; `moteur/engine.js:1668` (`window.__v`) ; `moteur/SCHEMA.md` (`rooms`).
+- ARCHITECTURE.md § 5.5 (moteur versionné), § 8.1 ; `moteur/ui.js:468` (`App.set`), `:855` (`leaveGallery`), `:759` (puces des pièces) ; `moteur/engine.js:1746` (`window.__v`) ; `moteur/SCHEMA.md` (`rooms`).
 
 ## Hors périmètre
 - Installation d'Umami et filtre : L7-01. Recette automatique : L7-07.

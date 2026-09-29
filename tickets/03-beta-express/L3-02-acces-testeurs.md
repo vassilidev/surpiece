@@ -9,7 +9,7 @@ Le serveur actuel n'accepte que `localhost` par construction (audit B4) : c'est 
 
 ## À faire
 1. **Réglages par variables d'environnement** (lus dans `pipeline/serveur.py`, valeurs par défaut = comportement actuel) :
-   - `PLAN_ECOUTE` (défaut `127.0.0.1`) : adresse d'écoute (`__main__`, `:698`), `0.0.0.0` seulement dans le conteneur ;
+   - `PLAN_ECOUTE` (défaut `127.0.0.1`) : adresse d'écoute (`__main__`, `:803`), `0.0.0.0` seulement dans le conteneur ;
    - `PLAN_HOTES` : hôtes autorisés en plus de `localhost:PORT` et `127.0.0.1:PORT` (par exemple `beta.<domaine>`), lus par `hote_ok` (`:499`) ; `origine_ok` (`:504`) accepte alors `https://<hôte>` ;
    - `PLAN_ACCES_EQUIPE` (`https://<équipe>.cloudflareaccess.com`) et `PLAN_ACCES_AUD` (étiquette AUD de l'application Access) ;
    - **démarrage refusé** si l'écoute n'est pas locale ou si `PLAN_HOTES` est rempli sans les deux réglages Access (message clair à la console, code de sortie non nul).
@@ -39,11 +39,11 @@ Le serveur actuel n'accepte que `localhost` par construction (audit B4) : c'est 
 - **Domaine.** Access protège un hôte d'une zone gérée par Cloudflare : il faut un domaine dont le DNS est chez Cloudflare. Tranché : L0-01 (nom et domaines) est une dépendance déclarée. Reste à choisir, D6 recommandant Scaleway pour la vitrine : sous-domaine de la marque délégué à Cloudflare, ou domaine technique neutre pour la bêta.
 - Vérification faite d'après la documentation de Cloudflare « Validate JWTs » (en-tête `Cf-Access-Jwt-Assertion`, point `certs`, contrôle de `iss` et `aud`), lue le 27/09/2026.
 - `ThreadingHTTPServer` reste un serveur de développement (B5) : Caddy en limite les risques pour une bêta courte, pas au-delà.
-- **Coordination avec le travail sur les duplex** : diff limité à `hote_ok`, `origine_ok`, `__main__` et un appel dans chaque `do_*`, plus le nouveau fichier `pipeline/acces.py` ; branche courte ; critère de fusion d'ARCHITECTURE.md § 8.1.
+- **Coordination avec le travail sur les niveaux** (fini le 27/09/2026, non commité) : partir du commit qui l'intègre ; diff limité à `hote_ok`, `origine_ok`, `__main__` et un appel dans chaque `do_*`, plus le nouveau fichier `pipeline/acces.py` ; branche courte ; critère de fusion d'ARCHITECTURE.md § 8.1.
 
 ## Références
 - produit/recherche/audit-code.md B4, B5 ; produit/ARCHITECTURE.md § 2.5 (hôtes et origines), § 6.2 (en-têtes), § 8.1 ; pipeline/README.md (protection localhost).
-- pipeline/serveur.py:483 (classe `H`), :499 (`hote_ok`), :504 (`origine_ok`), :511 (`send_head`), :530 (`do_GET`), :561 (`do_POST`), :698 (`__main__`).
+- pipeline/serveur.py:587 (classe `H`), :603 (`hote_ok`), :608 (`origine_ok`), :615 (`send_head`), :634 (`do_GET`), :665 (`do_POST`), :793 (`__main__`).
 - Documentation Cloudflare : developers.cloudflare.com/cloudflare-one/identity/authorization-cookie/validating-json/.
 
 ## Hors périmètre

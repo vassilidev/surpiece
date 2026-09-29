@@ -25,7 +25,7 @@ Le rejeu des plans réels (L1-02) ne tourne que sur le poste de l'équipe, car c
 
 ## Critères d'acceptation
 - [ ] Une demande de fusion sans changement passe au vert ; durée totale notée (objectif : moins de 20 min).
-- [ ] Trois régressions provoquées sur des branches d'essai font échouer la CI : une porte retournée dans `murs.py` ou le complément (écart `evaluer.py` ou contrôle), un texte technique réintroduit dans `ui.js` (contrôle des textes), un changement de rendu (écart d'image, par exemple exposition modifiée).
+- [ ] Quatre régressions provoquées sur des branches d'essai font échouer la CI : une fente remise dans une menuiserie (contrôle `etancheite`, test d'immersion), et une porte retournée dans `murs.py` ou le complément (écart `evaluer.py` ou contrôle), un texte technique réintroduit dans `ui.js` (contrôle des textes), un changement de rendu (écart d'image, par exemple exposition modifiée).
 - [ ] Une texture noire provoquée et un Chrome lancé sans WebGL font échouer la CI avec un message clair.
 - [ ] Aucune clé d'IA dans la configuration de la CI ; aucune ligne ajoutée à `appels-ia.json` ; aucun plan de promoteur dans le dépôt ni dans les artefacts.
 - [ ] La procédure d'approbation d'une nouvelle image est documentée et testée une fois.
@@ -37,6 +37,7 @@ Le rejeu des plans réels (L1-02) ne tourne que sur le poste de l'équipe, car c
 - **Réseau** : tant que three.js et les polices viennent de jsdelivr et Google Fonts (jusqu'à L4-06), la CI dépend d'eux ; une panne extérieure fait échouer la CI sans régression de notre code.
 - **Découpage** : L1-02 (scripts de rejeu, `ecart_images.py`, `fumee.sh`) n'est pas une dépendance déclarée ; il est couvert par L1-12, qui en dépend. Le conteneur de CI recoupe l'image de L3-01 et la CI de L5-01 : les faire partir de la même base.
 - Les 4 plans réels restent hors CI : rejeu local (L1-02), puis nocturne en préproduction (L5-18).
+- **Plusieurs niveaux** : la seule référence à deux niveaux est une duplex de promoteur, qui ne va jamais en CI. Les contrôles des niveaux ne tournent donc qu'au rejeu local (L1-02), tant qu'aucun témoin fictif à deux niveaux n'existe (à décider). La visite de contrôle s'est allongée le 27/09/2026 (test d'immersion) : durée à mesurer sur l'exécuteur.
 
 ## Références
 - `produit/ARCHITECTURE.md` § 8.1, § 9.2 (CI), § 9.5 (chaîne sans IA, non-régression visuelle, fumée, jeux privés hors CI)

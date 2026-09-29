@@ -40,6 +40,7 @@ Le premier plan offert coûte autant en IA qu'un plan payant (2,56 € au cas pr
 - Turnstile est un service de Cloudflare (société américaine) : DPA et transfert à documenter (L0-09) ; exemption de consentement à confirmer (SUIVI.md § 6.2).
 - Adresses IP : ne garder que le préfixe, et seulement le temps du compteur (24 h).
 - Pendant la bêta fermée, les testeurs invités peuvent partager une IP (entreprise, famille) : la limite différée évite un refus sec.
+- Plan sur plusieurs pages : depuis le 27/09/2026, l'analyse empile les pages d'un même logement. L'empreinte de la page rendue (R22) doit alors couvrir toutes les pages lues ; sinon, les mêmes pages réordonnées dans un autre PDF passeraient pour un autre plan. À régler avec L5-23 : les duplex sont acceptés en service (L4-08).
 
 ## Références
 - OFFRES.md § 2.2, § 6.2, § 8.8 ; recherche/auth-paiement.md § 3.5 ; ARCHITECTURE.md M3.3, § 4.2, § 5.7, § 6.4.

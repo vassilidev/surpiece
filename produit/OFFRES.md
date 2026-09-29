@@ -26,8 +26,8 @@ Version du 27/09/2026, alignée sur les décisions de l'utilisateur du même jou
 
 | Cible | Offre | Prix (hypothèse) | Contenu | Conditions |
 |---|---|---|---|---|
-| **Particulier** | Premier plan offert (aperçu) | 0 € | Images rendues par le serveur : vue du dessus 3D découpée, plan 2D coté, 2 photos ; surfaces comparées au tableau du promoteur, points à faire confirmer. **Sans la visite** : ni moteur ni `plan.json` envoyés | 1 par personne et par plan ; à lancer sous 30 jours ; conservé 6 mois |
-| | Visite d'un plan | **29 € TTC** | Plan complet : visite calculée dans le navigateur (marche libre, arrêts par pièce), maquette et plan 2D interactifs, les mêmes images que l'aperçu, fiche complète, téléchargements, partage privé, 24 mois en ligne. Aucun nombre de photos promis (galerie complète plus tard, § 7.4) | Paiement unique, sans abonnement |
+| **Particulier** | Premier plan offert (aperçu) | 0 € | Images rendues par le serveur : vue du dessus 3D découpée, plan 2D coté, 2 photos ; surfaces comparées au tableau du promoteur, points à faire confirmer. **Probablement la visite 360°** d'arrêt en arrêt, en panoramas rendus par le serveur, à la place de ces images ou en plus (décision de principe du 27/09/2026, à confirmer par le coût de rendu mesuré, L1-16). **Sans la visite 3D** : ni moteur ni `plan.json` envoyés | 1 par personne et par plan ; à lancer sous 30 jours ; conservé 6 mois |
+| | Visite d'un plan | **29 € TTC** | Plan complet : visite calculée dans le navigateur (marche libre, arrêts par pièce ; mode 360° une fois livré), maquette et plan 2D interactifs, les mêmes images que l'aperçu, fiche complète, téléchargements, partage privé, 24 mois en ligne. Aucun nombre de photos promis (galerie complète plus tard, § 7.4). Objectif : visite fluide sur un appareil modeste (décision 12), écrit dans l'offre seulement quand les seuils de L1-14 sont tenus | Paiement unique, sans abonnement |
 | | Plan suivant | **15 € TTC** | Un autre lot, ou le plan modificatif envoyé par le promoteur | Dans les 12 mois qui suivent un premier achat |
 | | Comparer 3 lots | **59 € TTC** (29 + 15 + 15) | 3 plans complets | Plans valables 12 mois |
 | **Conseillers** (Sur Pièce Pro) | Solo | **49 € HT par mois** | 5 plans par mois, 1 utilisateur | Sans engagement. Annuel : 490 € HT |
@@ -54,7 +54,7 @@ Version du 27/09/2026, alignée sur les décisions de l'utilisateur du même jou
    - Meublé, lumière réelle, réalisme, 4K et TMA ne seront vendus qu'une fois leurs contrôles automatiques en place (§ 7).
    - Aucune date n'est annoncée, et « bientôt » ne s'écrit nulle part.
    - La galerie complète (une dizaine de photos) n'est jamais promise au lancement : c'est une évolution (§ 7.4).
-6. **Périmètre affiché avant tout paiement** : appartements sur un seul niveau, logement vide, finitions supposées, illustration non contractuelle.
+6. **Périmètre affiché avant tout paiement** : appartements sur un ou deux niveaux (duplex), logement vide, finitions supposées, illustration non contractuelle. Les plans sur plusieurs niveaux sont traités depuis le 27/09/2026 (L13-08, fait) ; l'utilisateur a confirmé le même jour : « oui le duplex on l'a géré c'est bon, c'était avant ça » (décision 11). Le triplex n'entre au périmètre affiché qu'après la validation d'un plan réel de triplex.
 7. **Catalogue d'offres modifiable sans déploiement, droits acquis honorés** (décision n° 7, ticket L5-08).
    - Offres, prix, contenus, quotas, durées et conditions vivent dans un catalogue en base, par **versions** : une version publiée n'est jamais modifiée ; changer une offre, c'est publier une nouvelle version. La vitrine et l'application lisent le même catalogue : le prix affiché est le prix payé.
    - **Droits acquis** : chaque achat, chaque lot de crédits et chaque publication gardent la version d'offre en vigueur au moment de l'achat (prix, contenu, durées, conditions) et sont honorés tels quels. Un changement ne vaut que pour les achats suivants. On n'enlève jamais ce qui a été vendu ; une amélioration peut être étendue aux clients existants.
@@ -78,12 +78,16 @@ La base est la proposition « revenu récurrent des pros d'abord », la mieux no
   - Version de base : **simple et très éclairée**, avec un seul éclairage (`CLAUDE.md`).
   - Lumière réelle, meublé, réalisme, 4K et TMA sont des options futures (§ 7).
   - Les « moments de lumière » ne sont donc **pas** dans l'offre de base.
+- **Visite fluide sur un appareil modeste** (décisions du 27/09/2026) : portable d'entrée de gamme ou téléphone, pas seulement une machine puissante (seuils : L1-14).
+  - Qualité adaptative : textures, résolution et effets selon l'appareil (L4-12).
+  - Précalcul côté serveur : éclairage précalculé « peint » sur les murs, maquette compressée prête à l'emploi, itinéraires et éclairage par pièce (L4-13, L4-14, L5-28). Il sert la fluidité, pas le réalisme : l'éclairage reste celui de la version de base.
+  - Le rendu en direct sur le serveur (vidéo en continu) est écarté, pour son coût.
 - **Unité affichée.** Le client voit des **plans** : « votre premier plan est offert », « 2 plans restants », « 12 plans inclus par mois ». Le mot « crédit » reste interne (grand livre, factures), car un acquéreur l'entend comme son prêt (`MARQUE.md` § 5.1).
 - **Prix.** Les particuliers voient des prix TTC (TVA de 20 %), les pros des prix HT, toujours précisés. Les prix sont ronds : pas de « ,99 », pas de prix barré, pas de prix personnalisé par un traitement automatisé (L221-5, L112-1-1).
 - **Périmètre.**
-  - Pris en charge : un appartement sur un seul niveau, en PDF ou en image.
-  - Refusés avant toute dépense : duplex, maison, plan d'étage à plusieurs lots, croquis, perspective, format inconnu. Le message dit « pas encore pris en charge » et propose de laisser son e-mail pour être prévenu. Rien n'est promis.
-  - Un PDF de plusieurs lots serait aujourd'hui empilé comme des niveaux par l'analyse : en service, la qualification le refuse (« plusieurs lots », L6-02). Seul l'import promoteur (§ 4.1, L10-02) découpe un PDF multi-lots.
+  - Pris en charge : un appartement sur un ou deux niveaux (duplex), en PDF ou en image.
+  - Refusés avant toute dépense : plus de deux niveaux (triplex), maison, plan d'étage à plusieurs lots, croquis, perspective, format inconnu. Depuis le 27/09/2026, la chaîne traite un plan sur plusieurs niveaux (validée sur une duplex avec une lecture préparée à la main, L13-08) ; le service accepte les duplex et refuse au-delà par réglage (`niveaux_max = 2`, L4-08). Un triplex s'ouvre quand un plan réel de triplex a été validé. Escalier quart tournant, entrée par le niveau haut et plan en image n'ont pas encore été vus : ils se valident plan par plan, quand un tel plan est fourni. Le message dit « pas encore pris en charge » et propose de laisser son e-mail pour être prévenu. Rien n'est promis.
+  - Depuis le 27/09/2026, l'analyse n'empile que les pages d'un même logement (noms de niveau différents, même numéro de lot quand il est écrit) ; un PDF de plusieurs lots sans numéro lisible pourrait encore être empilé comme des niveaux : en service, la qualification le refuse (« plusieurs lots », L6-02). Seul l'import promoteur (§ 4.1, L10-02) découpe un PDF multi-lots.
   - Un nouveau format n'entre dans le prix de base qu'après validation plan par plan, sur des plans fournis par l'utilisateur.
 - **Sur une image**, une cote connue cale l'échelle, avec une précision de 5 à 10 cm.
   - Si l'analyse sans IA ne trouve pas d'échelle, la cote est demandée **avant** la lecture payante.
@@ -162,7 +166,7 @@ Surfaces et points à faire confirmer sont servis en texte depuis des champs fil
   - deux choix : « Ce logement : 29 € » et « Comparer 3 lots : 59 € » ;
   - un lien « Essayer la visite de l'appartement témoin » ;
 - pendant la bêta fermée, ce bouton et ce volet n'affichent ni prix ni achat (§ 2.8) ;
-- la visite, la maquette 3D et le plan 2D **interactifs** ;
+- la visite 3D en marche libre, la maquette 3D et le plan 2D **interactifs** (le 360°, s'il devient l'offre gratuite, n'est pas verrouillé) ;
 - les téléchargements, le partage de la visite et l'hébergement au-delà de 6 mois.
 
 Aucun emplacement de photo supplémentaire n'est montré : la galerie complète n'existe pas au lancement.
@@ -172,7 +176,9 @@ Aucun emplacement de photo supplémentaire n'est montré : la galerie complète 
 - **Contrôle automatique** : une page d'aperçu qui charge l'un des deux, ou qui affiche un texte technique, fait échouer la publication.
 - `ARCHITECTURE.md` M3.2 suit cette règle (verrou côté serveur, et non verrou d'interface).
 
-**Aperçu interactif.** Une maquette ou une vue du dessus manipulable dans l'aperçu demanderait un fichier distinct, sans les données de la visite. C'est une idée à tester plus tard (L13-03), pas une offre du lancement.
+**Visite 360°** (décision du 27/09/2026). À chaque arrêt de la visite guidée, un panorama rendu par le serveur : on regarde autour de soi et on passe d'arrêt en arrêt. Elle entre dans toutes les visites et deviendra probablement l'offre gratuite, à la place des images ci-dessus ou en plus. La page ne reçoit que des images et la liste des arrêts : ni moteur ni `plan.json` (décision n° 6). **À confirmer** avec le coût de rendu mesuré : environ 10 panoramas par plan offert, rendus en SwiftShader sans GPU (R3), temps de calcul à mesurer et à provisionner (L1-16, § 8.1). Remplacement ou ajout, et confirmation : décision de l'utilisateur après L1-16, mise en service par L6-13. D'ici là, l'aperçu reste celui décrit ci-dessus (R1) et aucun texte ne promet le 360°.
+
+**Vue du dessus manipulable.** Elle demanderait un fichier distinct, sans les données de la visite : idée à tester plus tard (L13-03), pas une offre du lancement.
 
 **Conditions et anti-abus** (`auth-paiement.md` § 3.5) :
 - e-mail vérifié par lien magique, ou compte Google ;
@@ -227,7 +233,7 @@ Aucun emplacement de photo supplémentaire n'est montré : la galerie complète 
 ### 2.4 Ce que débloque un plan payant
 
 Sur le plan déjà contrôlé, sans nouvelle lecture ni nouveau rendu. Le moteur et `plan.json` sont alors servis, et la visite 3D se calcule dans le navigateur du client (décision n° 5) :
-- la **visite** à la première personne, en marche libre et avec des arrêts par pièce, et la **maquette 3D** et le **plan 2D** interactifs. Tout s'ouvre tout de suite ;
+- la **visite** à la première personne, en marche libre et avec des arrêts par pièce, et la **maquette 3D** et le **plan 2D** interactifs. Tout s'ouvre tout de suite. La visite reste fluide sur un appareil modeste : qualité adaptée à l'appareil, fichiers préparés par le serveur (éclairage précalculé, maquette compressée) quand ils existent. Le mode 360° y entrera aussi, une fois livré (décision du 27/09/2026) ;
 - **les mêmes images que l'aperçu** : vue du dessus 3D découpée, plan 2D coté, 2 photos. Aucun nombre de photos n'est promis ; au pire, la visite est livrée sans les photos. La galerie complète viendra plus tard (§ 7.4) ;
 - la **fiche complète** : surfaces, équipements, ouvertures, hypothèses, points à faire confirmer ;
 - les **téléchargements** (L8-08) :
@@ -338,7 +344,7 @@ Autres prix :
 ### 3.3 Fonctions
 
 **Toutes les formules :**
-- le plan complet : plan 2D, maquette 3D, visite, vue du dessus 3D découpée, 2 photos, fiche des surfaces comparées au tableau du promoteur (galerie complète plus tard, § 7.4) ;
+- le plan complet : plan 2D, maquette 3D, visite, mode 360° (une fois livré), vue du dessus 3D découpée, 2 photos, fiche des surfaces comparées au tableau du promoteur (galerie complète plus tard, § 7.4) ;
 - des **liens de visite illimités** : non devinables, non indexés, révocables, avec une expiration réglable (90 jours par défaut). Un QR code (à construire) et la visite en plein écran pour le rendez-vous ou la visio ;
 - une **page sans compte pour le prospect**, avec le logo, le nom, le téléphone et l'e-mail du conseiller ;
 - le **bouton « Je suis intéressé, prévenir mon conseiller »** (§ 3.4) ;
@@ -459,7 +465,7 @@ Conditions de vente : devis, puis facture payée par virement à 30 jours. Prix 
 - Chaque lot passe l'analyse sans IA et la qualification (environ 0,02 $ par lot).
 - Le promoteur reçoit un rapport :
   - les lots pris en charge ;
-  - les lots non pris en charge (duplex, maison, plan illisible…), qui ne sont pas facturés.
+  - les lots non pris en charge (plus de deux niveaux, maison, plan illisible…), qui ne sont pas facturés.
 - Le devis ne porte que sur les lots pris en charge, à **prix ferme**.
 
 ### 4.2 Pilote payant
@@ -487,7 +493,7 @@ Conditions de vente : devis, puis facture payée par virement à 30 jours. Prix 
 ### 4.4 Contenu
 
 **Par lot :**
-- plan 2D, maquette 3D, visite, vue du dessus 3D découpée, 2 photos et fiche des surfaces comparées à la grille du promoteur. Aucun nombre de photos n'est promis tant que la galerie complète n'est pas en service (§ 7.4) ;
+- plan 2D, maquette 3D, visite, mode 360° (une fois livré), vue du dessus 3D découpée, 2 photos et fiche des surfaces comparées à la grille du promoteur. Aucun nombre de photos n'est promis tant que la galerie complète n'est pas en service (§ 7.4) ;
 - images HD pour les plaquettes ;
 - la superposition de son propre plan, permise ici puisqu'il en a les droits.
 
@@ -771,7 +777,7 @@ Une option n'est vendue que si quatre conditions sont réunies :
 En plus :
 - pas de prévente, pas de date annoncée, jamais « bientôt » ;
 - une option peut s'ajouter plus tard à un plan déjà débloqué, sans nouvelle lecture quand c'est possible ;
-- la couverture de nouveaux formats (duplex…) **n'est pas une option**. Un format validé entre dans le prix de base, et rien n'est promis avant.
+- la couverture de nouveaux formats (duplex, puis triplex…) **n'est pas une option**. Un format validé entre dans le prix de base, et rien n'est promis avant.
 
 ### 7.2 Ordre et prix cibles
 
@@ -790,7 +796,7 @@ En plus :
 
 | Jalon | Déclencheur | Ce qui ouvre |
 |---|---|---|
-| **J0 : bêta fermée** (lot 6) | Failles bloquantes corrigées (audit B1 à B9), grand livre, verrou serveur de l'aperçu, contrôle « aucun texte technique », mention incrustée, masquage en mode simple du rendu photoréaliste et de la superposition (L4-11), mentions légales, CGU, confidentialité, ZDR | Variante « bêta » : invités seulement (code d'invitation), 1 crédit `testeur` par testeur, aucun achat ni prix affiché (§ 2.8) |
+| **J0 : bêta fermée** (lot 6) | Failles bloquantes corrigées (audit B1 à B9), grand livre, verrou serveur de l'aperçu, contrôle « aucun texte technique », mention incrustée, masquage en mode simple du rendu photoréaliste et de la superposition (L4-11), visite fluide sur les appareils modestes de référence (proposition : L1-15, seuils de L1-14), mentions légales, CGU, confidentialité, ZDR | Variante « bêta » : invités seulement (code d'invitation), 1 crédit `testeur` par testeur, aucun achat ni prix affiché (§ 2.8) |
 | **J1 : particuliers payants** (lot 8, ouverture à tous en L8-07) | CGV avec les parcours de rétractation, médiateur, RC Pro, « Renoncer au contrat ici », tests T0 à T2 concluants | Premier plan offert, 29 €, 15 €, 59 € |
 | **J2 : conseillers** | Contrat pro et DPA, liens prospects, bouton « Je suis intéressé », Billing. Avant ce jalon, les pages pros ne proposent qu'un entretien ou la bêta fondateurs (L2-18) | Bêta fondateurs, puis Solo, Cabinet et Équipe, et l'essai en ligne |
 | **J3 : promoteurs** | Contrat promoteur et SLA, iframe limitée aux domaines, facture électronique possible | Rapport de prise en charge, pilote, prix au lot |
@@ -806,7 +812,10 @@ Elles améliorent ce qui est déjà vendu, sans être vendues à part. Aucune n'
 |---|---|---|
 | **Galerie complète** : une dizaine de photos par plan | L13-02, après L13-01 | Jamais promise au lancement : les textes ne citent aucun nombre de photos. Une fois en production, nouvelle version d'offre au catalogue ; proposition de L0-04 : l'ajouter **sans supplément** aux plans déjà vendus, par un rendu seul, sans lecture IA |
 | **Rendu plus rapide** (GPU, Mac, tâches à la demande) | L13-01 | Accélération optionnelle ; le rendu SwiftShader en conteneur reste la base, partout |
-| **Aperçu interactif** (vue du dessus manipulable) | L13-03 | Idée à tester ; ni moteur ni `plan.json` dans l'aperçu tant qu'elle n'est pas validée |
+| **Visite 360°** dans toutes les visites, probablement l'offre gratuite | L1-16, L4-15, L4-16, L5-27, L6-13 | Décidée le 27/09/2026 ; gratuité à confirmer par le coût de rendu mesuré ; images seulement, ni moteur ni `plan.json` ; écrite dans une offre une fois livrée |
+| **Qualité adaptative et précalcul serveur** (visite fluide sur appareil modeste) | L1-14, L1-15, L4-12, L4-13, L4-14, L5-28 | Décidés le 27/09/2026 ; le rendu en direct sur le serveur est écarté |
+| **Plans sur plusieurs niveaux** | L13-08 (fait), L4-08, L1-13 | Chaîne livrée le 27/09/2026 ; duplex acceptés en service et au périmètre affiché (décision 11) ; triplex après validation sur un plan réel ; dans le prix de base (§ 7.1) |
+| **Vue du dessus manipulable** | L13-03 | Idée à tester ; ni moteur ni `plan.json` dans l'aperçu tant qu'elle n'est pas validée |
 
 ---
 
@@ -819,7 +828,7 @@ Elles améliorent ce qui est déjà vendu, sans être vendues à part. Aucune n'
 | IA par plan | 1,10 à 1,85 $, plus 0,02 $ de qualification, plus 5,5 % de frais OpenRouter (8 % avec le routage UE) : **1,18 à 1,97 $** | `CLAUDE.md`, `hebergement.md` § 10 |
 | Change | **1 $ = 1 €** par prudence (la chaîne code 0,90) | `lire.py` |
 | Échecs après lecture | **20 % supposés**, non mesurés : seuls 4 plans ont été testés | hypothèse |
-| Rendu au lancement : visite de contrôle, vue du dessus, plan 2D et 2 photos, en SwiftShader dans un conteneur sur notre VM | Coût marginal compris dans les coûts fixes (§ 8.10). **Provisions par prudence**, reprises de l'estimation en tâches à la demande : 0,05 € pour les 4 images d'un aperçu ; 0,15 € pour un plan complet, qui couvre aussi le rendu futur de la galerie complète si elle est ajoutée sans supplément (§ 7.4) | `hebergement.md` § 2.3 (0,10 à 0,15 € pour 11 photos, 0,03 à 0,05 € pour 3 images) |
+| Rendu au lancement : visite de contrôle, vue du dessus, plan 2D et 2 photos, en SwiftShader dans un conteneur sur notre VM | Coût marginal compris dans les coûts fixes (§ 8.10). **Provisions par prudence**, reprises de l'estimation en tâches à la demande : 0,05 € pour les 4 images d'un aperçu ; 0,15 € pour un plan complet, qui couvre aussi le rendu futur de la galerie complète si elle est ajoutée sans supplément (§ 7.4). **À revoir** : le 360° ajoute environ 10 panoramas par plan, offert compris, et le précalcul serveur ajoute du calcul à chaque plan ; temps SwiftShader à mesurer (L1-16) avant de fixer la provision (décisions du 27/09/2026) | `hebergement.md` § 2.3 (0,10 à 0,15 € pour 11 photos, 0,03 à 0,05 € pour 3 images) |
 | Stockage, e-mails, CDN | moins de 0,05 € par plan | `hebergement.md` § 5 |
 | Relecture humaine d'un lot promoteur | 5 min à 50 € de l'heure, soit **4,17 €** (hypothèse à mesurer au pilote) | hypothèse |
 
@@ -924,7 +933,7 @@ Si le coût moyen réel dépasse 2 $ par plan sur 30 jours, les quotas et les pr
 
 ### 8.8 Premier plan offert : coût, seuil, budget
 
-- **Coût d'un aperçu** : 2,56 € au cas prudent, environ 1,10 € au cas bas. Au lancement, le verrou n'économise aucun rendu, puisque l'aperçu et la visite ont les mêmes images : il protège la visite, pas le coût. Le plan offert n'est consommé qu'à la publication de l'aperçu (§ 6.4) ; un échec ne coûte que l'IA déjà dépensée.
+- **Coût d'un aperçu** : 2,56 € au cas prudent, environ 1,10 € au cas bas. Au lancement, le verrou n'économise aucun rendu, puisque l'aperçu et la visite ont les mêmes images : il protège la visite, pas le coût. Avec le 360° gratuit et le précalcul fait pour tout plan, chaque aperçu coûtera aussi ce temps de rendu : seuil de perte et budget du jour à recalculer sur la mesure (L1-16, L8-09). Le plan offert n'est consommé qu'à la publication de l'aperçu (§ 6.4) ; un échec ne coûte que l'IA déjà dépensée.
 - **Seuil de perte.** C'est la part des aperçus qui doivent être débloqués pour que la marge couvre leur coût. Calcul : coût de l'aperçu ÷ marge d'un déblocage.
 
   | Prix du déblocage | Seuil de perte (cas prudent) | Seuil de perte (cas bas) |
@@ -984,7 +993,7 @@ Si le coût moyen réel dépasse 2 $ par plan sur 30 jours, les quotas et les pr
 | Prix d'un plan particulier | 29 € TTC | 29 €, puis 39 € ; 19 € si la conversion est très faible | Marge par aperçu = (ventes × marge − coût des aperçus) ÷ aperçus | Garder le prix qui maximise la marge par aperçu |
 | Plan suivant | 15 € TTC | 15 ou 19 € | Part des acheteurs qui en prennent un | Garder 15 € s'il sert, sinon le fondre dans le pack |
 | Comparer 3 lots | 59 € TTC | 49 ou 59 € | Part des ventes | Sous 10 % des ventes, retiré de la page ; le plan suivant reste |
-| Contenu de l'aperçu | Vue du dessus 3D découpée, plan 2D coté et 2 photos, en images | Aperçu interactif (L13-03), sans moteur ni `plan.json` de la visite | Conversion | Garder la variante qui convertit le mieux, à coût égal |
+| Contenu de l'aperçu | Vue du dessus 3D découpée, plan 2D coté et 2 photos, en images | Visite 360° d'arrêt en arrêt, en images (décision de principe du 27/09/2026) ; vue du dessus manipulable (L13-03) ; sans moteur ni `plan.json` de la visite | Coût de rendu par aperçu (L1-16), puis conversion | Le 360° devient l'offre gratuite si l'utilisateur juge son coût de rendu acceptable ; sinon, garder la variante qui convertit le mieux, à coût égal |
 | Verrou | Prix sur le bouton, puis volet | Volet sans prix sur le bouton | Clics, achats | Selon la conversion |
 | Quotas pros | 5, 12, 30 | Relevés si le coût réel est inférieur à 2 € | Consommation réelle, coût réel | Relever, jamais baisser |
 | Prix Solo | 49 € HT | 49 € ou 69 € par cohortes | Passage de l'essai à l'abonnement, marge | Selon la marge par essai |
@@ -997,8 +1006,9 @@ Si le coût moyen réel dépasse 2 $ par plan sur 30 jours, les quotas et les pr
 ### 9.2 Protocole, du moins cher au plus cher
 
 **T0. Sans aucune dépense IA, avant les testeurs.**
-- **Rendu en production** : réassembler sans IA l'appartement témoin et, hors CI, les 4 plans testés (`outils/finalise.sh`), en SwiftShader dans le conteneur de la VM (Docker Compose), le rendu par défaut partout (L5-11).
-  - Mesurer la durée de chaque passage de la visite de contrôle, de la vue du dessus, du plan 2D et de chaque photo (médiane et 9e décile).
+- **Rendu en production** : réassembler sans IA l'appartement témoin et, hors CI, les plans testés (4 à un niveau et la duplex, L1-02) (`outils/finalise.sh`), en SwiftShader dans le conteneur de la VM (Docker Compose), le rendu par défaut partout (L5-11).
+  - Mesurer la durée de chaque passage de la visite de contrôle, de la vue du dessus, du plan 2D et de chaque photo (médiane et 9e décile), puis des panoramas 360° et du précalcul serveur quand ils existent (L1-16).
+  - Mesurer la fluidité de la visite sur les appareils modestes de référence (banc de L1-14).
   - Comparer au rendu Metal : l'écart doit rester sous 2/255.
   - **Décision** : le délai affiché, qui remplace le marqueur ‹délai› partout, et la taille de la VM. L'essai M2.7a d'`ARCHITECTURE.md` n'est qu'une mesure informative ; GPU, Mac et tâches à la demande sont des accélérations après le lancement (L13-01), jamais obligatoires.
 - **Verrou** : contrôle automatique « ni moteur ni `plan.json` sur la page d'aperçu, aucun texte technique ».
@@ -1015,6 +1025,7 @@ Si le coût moyen réel dépasse 2 $ par plan sur 30 jours, les quotas et les pr
   - les échecs par cause ;
   - les défauts signalés ;
   - la compréhension de l'aperçu ;
+  - la fluidité de la visite sur leur appareil (clic, regard, déplacement), et l'appareil utilisé ;
   - les personnes avec qui ils partagent ;
   - le prix jugé acceptable (4 questions de type Van Westendorp).
 - **Décision** : si le coût dépasse 2 $ par plan ou si plus de 20 % des lectures échouent, revoir la qualification et les prix **avant** d'ouvrir l'aperçu offert au public.
@@ -1101,6 +1112,8 @@ Parrainage et carte cadeau ne seront testés qu'ensuite.
 | 19 | Facturation électronique | Amendes | Plateforme agréée pour la réception (déjà due), émission au plus tard le 01/09/2027 |
 | 20 | Nom non validé | Conflit ou rebranding | Forme unique « Sur Pièce ». `surpieces.fr` (au pluriel) est pris. Dépôt INPI avant toute annonce |
 | 21 | Support d'une petite équipe | Délais, erreurs | File de basse priorité pour les imports, formulaire de défaut structuré, pas de téléphone pour les particuliers, une instance de marque blanche à la fois |
+| 22 | Visite peu fluide sur un appareil modeste | Clics ratés, regard difficile : défaut perçu, visite payée puis abandonnée | Diagnostic et corrections (L1-14, L1-15), qualité adaptative (L4-12), précalcul serveur (L4-13, L4-14), seuils chiffrés mesurés avant la bêta, repli en images (`erreur.3d`) |
+| 23 | Coût de rendu du 360° gratuit | Chaque aperçu occupe le rendu SwiftShader (environ 10 panoramas par plan) | Mesure avant décision (L1-16), plafond du jour du plan offert (§ 8.8, L8-09), limites de concurrence (L5-22) |
 
 ---
 

@@ -12,7 +12,7 @@ Une instance en marque blanche sert les visites et l'application sur le domaine 
 1. **Table `domaines`** (créée par L10-04 pour `parent_integration`, sinon ici) avec `usage` `visite` ou `app` ; ajout par l'équipe au départ (une instance à la fois) ; vérification en deux temps : enregistrement TXT (jeton) puis CNAME vers `clients.<domaine>` ; `verifie_le`, `tls_etat`.
 2. **Certificats** : Caddy `on_demand_tls` avec `ask` pointé sur `GET /api/interne/domaines/autorise?domain=…`, qui répond 200 seulement pour un hôte vérifié et actif (réponse rapide, cache court) ; certificats sur un volume persistant et sauvegardé ; limites d'émission de l'autorité de certification à connaître avant la mise en service.
 3. **Hôtes autorisés dynamiques** (B4, ARCHITECTURE.md § 6.1) : liste = configuration + domaines vérifiés ; CSRF lié à la session et à l'hôte ; cookie `__Host-session` propre à chaque hôte, jamais posé sur `.client.fr`.
-4. **Résolution** hôte → organisation → marque (thème de L11-02) ; visites sur `visite.client.fr/v/<jeton>` ; photos et moteur restent sur `cdn.<domaine>` (Edge Services limite les domaines par pipeline, M5.3) : la CSP de l'instance autorise `cdn.<domaine>`.
+4. **Résolution** hôte → organisation → marque (thème de L11-02) ; visites sur `visite.client.fr/v/<jeton>` ; photos, panoramas 360°, maquette précalculée et moteur restent sur `cdn.<domaine>` (Edge Services limite les domaines par pipeline, M5.3) : la CSP de l'instance autorise `cdn.<domaine>`.
 5. **Connexion sur le domaine du client** (`usage = app`) : le lien magique (L5-03) fonctionne sur tout domaine ; Google (L5-24) exige que chaque adresse de retour soit déclarée à l'avance. Options : retour central sur `app.<domaine>` puis passage vers l'hôte du client par un jeton court à usage unique, ou lien magique seul sur les domaines clients. Décision à prendre avec L0-02.
 6. **En-têtes** : HSTS sans `includeSubDomains` sur un domaine client ; `frame-ancestors` selon L10-04.
 7. **Supervision** (ARCHITECTURE.md § 9.4) : certificat proche de l'expiration ou en échec, CNAME disparu à la revérification quotidienne → alerte, pages de l'hôte refusées proprement.
@@ -39,7 +39,7 @@ Une instance en marque blanche sert les visites et l'application sur le domaine 
 - produit/ARCHITECTURE.md § 2.2, § 2.5, § 4.2 (`domaines`), § 6.1 (B4), § 6.2, § 9.4, D1, D4, M5.3.
 - produit/OFFRES.md § 5.2, § 5.5, § 5.6, § 7.3 (J5), § 9.1, § 9.2 (T9) ; produit/MARQUE.md § 9.1 ; produit/PARCOURS.md D2.
 - produit/recherche/auth-paiement.md § 1.2 (domaines), § 1.5 ; produit/recherche/audit-code.md B4.
-- `pipeline/serveur.py:499-510` (`hote_ok`, `origine_ok`, protection locale, inchangée).
+- `pipeline/serveur.py:603` (`hote_ok`) et `:608` (`origine_ok`), protection locale, inchangée (relevés le 27/09/2026).
 
 ## Hors périmètre
 - Thème complet : L11-02. Clés IA par client : L11-03. Contrat, mise en service et facturation : L11-04. Domaines parents d'une intégration : L10-04.

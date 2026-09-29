@@ -323,9 +323,10 @@ En général, seuls quelques lots types sont modélisés, avec parfois une maque
 1. **Le réalisme.** Pas de photoréalisme, pas encore de mobilier ni de décoration. Les studios, Habiteo et GetFloorplan sont devant, et Planner 5D ou HomeByMe montrent du mobilier de marque.
 2. **Les TMA et les variantes**, que les configurateurs promoteurs (Habiteo) couvrent déjà.
 3. **La résidence et l'extérieur** : vue, étage, orientation réelle, parties communes.
-4. **La couverture des plans.** Nous avançons plan par plan : duplex en cours, cas inconnus non couverts.
+4. **La couverture des plans.** Nous avançons plan par plan. Duplex et triplex sont gérés par la chaîne depuis le 27/09/2026, validés sur une seule duplex avec une lecture préparée à la main ; lecture réelle par l'IA, triplex, escalier quart tournant, entrée au niveau haut et plan en image ne sont pas encore testés.
 5. **La notoriété et la confiance** face à des marques établies (Dassault Systèmes, Leroy Merlin, Habiteo).
 6. **La fréquence.** L'acquéreur achète une fois, et il existe des substituts gratuits ou presque (Planner 5D Premium à 59,99 par an avec import de plan).
+7. **Le 360°.** GetFloorplan, RoomSketcher, Planner 5D, HomeByMe et Nodalview le proposent (§ 2). Chez nous, il est décidé le 27/09/2026 (panoramas rendus par le serveur à chaque arrêt, `PLAN.md` § 2.1, décision 15) mais pas encore construit.
 
 ### 5.3 Prix de référence du marché
 

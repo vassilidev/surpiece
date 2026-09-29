@@ -23,20 +23,20 @@ Pendant chaque visite de contrôle et chaque séance photo, `moteur/controle.mjs
    - 200 pour `/<dir>/index.html`, `/<dir>/plan.json`, `/moteur/ui.js`, `/moteur/visite.css`.
    Le test ne lit jamais le contenu de `.env` : il crée son propre fichier leurre pour vérifier le refus. Il vérifie aussi que `envSansSecret()` retire une clé leurre (`OPENROUTER_API_KEY=leurre`) et garde `PATH` et `HOME`.
 5. **Vérifier la chaîne sans payer** : `node moteur/controle.mjs plans/<copie>` et `node moteur/photos.mjs plans/<copie>` sur des copies de plans déjà lus (dossiers `plans/_…`), avant et après le correctif : même `controle.json` (verdict et problèmes), mêmes photos à l'œil. Puis `outils/finalise.sh <copie>` de bout en bout.
-6. **Tous les scripts qui servent des fichiers** : `grep -rn "createServer\|listen(\|http.server\|HTTPServer" moteur/ outils/`. Relevé du 27/09/2026 : `moteur/controle.mjs`, `moteur/photos.mjs` et `moteur/_dbg.mjs` (lignes 19 à 24, fichier non suivi créé par l'agent des duplex) ouvrent le même serveur ; `outils/` n'en ouvre aucun. Prévenir l'agent des duplex : `_dbg.mjs` doit passer par `serveurStatique` et `envSansSecret` (ou être supprimé) avant toute fusion. Tout nouveau script qui sert des fichiers passe par `serveurStatique`.
+6. **Tous les scripts qui servent des fichiers** : `grep -rn "createServer\|listen(\|http.server\|HTTPServer" moteur/ outils/`. Relevé du 27/09/2026, après le travail sur les niveaux : `moteur/controle.mjs` et `moteur/photos.mjs` ouvrent toujours le même serveur (`http.createServer(…).listen(0)`, lignes 20 à 24, sans hôte) ; `moteur/_dbg.mjs` n'existe plus ; `outils/` n'en ouvre aucun. Tout nouveau script qui sert des fichiers passe par `serveurStatique`, dont le banc de fluidité (L1-14) et les panoramas (L1-16).
 7. **Après la fusion**, demander à l'utilisateur de faire tourner la clé API (L0-08) : on ne peut pas exclure qu'elle ait été lue pendant un rendu passé.
 
 ## Critères d'acceptation
 - [ ] Le test de l'étape 4 passe (toutes les réponses 404 et 200 attendues, clé leurre retirée) et tourne en moins de 5 s, sans réseau.
 - [ ] Pendant un rendu, `lsof -nP -iTCP -sTCP:LISTEN | grep node` ne montre que `127.0.0.1:<port>`.
 - [ ] Visite de contrôle lancée avec `OPENROUTER_API_KEY=leurre` dans l'environnement : l'environnement des processus Chrome (`ps eww` sous macOS, `/proc/<pid>/environ` sous Linux) ne contient ni `OPENROUTER_API_KEY` ni `ANTHROPIC_API_KEY`.
-- [ ] `grep -rn "createServer" moteur/ outils/` ne trouve plus que `moteur/chrome.mjs` dans tout fichier fusionné ; `_dbg.mjs`, s'il existe encore, est signalé à l'agent des duplex et n'est jamais fusionné avec son serveur ouvert.
+- [ ] `grep -rn "createServer" moteur/ outils/` ne trouve plus que `moteur/chrome.mjs` dans tout fichier fusionné ; les scripts ajoutés depuis (banc de fluidité, panoramas) passent par `serveurStatique`.
 - [ ] Même verdict de la visite de contrôle et mêmes photos avant et après, sur au moins deux plans déjà lus ; outil local (`python3 pipeline/serveur.py`) et `outils/finalise.sh` toujours en marche ; aucune lecture payante.
 - [ ] Critère de fusion d'ARCHITECTURE.md § 8.1 (règle 3) appliqué dès que L1-02 existe ; tout défaut trouvé ici devient un cas du test de l'étape 4.
 
 ## Points d'attention
 - **Découpage** : M0.3 demande « rejeu M0.1 identique », mais ce ticket ne dépend pas de L1-02, volontairement (urgence). En attendant, la comparaison manuelle de l'étape 5 tient lieu de rejeu ; L1-02 rejouera ensuite.
-- Petit diff isolé sur une branche courte : deux blocs de 6 lignes remplacés, une option `env` ajoutée à deux lancements et un fichier nouveau ; `controle.mjs` et `photos.mjs` sont en cours de modification par l'agent des duplex, à fusionner avec lui.
+- Petit diff isolé sur une branche courte : deux blocs de 6 lignes remplacés, une option `env` ajoutée à deux lancements et un fichier nouveau ; `controle.mjs` et `photos.mjs` portent le travail sur les niveaux du 27/09/2026, fini mais non commité (23 fichiers) : faire ce correctif sur le commit qui l'intègre, pas sur l'arbre de travail.
 - Le filtre de l'environnement est fait côté moteur, sans toucher à `enfant` (`pipeline/serveur.py`) ; il remplace la proposition faite dans L3-01 et L3-03.
 - L1-09 étendra `moteur/chrome.mjs` avec le lancement de Chrome : garder le module simple et exporté par fonctions nommées.
 - Les outils `outils/vues.mjs`, `marche.mjs` et `trajets.mjs` passent par le serveur local (`pipeline/serveur.py`, déjà limité à 127.0.0.1 et à une liste blanche) : ils n'ouvrent aucun serveur. Lancés à la main, hors de `enfant`, ils ne reçoivent pas les clés du `.env` ; ils passeront par `lancerChrome` et son environnement filtré avec L1-09.
@@ -45,7 +45,7 @@ Pendant chaque visite de contrôle et chaque séance photo, `moteur/controle.mjs
 - `produit/recherche/audit-code.md` B6, synthèse point 2
 - `produit/ARCHITECTURE.md` § 6.1 (B6), § 6.8 (`/.env` inaccessible par toutes les voies), § 8.1, § 8.3 M0.3
 - `produit/recherche/hebergement.md` § 4 (sécurité du rendu)
-- `moteur/photos.mjs` et `moteur/controle.mjs` (serveur statique en tête de fichier, `root`, `MIME`) ; `moteur/_dbg.mjs`
+- `moteur/photos.mjs` et `moteur/controle.mjs` (serveur statique en tête de fichier, `root`, `MIME`)
 - `pipeline/serveur.py` (`servable`, `VISITE`)
 
 ## Hors périmètre

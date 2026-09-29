@@ -30,7 +30,7 @@ Une sauvegarde qui n'a jamais été restaurée ne protège de rien. ARCHITECTURE
 ## Points d'attention
 - Les dumps de 12 mois gardent des données supprimées : durée à valider au registre (L0-09) ; raccourcir la rétention mensuelle si l'avocat le demande (L5-20).
 - Restaurer des données de production n'est permis que dans l'environnement de production, avec les mêmes accès que la production ; les plans des promoteurs ne sortent jamais vers un poste ou la préproduction sans accord (`CLAUDE.md`).
-- Photos non répliquées : leur régénération demande du rendu SwiftShader (quelques minutes par plan, L5-22) ; après une perte totale, prévoir un rendu étalé.
+- Photos, panoramas et précalculs non répliqués : leur régénération demande du rendu SwiftShader (quelques minutes par plan pour les photos, bien plus avec les panoramas : mesure de L1-16) ; après une perte totale, prévoir un rendu étalé.
 - Le seau `sauvegardes` suit les mêmes règles d'accès que le seau privé : aucun accès public, identifiants distincts de ceux des services.
 
 ## Références

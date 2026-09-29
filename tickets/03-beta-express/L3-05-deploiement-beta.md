@@ -9,7 +9,7 @@ Mettre l'outil conteneurisé (L3-01), fermé par Cloudflare Access (L3-02), cloi
 
 ## À faire
 1. **VM** dans le projet Scaleway « bêta », séparé des futurs projets de préproduction et de production (L0-08), région Paris, processeur x86-64 (Chrome for Testing, voir L3-01).
-   - Taille : partir de la PLAY2-MICRO (4 vCPU, 8 Go, environ 40 €/mois, recherche/hebergement.md § 3.2), rejouer un plan de référence sans payer, chronométrer. Si le plan complet (11 photos en SwiftShader) dépasse 30 min, prendre une instance plus large pour la durée de la bêta ou garder `PLAN_PARALLELE=1` et l'annoncer aux testeurs.
+   - Taille : partir de la PLAY2-MICRO (4 vCPU, 8 Go, environ 40 €/mois, recherche/hebergement.md § 3.2), rejouer un plan de référence sans payer, chronométrer. Si le plan complet (galerie de 11 à 12 photos et visite de contrôle avec test d'immersion, en SwiftShader, duplex comprise) dépasse 30 min, prendre une instance plus large pour la durée de la bêta ou garder `PLAN_PARALLELE=1` et l'annoncer aux testeurs.
    - Système Debian ou Ubuntu LTS, Docker Engine et son greffon Compose, mises à jour de sécurité automatiques, SSH par clé seulement, pare-feu : aucun port entrant sauf SSH limité aux adresses de l'équipe (le tunnel `cloudflared` de L3-02 sort vers Cloudflare).
 2. **Déploiement** : `git clone` d'une étiquette (`beta-AAAAMMJJ`, commit fusionné), `docker compose up -d --build`. Fichiers propres à la bêta rangés dans `deploiement/beta/` (nouveau dossier, hors de `pipeline/` et `moteur/`) : surcharge Compose (tunnel, Caddy), `Caddyfile`, scripts de sauvegarde et de restauration, procédures.
 3. **Secrets** : fichier `/etc/visite-plans/outil.env` (propriétaire root, droits 600) ou Secret Manager de Scaleway lu au démarrage : clé OpenRouter « bêta » (L3-04), jeton du tunnel, `PLAN_ACCES_*`, `PLAN_EQUIPE`. Rien dans le dépôt, l'image ou les journaux.
@@ -37,7 +37,7 @@ Mettre l'outil conteneurisé (L3-01), fermé par Cloudflare Access (L3-02), cloi
 - **Coût mensuel** (estimation) : VM, volume, sauvegardes et IPv4 de l'ordre de 50 à 60 € par mois, plus l'IA (L3-04). Arrêter la VM à la fin de la bêta.
 - **Sauvegardes** : elles contiennent des plans de promoteurs et des e-mails ; chiffrement, rétention et purge à inscrire au registre (L0-09).
 - **Code jetable** : garder la bêta dans `deploiement/beta/` pour ne pas la mêler à la préproduction du socle (L5-18).
-- **Coordination avec le travail sur les duplex** : aucun fichier de `pipeline/` ni de `moteur/` modifié ; l'étiquette déployée doit être un commit fusionné.
+- **Coordination avec le travail sur les niveaux** (fini le 27/09/2026, non commité) : aucun fichier de `pipeline/` ni de `moteur/` modifié ; l'étiquette déployée doit être un commit fusionné.
 
 ## Références
 - produit/recherche/hebergement.md § 3.2, § 4, § 7 (supervision), § 8 (sauvegardes), § 10 ; produit/ARCHITECTURE.md § 3 (D2, D5), § 9.1, § 9.3, § 9.4 ; produit/recherche/juridique.md § 3.3, § 3.4, § 7 (n° 2 à 7) ; produit/OFFRES.md § 7.3 (J0) ; produit/MESSAGES.md § 8.3.

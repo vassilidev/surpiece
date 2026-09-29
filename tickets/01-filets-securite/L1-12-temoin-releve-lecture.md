@@ -28,8 +28,9 @@ Suite de L1-03 (découpé : l'ensemble dépassait 5 jours). Le PDF fictif ne ser
 
 ## Points d'attention
 - **Découpage** : le diff `[P]` se limite à un alias d'`evaluer.py`, facultatif puisque le chemin marche déjà ; le marqueur `[P]` vient surtout de la coordination. En revanche, si la lecture du témoin révèle un défaut de la chaîne, sa correction (et la nouvelle lecture payante) peut faire dépasser la taille M : la traiter dans un ticket à part.
-- **Dépendance aux changements d'extraction** : la lecture gardée référence les indices de murs d'`extract.json`. Si l'agent des duplex change `extract.py` au point de décaler ces indices, la lecture gardée ne s'applique plus : il faudra une nouvelle lecture payante, sur accord. Le mode `--extraction` de L1-02 le détecte.
+- **Dépendance aux changements d'extraction** : la lecture gardée référence les indices de murs d'`extract.json`. Si un changement d'`extract.py` (comme le travail sur les niveaux du 27/09/2026) au point de décaler ces indices, la lecture gardée ne s'applique plus : il faudra une nouvelle lecture payante, sur accord. Le mode `--extraction` de L1-02 le détecte.
 - `reponse-ia.json` est une sortie de l'IA ; ARCHITECTURE.md interdit d'en **publier** : la versionner dans un dépôt privé est acceptable pour le témoin (aucune donnée de client), mais elle ne doit pas figurer sur le site.
+- Consignes de lecture changées le 27/09/2026 (légende des sigles de baies, champs `allege`, `fixe`, `tap`, plusieurs niveaux) : faire la lecture gardée sur un commit qui les contient, sinon elle ne représente plus le service.
 - Un seul modèle, un seul effort (ceux du service, `claude-opus-5`, effort medium) : noter la configuration exacte pour que la base soit reproductible.
 - Mémoire du projet : ne pas payer de lecture vouée à l'échec ; l'étape 2 gratuite passe avant l'étape 3.
 

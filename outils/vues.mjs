@@ -1,4 +1,5 @@
-// node vues.mjs port plan prefixe : maquette (vue par défaut + dessus coupée) et plan 2D
+// node vues.mjs port plan prefixe : maquette (vue par défaut + dessus coupée) et plan 2D.
+// Plusieurs niveaux : les trois vues pour chaque niveau (niveaux du dessus retirés), <prefixe>-n<niveau>-orbit|dessus|plan.png
 import { createRequire } from 'node:module';
 import { execSync } from 'node:child_process';
 const req = createRequire(execSync('npm root -g').toString().trim() + '/noop.js');
@@ -11,14 +12,18 @@ await page.evaluateOnNewDocument(() => { try { localStorage.clear(); } catch (e)
 await page.goto(`http://localhost:${port}/plans/${plan}/?shoot=1`);
 await page.waitForFunction(() => window.App && window.App.engine && window.__v, { timeout: 180000 });
 await page.addStyleTag({ content: '.ui, #gallery { display:none !important }' });
-await page.evaluate(() => { App.set('mode', 'orbit'); __v.invalidate(20); });
-await new Promise(r => setTimeout(r, 9000));
-await page.screenshot({ path: `${pre}-orbit.png` });
-await page.evaluate(() => { const V = __v, b = App.D.bounds || [0, 8, 0, 8]; const cx = (b[0] + b[1]) / 2, cz = (b[2] + b[3]) / 2; V.orbit.target.set(cx, 0, cz); V.camera.position.set(cx + 0.01, 14, cz + 0.01); V.orbit.update(); V.invalidate(20); });
-await new Promise(r => setTimeout(r, 7000));
-await page.screenshot({ path: `${pre}-dessus.png` });
-await page.evaluate(() => App.set('mode', 'plan'));
-await new Promise(r => setTimeout(r, 2000));
-await page.screenshot({ path: `${pre}-plan.png` });
+const NL = await page.evaluate(() => App.D.multi ? App.D.levels.length : 0);
+for (let k = 0; k < Math.max(1, NL); k++) {
+  const pk = NL ? `${pre}-n${k}` : pre;
+  await page.evaluate(k => { App.set('mode', 'orbit'); if (App.D.multi) { App.set('level', k); __v.defaultOrbitView(); } __v.invalidate(20); }, k);
+  await new Promise(r => setTimeout(r, 9000));
+  await page.screenshot({ path: `${pk}-orbit.png` });
+  await page.evaluate(k => { const V = __v, b = App.D.bounds || [0, 8, 0, 8], y = App.D.multi ? V.levels[k].y : 0; const cx = (b[0] + b[1]) / 2, cz = (b[2] + b[3]) / 2; V.orbit.target.set(cx, y, cz); V.camera.position.set(cx + 0.01, y + 14, cz + 0.01); V.orbit.update(); V.invalidate(20); }, k);
+  await new Promise(r => setTimeout(r, 7000));
+  await page.screenshot({ path: `${pk}-dessus.png` });
+  await page.evaluate(k => { App.set('mode', 'plan'); if (App.D.multi) App.set('level', k); }, k);
+  await new Promise(r => setTimeout(r, 2000));
+  await page.screenshot({ path: `${pk}-plan.png` });
+}
 console.log(JSON.stringify(errs.slice(0, 20)));
 await browser.close();

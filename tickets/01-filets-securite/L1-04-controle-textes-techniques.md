@@ -7,6 +7,8 @@
 ## Pourquoi
 Des textes techniques ou écrits pour l'IA atteignent l'écran : « .env », « Chrome sans écran », « Équipement 2 (shower) : … corrige le type », le nom de la bibliothèque 3D et de son CDN, l'identifiant technique en titre, des traces d'erreur (audit B9). La consigne est « aucun texte technique montré » et « tout défaut trouvé devient un contrôle automatique ». Ce ticket livre le contrôle ; L1-05 retire les fuites qu'il trouve (M0.4).
 
+État au 27/09/2026 : `pipeline/serveur.py` filtre chaque écriture d'`etat.json` (`masquer`, `montrable`, motif `TECHNIQUE`) et range les textes retirés dans `textes_masques` ; `accueil.html` ne montre `technique_erreur` qu'avec `?debug=1`. Ce filtre ne suffit pas. Essayé sur les fuites connues, il laisse passer « … dans le fichier .env », « Équipement 2 (shower) … », « Crédit API insuffisant … » et « Logement <identifiant> ». Il ne voit pas les textes du moteur (`ui.js`). Le contrôle de ce ticket reste à faire.
+
 ## À faire
 1. **Écrire `outils/textes.mjs`** (nouveau, puppeteer), qui s'appuie sur le serveur local déjà en marche (URL en paramètre, `http://localhost:8780` par défaut, comme `outils/vues.mjs`) et ne modifie ni `pipeline/` ni `moteur/`.
 2. **Visite** (`/plans/<id>/`) : pour chaque mode, `App.set('mode', …)` sur `plan`, `orbit`, `walk`, puis galerie, visionneuse et fiche ouvertes par leurs boutons, extraire :
@@ -24,10 +26,11 @@ Des textes techniques ou écrits pour l'IA atteignent l'écran : « .env », « 
    - jargon listé dans le prompt (`pipeline/lire.py`, constante `SYSTEM`, consigne de la fiche) : `SHAB`, `trémie`, `gaine déduite`… en mots entiers, avec une liste d'exceptions pour éviter les faux positifs (« nu » ne s'applique qu'en contexte).
 6. **Sortie** : liste des fuites (texte, endroit, motif), code de sortie non nul s'il y en a une. Option `--liste-blanche` pour un faux positif documenté, jamais pour une vraie fuite.
 7. **Jeu de cas** : une visite témoin saine (plan de référence rejoué par L1-02) et des cas abîmés exprès (`plan.json` sans titre, `etat.json` avec une trace d'erreur), pour vérifier que l'outil voit ce qu'il doit voir.
-8. **Brancher** l'outil dans `outils/rejouer_references.sh` (L1-02) comme étape de chaque rejeu.
+8. **Une seule liste de motifs** : `pipeline/serveur.py` (`montrable`) lit `outils/textes-interdits.json` à la place de son motif `TECHNIQUE`, ou un test vérifie que `TECHNIQUE` refuse chaque cas de la liste. Sur un plan à plusieurs niveaux, contrôler aussi chaque onglet de niveau (plan 2D, maquette), la visite à chaque niveau, les noms de niveaux (repli « Niveau k ») et l'état « niveaux non séparés » de la page de dépôt.
+9. **Brancher** l'outil dans `outils/rejouer_references.sh` (L1-02) comme étape de chaque rejeu.
 
 ## Critères d'acceptation
-- [ ] Sur l'état actuel du code, `node outils/textes.mjs` **échoue** sur les fuites connues : message du chargeur qui cite la bibliothèque 3D et son CDN (`moteur/ui.js`, fonction `armLoader`), titre par défaut « Logement <identifiant> » (`pipeline/lire.py`, fonction `complete`), détail technique sous l'erreur (`pipeline/accueil.html`, `#detail`), avertissement « Équipement … (shower) » dans `#warns`, messages de `expliquer` qui citent `.env` ou « Chrome sans écran ».
+- [ ] Sur l'état actuel du code, `node outils/textes.mjs` **échoue** sur les fuites connues : message du chargeur qui cite la bibliothèque 3D et son CDN (`moteur/ui.js`, fonction `armLoader`), titre par défaut « Logement <identifiant> » (`pipeline/lire.py`, fonction `complete`), détail technique sous l'erreur avec `?debug=1` (`pipeline/accueil.html`, `#detail` : signalé comme réservé à l'équipe, jamais atteint par un client), messages d'`expliquer` et de `lecture` qui citent « .env » ou « API », avertissement « Équipement … (shower) » dans `#warns`, messages de `expliquer` qui citent `.env` ou « Chrome sans écran ».
 - [ ] Il passe sur les 4 références une fois L1-05 livré (vérifié par L1-05).
 - [ ] Les cas abîmés de l'étape 7 sont tous détectés ; la visite saine ne produit aucun faux positif.
 - [ ] L'outil tourne sans appel payant et sans modifier `pipeline/` ni `moteur/`.

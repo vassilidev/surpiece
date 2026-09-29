@@ -17,7 +17,7 @@ Le promoteur achète des lots conformes à son tableau et sans défaut visible :
 4. **Calcul de l'écart** : `rooms[].area` recopie la surface du tableau du promoteur (prompt `SYSTEM` de `pipeline/lire.py`, l. 233 et 239). Comparer donc :
    - la surface mesurée sur le polygone de chaque pièce à celle du tableau, avec la tolérance déjà demandée à la lecture (2 %, gaines déduites, l. 242) ;
    - la surface totale du lot à `lots.surface_annoncee_m2` de la grille CSV (L10-02).
-   La règle exacte est vérifiée sur les plans de référence (L1-02, `evaluer.py`) avant d'être affichée.
+   La règle exacte est vérifiée sur les plans de référence (L1-02, `evaluer.py`) avant d'être affichée. Lot en duplex : écart par pièce, puis total par niveau et total du lot, comme la fiche découpée par niveau.
 5. **Demande de correction** : formulaire structuré (pièce choisie dans la liste des pièces du lot, `type_defaut` de SUIVI.md § 3.2, commentaire de 500 caractères au plus, filtré et échappé) ; table `corrections` (`lot_id`, `cycle`, `nature`, `piece`, `type_defaut`, `commentaire`, `demandee_par`, `statut`, `resolution`, `controle_ajoute`, `traitee_le`). `nature` est fixée par l'équipe au traitement : `defaut` (défaut de notre fait, hors cycles, R14) ou `modification` (demande du promoteur, comptée dans les 2 cycles), comme la propriété `nature` de `lot_correction_demandee` (SUIVI.md § 3.13).
 6. **Traitement par l'équipe** (administration) :
    - défaut de notre fait : correctif de code, contrôle automatique ajouté (champ `controle_ajoute` obligatoire pour clore), travail `rejouer` avec `ia_autorisee = false`, sans frais et sans consommer de cycle (R14), même après les 2 cycles ;
@@ -32,7 +32,7 @@ Le promoteur achète des lots conformes à son tableau et sans défaut visible :
 - [ ] Une surface volontairement fausse dans la grille CSV fait apparaître le libellé « Écart » ; aucune pièce sans écart n'en porte.
 - [ ] Un `membre` ne peut pas valider ; une autre organisation reçoit 404 (tests d'accès).
 - [ ] Une correction « défaut de notre fait » ne peut pas être close sans contrôle automatique lié, et ne décompte aucun cycle (test : défaut signalé au 3e tour → corrigé, sans frais).
-- [ ] Lots relivrés : visite de contrôle réussie, zéro défaut visible ; écrans et e-mails sans texte technique (L1-04).
+- [ ] Lots relivrés : visite de contrôle réussie avec tous ses contrôles bloquants (test d'immersion `etancheite`, baies recoupées avec la légende de leur plan `baie`, `garde-corps`, `menuiserie`, et pour un lot à plusieurs niveaux `escalier`, `vide`, `dalle`, `niveau`), zéro défaut visible ; écrans et e-mails sans texte technique (L1-04).
 - [ ] Outil local inchangé.
 
 ## Mesure
@@ -42,7 +42,7 @@ Le promoteur achète des lots conformes à son tableau et sans défaut visible :
 ## Points d'attention
 - **Tranché : R14.** Les cycles ne comptent que les demandes de modification du promoteur ; un défaut de notre fait est corrigé gratuitement, hors cycles. L'effet de la date limite (validation tacite ou non) reste à trancher par L10-01, avec l'avocat.
 - La durée d'écran n'est qu'une approximation du temps humain par lot ; SUIVI.md § 3.13 prévoit une saisie par l'équipe, qui reste la référence du seuil de 5 minutes (OFFRES.md § 8.11).
-- Un rejeu repasse la visite de contrôle et le rendu des images en SwiftShader (L5-11) : le délai de relivraison en dépend (L13-01).
+- Un rejeu repasse la visite de contrôle et le rendu des images en SwiftShader (L5-11), plus les panoramas 360° et le précalcul d'éclairage s'ils sont au contenu (L5-27, L5-28) : le délai de relivraison en dépend (L13-01).
 - Dépendances implicites : L5-17 (écrans de l'équipe), L5-14 (e-mails), L5-12 (vue propriétaire).
 - Les plans réels d'un promoteur ne vont ni en CI ni dans une capture de recette (CLAUDE.md) : tests sur le témoin seulement.
 

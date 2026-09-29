@@ -5,7 +5,7 @@
 | 5 · Socle en ligne | P0 | L (3 à 5 j) | L4-05, L5-02, L5-03, L5-15 | `service/` | À faire |
 
 ## Pourquoi
-Trois failles bloquantes de l'audit concernent les plans : `/api/plans` liste les plans de tout le monde (B1, `pipeline/serveur.py:541`), l'état, les visites et les actions sont ouverts à qui connaît l'identifiant (B2, `:534`, `:561`), et le dépôt est lu en mémoire par un serveur de développement (B5, `depot`, `:596`). Ce ticket crée les plans en base, l'envoi direct au stockage par URL signée, « Mes plans », la suppression, et cadre **toutes** les routes par organisation. Il expose aussi une vue réduite de l'état, sans aucun détail technique, pour l'écran « chantier ».
+Trois failles bloquantes de l'audit concernent les plans : `/api/plans` liste les plans de tout le monde (B1, `pipeline/serveur.py:645`), l'état, les visites et les actions sont ouverts à qui connaît l'identifiant (B2, `:638`, `:665`), et le dépôt est lu en mémoire par un serveur de développement (B5, `depot`, `:701`). Ce ticket crée les plans en base, l'envoi direct au stockage par URL signée, « Mes plans », la suppression, et cadre **toutes** les routes par organisation. Il expose aussi une vue réduite de l'état, sans aucun détail technique, pour l'écran « chantier ».
 
 ## À faire
 1. Migration `plans` (ARCHITECTURE § 4.2) :
@@ -47,7 +47,7 @@ Trois failles bloquantes de l'audit concernent les plans : `/api/plans` liste le
 - produit/ARCHITECTURE.md § 2.3 (étapes 1 et 2), § 4.1, § 4.2 (`plans`), § 5.1, § 5.7, § 6.1 (B1, B2, B5), § 6.4, M2.5.
 - produit/recherche/audit-code.md B1, B2, B3, B5, A10.
 - produit/PARCOURS.md § 1.6 (cas limites du dépôt), § 8.2 ; produit/MESSAGES.md § 7.1, § 7.4.
-- `pipeline/serveur.py:534` (`/api/etat`), `:541` (`/api/plans`), `:561` (`do_POST`), `:596` (`depot`), `:46` (`slug`).
+- `pipeline/serveur.py:638` (`/api/etat`), `:645` (`/api/plans`), `:665` (`do_POST`), `:701` (`depot`), `:46` (`slug`).
 
 ## Hors périmètre
 - Analyse, calibration, lancement et travaux : L5-06. Dépôt provisoire anonyme : L5-23.

@@ -2,13 +2,13 @@
 
 Document du 27/09/2026. Il tire des recherches de `produit/recherche/` (audit-code, hebergement, auth-paiement, suivi, juridique, marche, nom) et du code du dépôt une architecture cible, les décisions qui restent à prendre et un ordre de travail en tickets courts. Il ne répète pas ces recherches : il y renvoie.
 
-Aligné le 27/09/2026 sur les décisions de l'utilisateur (`PLAN.md` § 2.1) et sur les arbitrages qui en découlent. **Ordre de primauté** quand deux documents divergent : décisions de l'utilisateur, puis arbitrages, puis `OFFRES.md` pour les offres et les crédits (règles commerciales, ordre de consommation, validités, durées d'hébergement et de conservation), puis ce document pour la technique.
+Aligné le 27/09/2026 sur les décisions de l'utilisateur (`PLAN.md` § 2.1) et sur les arbitrages qui en découlent. Complété le même jour après le travail sur les logements à plusieurs niveaux et les décisions n° 11 à 15 (plusieurs niveaux, fluidité sur appareil modeste, qualité adaptative, précalcul serveur, mode 360°), puis la demande « s'inspirer des jeux vidéo » (décision n° 13, § 2.6). **Ordre de primauté** quand deux documents divergent : décisions de l'utilisateur, puis arbitrages, puis `OFFRES.md` pour les offres et les crédits (règles commerciales, ordre de consommation, validités, durées d'hébergement et de conservation), puis ce document pour la technique.
 
 Conventions :
 - **Décisions.** « Décision n° N » renvoie aux décisions de l'utilisateur du 27/09/2026 (`PLAN.md` § 2.1). D1 à D7 sont les questions techniques de ce document (§ 3).
 - **Tickets.** Les identifiants M0.1 à M5.6 du § 8.3 correspondent aux tickets `L*` du dossier `tickets/`, qui font foi pour le détail. La correspondance est donnée au § 8.3.
 - **Nom du produit.** « Sur Pièce » est un nom de travail, **non validé** (plan B : « Avant-Clés », voir `recherche/nom.md`). Il n'apparaît que dans ce paragraphe. Ailleurs, ce document dit « le produit » et écrit `<domaine>` pour le domaine (`surpiece.fr` si le nom est retenu). Dans le code, le nom et les domaines ne vivent que dans la configuration (`MARQUE_NOM`, `DOMAINE_PRINCIPAL`), jamais en dur : la marque blanche l'exige de toute façon. Changer de nom = changer ce paragraphe et ces deux valeurs.
-- **Références au code.** Les `fichier:ligne` ont été relevées le 27/09/2026 sur l'arbre de travail, que le travail sur les duplex modifie en parallèle : elles bougeront. `recherche/audit-code.md` cite le commit `fdc073e`. En cas d'écart, chercher le nom de la fonction.
+- **Références au code.** Les `fichier:ligne` ont été relevées le 27/09/2026 sur l'arbre de travail ; le travail sur les niveaux (fini le 27/09/2026, non commité) en a déplacé beaucoup, et certaines ont été relevées à nouveau ce jour-là : elles bougeront encore. `recherche/audit-code.md` cite le commit `fdc073e`. En cas d'écart, chercher le nom de la fonction.
 - **Marqueurs de ticket.** `[P]` : le ticket modifie `pipeline/`. `[M]` : il modifie `moteur/`. Ces tickets suivent les règles de coordination du § 8.1.
 - « Mesuré » renvoie à une mesure citée dans les recherches. « Estimation » signale un calcul ou un jugement non mesuré.
 
@@ -16,7 +16,7 @@ Conventions :
 
 ## 0. En bref
 
-**Architecture.** Un site vitrine statique, assemblé par un petit script Python sans dépendance (`outils/site.py`) ; une application web/API FastAPI sans état ; Postgres, qui porte aussi la file de travaux (Procrastinate), le grand livre de crédits et le catalogue d'offres ; un worker « lecture » en Python, qui exécute la chaîne actuelle sans la réécrire ; un worker « rendu » Chrome en SwiftShader dans un conteneur, sans secret, qui ne rend que les images d'aperçu (vue du dessus 3D découpée, plan 2D coté, 2 photos) ; un stockage objet S3 coupé en deux (privé et publié), avec un CDN devant la partie publiée ; des e-mails transactionnels ; la supervision. **La visite 3D se calcule dans le navigateur du client** (décision n° 5). Le tout tourne en Docker Compose et se déploie chez tout hébergeur (décision n° 2) : aucun composant propre à un hébergeur n'est obligatoire. Recommandation : tout en France chez un seul hébergeur, sauf l'appel au modèle (OpenRouter, sans conservation des données).
+**Architecture.** Un site vitrine statique, assemblé par un petit script Python sans dépendance (`outils/site.py`) ; une application web/API FastAPI sans état ; Postgres, qui porte aussi la file de travaux (Procrastinate), le grand livre de crédits et le catalogue d'offres ; un worker « lecture » en Python, qui exécute la chaîne actuelle sans la réécrire ; un worker « rendu » Chrome en SwiftShader dans un conteneur, sans secret, qui rend les images d'aperçu (vue du dessus 3D découpée, plan 2D coté, 2 photos), les panoramas 360° de chaque arrêt et les précalculs (éclairage peint sur les murs, éclairage par pièce, maquette compressée, itinéraires ; décisions n° 14 et 15) ; un stockage objet S3 coupé en deux (privé et publié), avec un CDN devant la partie publiée ; des e-mails transactionnels ; la supervision. **La visite 3D se calcule dans le navigateur du client** (décision n° 5). Elle doit être fluide sur un appareil modeste, grâce à une qualité adaptative, aux précalculs du serveur et à des optimisations inspirées des jeux vidéo : ne dessiner que ce qu'on voit, textures compressées (décisions n° 12 à 14, § 2.6). Le rendu en direct sur le serveur (streaming vidéo) est écarté pour son coût. Le tout tourne en Docker Compose et se déploie chez tout hébergeur (décision n° 2) : aucun composant propre à un hébergeur n'est obligatoire. Recommandation : tout en France chez un seul hébergeur, sauf l'appel au modèle (OpenRouter, sans conservation des données).
 
 **Décisions à prendre** (détail au § 3) :
 
@@ -31,14 +31,14 @@ Conventions :
 | D7 | Fournisseur IA | OpenRouter avec ZDR (consigne actuelle), plafonds des clés en second verrou (n° 3) ; décision à rouvrir avant le premier promoteur | Anthropic en direct ; routage UE d'OpenRouter | M5.1 (L10-02) |
 
 **Chemin de migration** (§ 8), chaque ticket livrable et testable, l'outil local toujours en état de marche. Entre parenthèses, les lots du dossier `tickets/` :
-0. Filets de sécurité et correctifs immédiats, sur l'outil local : jeu de référence rejouable sans payer, appartement témoin fictif (`references/temoin/`), contrôle « aucun texte technique », fuite de `.env` par les scripts Chrome (B6), rendu Chrome portable (lot 1).
-1. Cœur réutilisable : configuration passée en paramètre au lieu de `os.environ`, budgets IA, étapes découpées, catalogue de messages, moteur servi par nous et versionné, images d'aperçu rendues par le serveur, visite dans le navigateur du client avec repli. Le comportement local ne change pas (lot 4).
+0. Filets de sécurité et correctifs immédiats, sur l'outil local : jeu de référence rejouable sans payer, appartement témoin fictif (`references/temoin/`), contrôle « aucun texte technique », fuite de `.env` par les scripts Chrome (B6), rendu Chrome portable, diagnostic et corrections de la navigation, lecture réelle d'une duplex, coût de rendu des panoramas 360° (lot 1).
+1. Cœur réutilisable : configuration passée en paramètre au lieu de `os.environ`, budgets IA, étapes découpées, catalogue de messages, moteur servi par nous et versionné, images d'aperçu rendues par le serveur, visite dans le navigateur du client avec repli, qualité adaptative, précalcul d'éclairage et maquette compressée, panoramas 360° et leur visionneuse, culling par pièces et textures compressées (L4-12 à L4-18). Le comportement local ne change pas (lot 4).
 2. Socle en ligne et bêta fermée : FastAPI, Postgres, file, stockage S3, comptes, contrôle d'accès, grand livre, catalogue d'offres, budgets IA, rendu en conteneur, livraison en deux temps, publication, partages, e-mails, préproduction (lot 5), puis parcours particulier sans achat (lot 6).
 3. Paiement des particuliers : Stripe, déblocage de l'aperçu sans nouvelle lecture, parcours de rétractation (lot 8).
 4. Conseillers : abonnements, réglages par organisation, liens prospects (lot 9).
 5. Promoteurs et marque blanche : programmes et lots, import, intégration iframe, domaines des clients, SSO (lots 10 et 11).
 
-**Invariants.** L'outil local (`python3 pipeline/serveur.py`, `outils/finalise.sh`) marche à chaque ticket. Aucun fichier du promoteur ni aucune réponse IA n'est publié. Une page d'aperçu ne reçoit ni le moteur ni `plan.json`. Rien n'est publié sans visite de contrôle réussie. Aucun texte technique n'atteint l'écran. Chaque dollar d'IA est réservé avant d'être dépensé, et un plan coûte 3 $ d'IA au plus, toutes passes et relances confondues. Tout défaut trouvé devient un contrôle. Rien n'est promis avant d'avoir été validé plan par plan (les duplex restent refusés en production).
+**Invariants.** L'outil local (`python3 pipeline/serveur.py`, `outils/finalise.sh`) marche à chaque ticket. Aucun fichier du promoteur ni aucune réponse IA n'est publié. Une page d'aperçu ne reçoit ni le moteur ni `plan.json`. Rien n'est publié sans visite de contrôle réussie. Aucun texte technique n'atteint l'écran. Chaque dollar d'IA est réservé avant d'être dépensé, et un plan coûte 3 $ d'IA au plus, toutes passes et relances confondues. Tout défaut trouvé devient un contrôle. Rien n'est promis avant d'avoir été validé plan par plan. Les logements sur plusieurs niveaux sont pris en charge depuis le 27/09/2026 (L13-08, fait) ; en production, `niveaux_max = 2` : duplex acceptés, refus au-delà (décision n° 11, L4-08). Une page gratuite, même en 360°, ne reçoit ni le moteur, ni `plan.json`, ni la maquette précalculée.
 
 ---
 
@@ -50,12 +50,13 @@ Conventions :
 4. **Aucun texte technique à l'écran.** Les étapes renvoient un code ; un catalogue le traduit pour l'utilisateur ; le détail part au journal.
 5. **Budget avant dépense.** Les blocages sont d'abord dans notre logiciel : on sait qui consomme quoi (coût par organisation et par travail) et des plafonds bloquent par appel, par plan (3 $, toutes passes et relances confondues), par organisation, par jour pour le plan offert et globalement. Les plafonds des clés OpenRouter ne sont qu'un second verrou (décision n° 3, § 6.5).
 6. **Tout défaut devient un contrôle.** Chaque ticket livre le test qui empêche la régression.
-7. **Plan par plan.** Une capacité n'est ouverte en production qu'après validation sur des plans réels. Réglage `niveaux_max = 1` en production tant que les duplex ne sont pas validés.
+7. **Plan par plan.** Une capacité n'est ouverte en production qu'après validation sur des plans réels. Le 27/09/2026, l'utilisateur a levé la consigne « sans généraliser (duplex…) » (décision n° 11) : l'outil local lit les plans à plusieurs niveaux. Le même jour, il a confirmé : « oui le duplex on l'a géré c'est bon, c'était avant ça ». Réglage `niveaux_max` en production : 2, duplex acceptés (L4-08). Chaque cas encore non vu se valide à part, quand un tel plan est fourni : triplex (la valeur se relève alors), escalier quart tournant, entrée au niveau haut, plan en image. La lecture réelle d'une duplex par l'IA (L1-13) est une vérification utile, pas un préalable.
 8. **Données en UE**, sauf l'appel au modèle (OpenRouter, ZDR imposé, cartouche masqué à terme).
 9. **Portable.** Docker Compose et interfaces standard (S3 compatible, Postgres, SMTP, OIDC) : aucun composant propre à un hébergeur n'est obligatoire. Un service propre à un hébergeur (Serverless Jobs, GPU, Mac mini) n'entre que comme option, derrière une interface (décision n° 2).
-10. **Le serveur rend peu, le navigateur calcule la visite.** Côté serveur : la visite de contrôle et les images d'aperçu, en SwiftShader, par défaut et partout (décision n° 4). La visite débloquée se calcule dans le navigateur du client, à partir du moteur versionné et du `plan.json` filtré (décision n° 5).
+10. **Le serveur rend et précalcule, le navigateur affiche la visite.** Côté serveur, en SwiftShader, par défaut et partout (décision n° 4) : la visite de contrôle, les images d'aperçu, les panoramas 360° de chaque arrêt (décision n° 15), et les précalculs : éclairage peint sur les murs, éclairage par pièce, maquette compressée, itinéraires (décision n° 14). La visite débloquée s'affiche dans le navigateur du client, à partir du moteur versionné, du `plan.json` filtré et de ces précalculs (décision n° 5). Pas de rendu en direct sur le serveur (streaming vidéo) : écarté pour son coût.
 11. **Le verrou de l'offre gratuite est côté serveur.** Rien de la visite n'est envoyé pour un aperçu : ni moteur, ni `plan.json` (décision n° 6).
 12. **Offres en données.** Prix, contenus et durées vivent dans un catalogue en base, modifiable sans déploiement ; chaque achat garde la version d'offre achetée (droits acquis, décision n° 7).
+13. **Fluide sur un appareil modeste.** La visite doit l'être sur un portable ou un téléphone d'entrée de gamme, pas seulement sur une machine puissante (décision n° 12). Moyens : corrections de la navigation (L1-14, L1-15), qualité adaptative (textures, résolution, effets ; décision n° 13, L4-12), précalculs du serveur (L4-13, L4-14), optimisations inspirées des jeux vidéo (ne dessiner que ce qu'on voit, textures compressées à plusieurs résolutions, niveaux de détail, chargement progressif ; L4-17, L4-18, § 2.6), images par seconde et confort (clic, regard, déplacement) mesurés sur une matrice d'appareils (L4-10). Les images du serveur (contrôle, photos, panoramas) se rendent toujours en qualité fixe, pour rester comparables.
 
 ---
 
@@ -69,8 +70,8 @@ Conventions :
 | **Web/API** | Pages de l'application, API JSON, auth, catalogue d'offres (`GET /api/offres`), page d'aperçu (images seulement), partages, pages de visite, webhooks Stripe, URL signées, limites de débit, en-têtes de sécurité | routes de `serveur.py` (classe `H`, `:483`), écran « chantier » (`accueil.html:121-152`), calibration au clic (`accueil.html:216-269`) | FastAPI et uvicorn derrière Caddy ; pages rendues côté serveur (Jinja2) et JS sans étape de build, comme `accueil.html` | VM (Docker Compose) | base, sessions, Stripe, e-mails, signature S3. **Pas la clé OpenRouter** |
 | **File et état** | Travaux, étapes, verrous, reprises, tâches périodiques | remplace `RUNNING`, `SLOTS`, `etat.json` (`serveur.py:23-24`, `:74`) | Postgres géré et Procrastinate | Postgres géré | — |
 | **Worker lecture** | Analyse (isolée), qualification, calibration, lecture et relecture IA, murs, complément, visite de contrôle et réparations, marquage des images, publication | `analyse`, `qualifier`, `lecture`, `controle` (`serveur.py:132`, `:260`, `:289`, `:346`), `lire.read_plan` (`lire.py:1300`), `repare_moteur` (`lire.py:947`) | Python ; un sous-processus par travail, avec délai et limites mémoire ; Chrome figé pour le contrôle, en SwiftShader, lancé sans variable secrète | VM (même VM au lancement) | base, stockage privé, clés OpenRouter `prod-payant` et `prod-gratuit` (§ 6.5) |
-| **Worker rendu** | Images d'aperçu, dans l'ordre : vue du dessus 3D découpée, plan 2D coté, 2 photos (L4-09). Pas de galerie complète au lancement (L13-02) | `moteur/photos.mjs` | Node et Chrome for Testing figés, **SwiftShader**, service `rendu` du Compose, limité en processeur ; exécutant interchangeable derrière le contrat de rendu (accélérations optionnelles après le lancement : Serverless Jobs, Mac mini, GPU ; L13-01) | VM (même VM au lancement, D3) | **aucun secret durable** : URL signées et un jeton de rappel à usage unique par image |
-| **Navigateur du client** | Visite débloquée : marche libre, arrêts par pièce, maquette, plan 2D interactif, fiche complète ; repli sur les images et le plan 2D sans WebGL (L4-10) | `moteur/` (`engine.js`, `ui.js`) | moteur versionné servi par le CDN, `plan.json` filtré servi après contrôle du jeton | navigateur | aucun |
+| **Worker rendu** | Images d'aperçu, dans l'ordre : vue du dessus 3D découpée, plan 2D coté, 2 photos (L4-09) ; panoramas 360° de chaque arrêt (L4-15, L5-27) ; précalculs d'éclairage et maquette compressée, si leur place est retenue ici (L4-13, L4-14, L5-28). Pas de galerie complète au lancement (L13-02) | `moteur/photos.mjs` | Node et Chrome for Testing figés, **SwiftShader**, service `rendu` du Compose, limité en processeur ; exécutant interchangeable derrière le contrat de rendu (accélérations optionnelles après le lancement : Serverless Jobs, Mac mini, GPU ; L13-01) | VM (même VM au lancement, D3) | **aucun secret durable** : URL signées et un jeton de rappel à usage unique par image |
+| **Navigateur du client** | Visite débloquée : marche libre, arrêts par pièce, maquette, plan 2D interactif (un onglet par niveau), fiche complète, mode 360° d'arrêt en arrêt (L4-16) ; qualité adaptative (L4-12) ; culling par pièces, textures compressées et niveaux de détail (L4-17, L4-18, § 2.6) ; repli sans WebGL sur les images, le plan 2D et, si c'est vérifié et retenu, les panoramas (L4-10). Page gratuite : visionneuse 360° sans moteur, si l'offre gratuite devient le 360° (à décider, L6-13) | `moteur/` (`engine.js`, `ui.js`) | moteur versionné servi par le CDN, `plan.json` filtré servi après contrôle du jeton | navigateur | aucun |
 | **Stockage objet** | Espace privé, espace publié, sauvegardes dans une autre région | `plans/<id>/` | S3 compatible (MinIO en local) | Scaleway Object Storage, Paris (sauvegardes à Amsterdam ou Varsovie) | — |
 | **CDN** | Moteur versionné, bibliothèques, polices, photos publiées | — | Edge Services devant l'espace publié | Scaleway | — |
 | **E-mails** | Lien de connexion, visite prête, échec et crédit rendu, confirmations légales, reçus | remplace l'API Notification (`accueil.html:135-144`) | SMTP ou API | D4 | clé d'envoi (web et worker) |
@@ -116,12 +117,12 @@ Conventions :
 ### 2.3 Parcours d'une génération
 
 1. **Dépôt.** L'application crée la ligne `plans`, **sans empreinte** (`source_sha256` est calculée après l'envoi, à l'étape 2), et renvoie une URL signée d'envoi (PUT, 40 Mo au plus, 15 min). Le navigateur envoie le fichier **directement** au stockage privé : il ne transite plus par le processus web (B5 ; aujourd'hui il est lu en mémoire, `serveur.py:571`). Un dépôt sans compte passe par un dépôt provisoire anonyme de 24 h, analysé sans IA, puis rattaché au compte à la vérification de l'e-mail (L5-23). Pendant la bêta fermée, le dépôt est réservé aux invités (code d'invitation) ; l'ouverture à tous vient avec la vente (L8-07).
-2. **Analyse** (travail `analyse`, sans IA, gratuit pour l'utilisateur) : format reconnu à ses premiers octets (`format_fichier`, `serveur.py:52`), refus motivés, page la plus détaillée, échelle, niveaux, **empreintes** : SHA-256 du fichier reçu et empreinte de la page retenue, rendue à résolution fixe (§ 5.7). Elle tourne dans un sous-processus limité en mémoire et en temps (A10), sans clé IA. Un plan refusé ne consomme **aucun crédit**. Un plan à plusieurs niveaux est refusé en production (`niveaux_max = 1`, voir `niveaux_refus`, `serveur.py:218`). **Plusieurs lots** : aujourd'hui, l'analyse empilerait les pages d'un PDF de plusieurs lots comme des niveaux (`pages_niveaux`, `empiler`) ; en service, la qualification refuse donc « plusieurs lots » (L6-02), et seul l'import promoteur découpe un PDF de plusieurs lots, une page = un plan, avant l'analyse (L10-02).
-3. **Qualification puis calibration.** La qualification IA légère (environ 0,02 $, `recherche/audit-code.md` A9) passe **avant** toute demande de cote, comme dans le code actuel (`calibration_needed` appelle `qualifier` avant d'attendre la cote, `serveur.py:245`) : un refus (pas un plan, perspective, maison, plusieurs lots, plusieurs niveaux) ne décompte rien et n'oblige personne à caler une échelle pour rien (L6-02). Ensuite, calibration si l'échelle est incertaine : clic sur une cote connue, repris d'`accueil.html:216-269`. La validation passe dans le worker (aujourd'hui `extract()` tourne dans le fil de la requête HTTP).
+2. **Analyse** (travail `analyse`, sans IA, gratuit pour l'utilisateur) : format reconnu à ses premiers octets (`format_fichier`, `serveur.py:52`), refus motivés, page la plus détaillée, échelle, niveaux, **empreintes** : SHA-256 du fichier reçu et empreinte de la page retenue, rendue à résolution fixe (§ 5.7). Elle tourne dans un sous-processus limité en mémoire et en temps (A10), sans clé IA. Un plan refusé ne consomme **aucun crédit**. Depuis le 27/09/2026, l'analyse détecte les niveaux et les nomme d'après le plan (R+1, RDC…) ; elle les recale par corrélation des murs, reconnaît les escaliers et empile les pages d'un même logement. Des niveaux qui ne se séparent pas arrêtent le plan avant toute lecture payante (`niveaux_refus`, `serveur.py:271`). Au-delà de `niveaux_max` (2 en production, L4-08) : refus motivé. **Plusieurs lots** : l'analyse n'empile que des pages aux noms de niveau différents et, quand le numéro est écrit, du même lot (`pages_niveaux`, `numeros_lot`, `empiler`) ; un PDF de plusieurs lots sans numéro lisible peut encore être empilé ; en service, la qualification refuse donc « plusieurs lots » (L6-02), et seul l'import promoteur découpe un PDF de plusieurs lots, une page = un plan, avant l'analyse (L10-02).
+3. **Qualification puis calibration.** La qualification IA légère (environ 0,02 $, `recherche/audit-code.md` A9) passe **avant** toute demande de cote, comme dans le code actuel (`calibration_needed` appelle `qualifier` avant d'attendre la cote, `serveur.py:298`) : un refus (pas un plan, perspective, maison, plusieurs lots, plusieurs niveaux) ne décompte rien et n'oblige personne à caler une échelle pour rien (L6-02). Ensuite, calibration si l'échelle est incertaine : clic sur une cote connue, repris d'`accueil.html:216-269`. La validation passe dans le worker (aujourd'hui `extract()` tourne dans le fil de la requête HTTP).
 4. **Lancement**, qualification réussie et cote validée s'il en fallait une (la réservation vient après la cote validée, `OFFRES.md` § 6.4, arbitrage R24 de `PLAN.md`). Le type de génération n'est pas choisi par l'utilisateur : il suit le lot réservé (un crédit complet s'il en existe un, sinon le crédit aperçu, `OFFRES.md` § 6.3). Pour un plan payant, le particulier coche la renonciation au droit de rétractation (`recherche/juridique.md` § 1.2). Dans **une transaction** : vérification du solde, mouvement `reservation` au grand livre, réservation du budget IA du plan (3 $) sur les plafonds de l'organisation, du jour (plan offert) et global (§ 6.5), création du travail `generation`. L'index unique sur les travaux actifs garantit qu'un plan n'est jamais traité deux fois (remplace `reserver`, `serveur.py:444`).
 5. **Lecture** (file `lecture`) : `read_plan` avec la configuration résolue (§ 7) et un budget de 3 $, toutes passes et relances confondues. Chaque appel IA est écrit dans `appels_ia` **avant** toute exception. Réponses gardées dans l'espace privé (`reponse-ia.json`), ce qui permet de reprendre sans repayer.
-6. **Visite de contrôle** dans le worker lecture : `controle.mjs` en SwiftShader (13 à 14 s mesurés contre 5 à 6 s en Metal), jusqu'à 6 passages avec `repare_moteur` entre deux. Plus deux contrôles ajoutés : aucun texte technique, aucune violation de CSP ni requête sortante (§ 9.5). **Un échec bloque tout** : aucune image rendue ni montrée, rien de publié.
-7. **Images d'aperçu** (file `rendu`), seulement après un contrôle réussi : le worker lecture crée le préfixe de publication et confie à l'exécutant de rendu **une** tâche ordonnée (L4-09, L5-10) : `vue_dessus` (vue du dessus 3D découpée), `plan_2d` (plan 2D coté, capture sans WebGL, sans la superposition du plan du promoteur), `photo_1` (séjour), `photo_2` (chambre principale, à défaut la pièce principale suivante). Entrées par URL signées (`plan.json`, version du moteur) ; pour chaque image, une URL signée d'écriture et **un jeton de rappel à usage unique**. L'exécutant rappelle l'API dès qu'une image est écrite ; les vues écartées sont annoncées, l'exécutant ne réécrit jamais `plan.json` (aujourd'hui `photos.mjs` les retire de `plan.json`, `photos.mjs:98-101`).
+6. **Visite de contrôle** dans le worker lecture : `controle.mjs` en SwiftShader (13 à 14 s mesurés contre 5 à 6 s en Metal, avant les contrôles ajoutés le 27/09/2026, dont le test d'immersion `etancheite` : à remesurer, L5-10), jusqu'à 6 passages avec `repare_moteur` entre deux. Plus deux contrôles ajoutés : aucun texte technique, aucune violation de CSP ni requête sortante (§ 9.5). **Un échec bloque tout** : aucune image rendue ni montrée, rien de publié. Si des précalculs sont servis (maquette compressée, éclairage), la visite de contrôle porte sur eux : ce qui est publié est ce qui a été contrôlé (ordre fixé par L5-28).
+7. **Images d'aperçu** (file `rendu`), seulement après un contrôle réussi : le worker lecture crée le préfixe de publication et confie à l'exécutant de rendu **une** tâche ordonnée (L4-09, L5-10) : `vue_dessus` (vue du dessus 3D découpée), `plan_2d` (plan 2D coté, capture sans WebGL, sans la superposition du plan du promoteur), `photo_1` (séjour), `photo_2` (chambre principale, à défaut la pièce principale suivante). Entrées par URL signées (`plan.json`, version du moteur) ; pour chaque image, une URL signée d'écriture et **un jeton de rappel à usage unique**. L'exécutant rappelle l'API dès qu'une image est écrite ; les vues écartées sont annoncées, l'exécutant ne réécrit jamais `plan.json` (aujourd'hui `photos.mjs` les retire de `plan.json`, `photos.mjs:98-101`). Pour toute visite, les panoramas 360° de chaque arrêt suivent par la même voie : une tâche ordonnée, un jeton de rappel par panorama (L5-27). Leur place dans l'aperçu gratuit est à décider (décision n° 15, coût mesuré par L1-16).
 8. **Marquage**, image par image dès son rappel : contrôle de l'image (ni noire ni uniforme), mention « illustration non contractuelle » incrustée et métadonnées de contenu généré (A6, `recherche/juridique.md` § 5.1 et 5.4), en post-traitement Python, sans toucher au moteur ; puis copie vers l'espace publié et mise à jour de l'état public (L5-11).
 9. **Publication en deux temps** (§ 5.4), jamais sans contrôle réussi :
    - **plan complet** (achat, testeur, abonnement…) : la visite est publiée dès le contrôle réussi (`plan.json` filtré, `index.html` pointant vers `moteur/v<N>/`) ; les images s'ajoutent quand elles sont prêtes ;
@@ -141,8 +142,9 @@ Conventions :
 - Moteur, bibliothèques et polices viennent de `cdn.<domaine>/moteur/v<N>/` et `/vendor/`, immuables et mis en cache longtemps.
 - Le propriétaire voit sa visite privée sur la même origine, avec un **jeton propriétaire de courte durée** (5 min, un seul plan) émis par l'application. Lui seul peut afficher la superposition du plan du promoteur (B7), sauf accord prouvé du promoteur (L10-06). En mode simple, le moteur masque « Rendu photoréaliste de la vue » et la superposition partout ailleurs (L4-11, `[M]`, avant la bêta fermée).
 - La visite se calcule **dans le navigateur du client**. Sans WebGL ou après une perte de contexte, la page se replie sur les images et le plan 2D, avec un message du catalogue (L4-10).
+- Mode 360° : à chaque arrêt, la visite propose le panorama rendu par le serveur, avec passage d'arrêt en arrêt (L4-16). Maquette compressée et éclairage précalculé, s'ils sont retenus (L4-14, L5-28), sont servis comme `plan.json` : après contrôle du jeton, `Cache-Control: private, no-store`, jamais pour un aperçu.
 
-**Aperçu (plan offert).** `app.<domaine>/plans/<id>/apercu` (propriétaire, L6-05) et `visite.<domaine>/a/<jeton>` (lien d'aperçu à montrer à ses proches, 30 jours, `OFFRES.md` § 2.2, L5-13) : page rendue côté serveur, qui ne sert que les images publiées et les données de la fiche (surfaces, points à faire confirmer). **Aucune route ne sert `engine.js`, `/vendor/three`, `index.html` ni `plan.json` d'un aperçu** : le verrou est côté serveur, rien de la visite n'est envoyé (décision n° 6). Un aperçu interactif est une idée à tester plus tard (L13-03).
+**Aperçu (plan offert).** `app.<domaine>/plans/<id>/apercu` (propriétaire, L6-05) et `visite.<domaine>/a/<jeton>` (lien d'aperçu à montrer à ses proches, 30 jours, `OFFRES.md` § 2.2, L5-13) : page rendue côté serveur, qui ne sert que les images publiées et les données de la fiche (surfaces, points à faire confirmer). **Aucune route ne sert `engine.js`, `/vendor/three`, `index.html` ni `plan.json` d'un aperçu** : le verrou est côté serveur, rien de la visite n'est envoyé (décision n° 6). Décision de principe du 27/09/2026 (n° 15) : l'aperçu gratuit deviendrait probablement le 360° (panoramas rendus par le serveur, visionneuse sans moteur, navigation d'arrêt en arrêt) ; la visite 3D complète reste payante. À confirmer au vu du coût de rendu mesuré (L1-16) ; remplacement ou ajout à l'aperçu de R1 : à décider ; mise en service par L6-13. La vue du dessus manipulable reste une idée à tester (L13-03).
 
 ### 2.5 Domaines et origines
 
@@ -159,13 +161,40 @@ Les visites affichent des textes issus du plan déposé et de l'IA. Les servir s
 
 **Indexation.** La vitrine est indexable dès sa mise en ligne, une fois le nom déposé. Les pages de l'application, d'aperçu et de visite sont en `noindex`.
 
+### 2.6 Rendu dans le navigateur
+
+Demande de l'utilisateur du 27/09/2026, mot pour mot : « Il faut s'inspirer des jeux vidéos, des optimisations, différentes textures, ne pas charger ce qu'on ne voit pas etc.. non ? ». Réponse donnée et acceptée comme direction : oui (`PLAN.md` § 2.1, décision 13). Les détails techniques restent à mesurer.
+
+**Diagnostic du 27/09/2026** (L1-14), Mac M3 Retina : 16 à 18 i/s, 8 à 10 en marchant sur la duplex.
+- Le goulot est le remplissage de pixels : GTAO en pleine résolution = 47 à 51 % du temps d'image, MSAA 4× = 28 à 31 %, rapport de pixels 1,75.
+- La géométrie n'est pas le goulot : environ 220 appels de dessin, 220 000 triangles.
+- 6 lampes à ombre : chacune redessine la scène 6 fois pour son cube d'ombre.
+- Les murs de tout l'appartement sont fusionnés en un seul maillage par matériau : le navigateur ne peut rien écarter hors champ.
+- Les textures sont générées au chargement par le navigateur (bruit procédural).
+- Sur la duplex, masquer l'autre niveau hors de la volée et de la trémie fait gagner 12 %.
+
+**Leviers, dans l'ordre.** D'abord les corrections en cours : L1-15 (clic, regard, trajets, précompilation des shaders, sondes) et L4-12 (qualité adaptative). Ensuite :
+
+| Levier | Principe | Ticket |
+|---|---|---|
+| Ne dessiner que ce qu'on voit | culling par portails : pièce courante et pièces vues par les baies ouvertes ; pièces invisibles, autre niveau et leurs lampes éteints ; lampes à ombre seulement dans le champ | L4-17 |
+| Maquette découpée | un groupe par pièce et par niveau, et non plus un maillage par matériau pour tout l'appartement, pour que le tri hors champ (frustum culling) serve | L4-17 |
+| Textures | compressées (KTX2/Basis), avec mipmaps, à plusieurs résolutions choisies selon l'appareil (palier de L4-12), servies avec le moteur versionné (L4-06) au lieu d'être générées au chargement | L4-18 |
+| Lumière précalculée | éclairage peint par le serveur (lightmaps) à la place des ombres et de l'occlusion ambiante calculées à chaque image (décision 14) | L4-13 |
+| Niveaux de détail | versions simplifiées des équipements vus de loin ; gain à mesurer d'abord (la géométrie n'est pas le goulot) | L4-18 |
+| Chargement progressif | la pièce d'entrée d'abord ; en 360°, seulement les panoramas des arrêts voisins | L4-14, L4-16 |
+
+**Critère commun** : 60 i/s en simulation d'appareil modeste (processeur ralenti ×4, écran non Retina) et de téléphone, mesurés par le banc de L1-14, pas seulement sur le Mac de l'utilisateur ; puis vérifiés sur appareils réels (L4-10). Les photos (mode `?shoot=1`), la visite de contrôle et ses tests restent inchangés : ils voient toute la maquette, en qualité fixe.
+
+**À mesurer ou à décider** : gain réel de chaque levier ; rattachement des murs mitoyens à une pièce ; nombre de lampes à ombre actives ; format et résolutions des textures ; transcodeur et CSP (§ 6.2) ; place de L4-17 et L4-18 avant ou après la bêta fermée (`PLAN.md` § 2.2).
+
 ---
 
 ## 3. Décisions à prendre
 
 Chaque décision est présentée avec la recommandation, les alternatives, ce qui ferait basculer, la réversibilité et le ticket qu'elle bloque.
 
-Les décisions de l'utilisateur du 27/09/2026 (`PLAN.md` § 2.1) en ont déjà tranché une partie : Docker Compose et S3 (n° 2, D2), blocages côté logiciel puis plafonds des clés (n° 3, § 6.5), rendu SwiftShader partout (n° 4, D3 tranchée), aperçu rendu par le serveur et visite calculée dans le navigateur (n° 5 et 6), catalogue d'offres modifiable (n° 7), Umami auto-hébergé (n° 9). D1 reste ouverte (n° 8). Les tickets de décision sont L0-02 (D1) et L0-03 (D2 à D7).
+Les décisions de l'utilisateur du 27/09/2026 (`PLAN.md` § 2.1) en ont déjà tranché une partie : Docker Compose et S3 (n° 2, D2), blocages côté logiciel puis plafonds des clés (n° 3, § 6.5), rendu SwiftShader partout (n° 4, D3 tranchée), aperçu rendu par le serveur et visite calculée dans le navigateur (n° 5 et 6), catalogue d'offres modifiable (n° 7), Umami auto-hébergé (n° 9). D1 reste ouverte (n° 8). Décisions prises ensuite le même jour : n° 11 (logements sur plusieurs niveaux, consigne « sans généraliser » levée), n° 12 (fluidité sur appareil modeste), n° 13 (qualité adaptative), n° 14 (précalcul côté serveur, streaming vidéo écarté), n° 15 (mode 360° à chaque arrêt). Les tickets de décision sont L0-02 (D1) et L0-03 (D2 à D7).
 
 ### D1. Authentification
 
@@ -216,7 +245,7 @@ Règles qui rendent le fournisseur remplaçable :
 | VM : Caddy, FastAPI, worker lecture, visite de contrôle, rendu des images d'aperçu, Umami | PLAY2-MICRO (4 vCPU, 8 Go), Docker Compose | environ 46 € |
 | Base et file | Postgres géré DB-DEV-S | environ 12 € |
 | Stockage et CDN | Object Storage et Edge Services | environ 1 à 13 € selon le palier d'Edge Services |
-| Rendu des images d'aperçu | conteneur SwiftShader sur la même VM (D3) ; capacité à mesurer au T0 (L5-11, L5-22) | 0 € de plus tant que la VM suffit |
+| Rendu des images d'aperçu, des panoramas 360° et des précalculs | conteneur SwiftShader sur la même VM (D3) ; capacité à mesurer au T0 (L5-11, L5-22) et pour les panoramas (L1-16) | VM plus grosse ou séparée si la mesure l'impose ; 0 € de plus tant que la VM suffit |
 | E-mails, supervision | TEM, Sentry Developer, surveillance gratuite | environ 0 € |
 | **Total** | | **environ 60 à 70 €/mois** (somme des lignes, estimation) ; plus si la mesure impose une VM plus grosse ou séparée pour le rendu (D3) |
 
@@ -238,6 +267,9 @@ L'IA coûte à côté 116 à 195 $ pour 100 plans : l'enjeu de coût est le plaf
 - La **visite de contrôle**, dans le worker lecture : elle est courte et s'imbrique dans la boucle de réparation Python.
 - Puis les **images d'aperçu**, dans cet ordre : vue du dessus 3D découpée (affichée en direct sur l'écran d'attente dès qu'elle existe), plan 2D coté, 2 photos (séjour, puis chambre principale ou, à défaut, la pièce principale suivante). Service `rendu` du Compose, sans secret, contrat de rendu (L5-10).
 - **Pas de galerie complète au lancement** (une dizaine de photos, plus tard : L13-02). La visite 3D se calcule dans le navigateur du client ; au pire, la visite est livrée sans photos.
+- **Panoramas 360°** de chaque arrêt, pour toutes les visites (décision n° 15) : environ 10 par plan (ordre de grandeur donné pour un plan gratuit). Temps de rendu en SwiftShader inconnu : à mesurer et à provisionner (L1-16, L4-15).
+- **Précalculs** (décision n° 14) : éclairage peint sur les murs, éclairage par pièce, maquette compressée, itinéraires. Méthode et durée à mesurer (L4-13, L4-14).
+- Rendu en direct sur le serveur (streaming vidéo) : écarté pour son coût.
 
 **Mesures du 27/09/2026** (Mac M3, `recherche/hebergement.md` § 2.1) :
 - 11 photos d'un T2 : **60 s en Metal, 684 s en SwiftShader (× 11,4)** ;
@@ -248,7 +280,7 @@ L'IA coûte à côté 116 à 195 $ pour 100 plans : l'enjeu de coût est le plaf
 
 Estimation pour les 4 images d'aperçu : environ 4 à 5 min sur M3, 1,5 à 2 fois plus sur des vCPU de serveur. À remplacer par la mesure T0 en conteneur (L5-11), qui fixe aussi le délai affiché : aucun délai n'est écrit en dur d'ici là.
 
-**Place du rendu sur la VM.** Un rendu SwiftShader qui occupe près de 5 cœurs peut saturer une VM de 4 vCPU qui porte aussi le web et la lecture. Options : (a) service `rendu` sur la même VM, limité à un travail à la fois et en processeur ; (b) VM plus grosse ; (c) VM de rendu séparée ; (d) exécutant externe optionnel. Recommandation : (a), avec un seuil de bascule écrit après la mesure T0 (L0-03, L5-22).
+**Place du rendu sur la VM.** Un rendu SwiftShader qui occupe près de 5 cœurs peut saturer une VM de 4 vCPU qui porte aussi le web et la lecture. Options : (a) service `rendu` sur la même VM, limité à un travail à la fois et en processeur ; (b) VM plus grosse ; (c) VM de rendu séparée ; (d) exécutant externe optionnel. Recommandation : (a), avec un seuil de bascule écrit après la mesure T0 (L0-03, L5-22). Les panoramas et le précalcul multiplient le temps de rendu par plan : seuil à revoir sur la mesure de L1-16.
 
 **Essai M2.7a.** Il ne décide plus rien : il devient une **mesure informative** (durée de chaque image et de la visite de contrôle en SwiftShader sur la VM cible, L5-10).
 
@@ -488,7 +520,7 @@ create table etapes (
   id uuid primary key,
   travail_id uuid not null references travaux,
   nom text not null,                      -- 'analyse', 'qualification', 'lecture', 'relecture', 'arbitrage', 'murs',
-                                          -- 'complement', 'controle', 'reparation', 'photos', 'marquage', 'publication'
+                                          -- 'complement', 'controle', 'reparation', 'precalcul', 'photos', 'panoramas', 'marquage', 'publication'
   tentative smallint not null default 1,
   etat text not null, debut_le timestamptz, fin_le timestamptz, duree_ms int,
   code_erreur text,
@@ -531,7 +563,7 @@ create table offres_versions (            -- immuable une fois publiée : change
   credits jsonb,                          -- [{type_plan, quantite}]
   validite_credits_jours int,             -- valeurs d'OFFRES § 6.2
   hebergement_mois int,                   -- aperçu 6, visite 24 au lancement (OFFRES § 2.2, § 2.4)
-  contenu jsonb,                          -- liste fermée : visite, maquette_interactive, plan_interactif, photos (nombre), ...
+  contenu jsonb,                          -- liste fermée : visite, maquette_interactive, plan_interactif, photos (nombre), visite_360, ...
   conditions jsonb,                       -- par exemple « dans les 12 mois d'un premier achat »
   periode_prix text,                      -- tests de prix par périodes seulement, jamais par personne (OFFRES § 9.1)
   stripe_price_id text,                   -- prix Stripe créé à neuf pour chaque version payante (jamais modifié)
@@ -616,7 +648,8 @@ create table publications (
   type text not null check (type in ('apercu', 'complete')),
                                           -- 'apercu' : images et fiche seulement ; ni index.html ni plan.json servis
                                           -- (verrou côté serveur, § 5.3). Déblocage : nouvelle ligne 'complete', même travail
-  images jsonb not null default '[]',     -- images disponibles, dans l'ordre : [{type, rang, cle}] ; alimenté image par image
+  images jsonb not null default '[]',     -- images disponibles, dans l'ordre : [{type, rang, cle, niveau}] ; type : vue_dessus, plan_2d,
+                                          -- photo, panorama (L5-27) ; niveau pour un plan à plusieurs niveaux ; alimenté image par image
   heberge_jusqu_au timestamptz not null,  -- durée de la version d'offre du lot consommé (droits acquis, OFFRES § 2.2, § 2.4)
   superposition boolean not null default false,   -- plan du promoteur : seulement avec autorisation prouvée
   controle jsonb,                         -- résumé du verdict de la visite de contrôle
@@ -795,7 +828,8 @@ prive/
     analyse/     extract.json, page.png, calibration.png, plan-<…>.png (superposition), fichiers de niveaux
     ia/          reponse-brute*.txt, reponse-ia.json, relecture-ia.json, appels-ia.json, reponse-ia.rejetee.json
     travaux/<travail_id>/
-                 plan.json (brouillon), rapport.json, controle.json, images-brutes/, journal.txt
+                 plan.json (brouillon), rapport.json, controle.json, images-brutes/, panoramas-bruts/,
+                 precalcul/ (maquette compressée, éclairage, itinéraires ; gardés avec la publication d'une visite, sous le même régime que plan.json, L5-28), journal.txt
     publications/<publication_id>/
                  plan.json (filtré ; servi par l'application après contrôle du jeton, pour une visite seulement ;
                  pour un aperçu, gardé privé jusqu'au déblocage)
@@ -814,7 +848,7 @@ publie/
   p/<préfixe>/     photos/vue_dessus-jour.jpg, photos/plan_2d.png, photos/<vue>-<moment>.jpg (marquées), vignette.jpg
 ```
 
-Au lancement, un préfixe contient au plus les 4 images d'aperçu (vue du dessus, plan 2D, 2 photos), copiées une à une dès qu'elles sont marquées. La galerie complète viendra plus tard (L13-02).
+Au lancement, un préfixe contient les images d'aperçu : vue du dessus, plan 2D, 2 photos (une vue du dessus et un plan 2D par niveau pour un duplex, nombre à confirmer en L0-04). Dès L5-27, il contient aussi les faces des panoramas 360° (`pano/<arrêt>/<face>.jpg`, nom proposé). Chaque image est copiée dès qu'elle est marquée. La galerie complète viendra plus tard (L13-02).
 
 Le préfixe fait 128 bits aléatoires ; il ne dit rien du plan ni du client. Retirer une publication (révocation de tous ses partages, suppression, fin de contrat) efface ses objets et purge le CDN.
 
@@ -824,7 +858,7 @@ Le préfixe fait 128 bits aléatoires ; il ne dit rien du plan ni du client. Ret
 - Les **réponses et journaux de l'IA** : `reponse-*`, `relecture-ia.json`, `appels-ia.json`, et les coûts.
 - `extract.json`, `rapport.json`, `controle.json`, `etat.json`, le nom du fichier déposé.
 - Dans `plan.json` : la clé `underlay`, et tout champ que le moteur ne lit pas. La liste blanche des clés est tirée de `moteur/SCHEMA.md` et vérifiée par un test : une clé inconnue fait échouer la publication plutôt que de fuir.
-- **Pour un aperçu (plan offert) : rien de la visite.** Ni `index.html`, ni `plan.json`, ni le moteur, sur aucune route. La page d'aperçu est rendue côté serveur avec les images publiées et les seules données de la fiche (surfaces, points à faire confirmer), échappées et passées au filtre des textes. **Contrôle automatique** : une page d'aperçu qui charge `engine.js`, `/vendor/three` ou `plan.json`, ou qui affiche un texte technique, fait échouer la publication (`OFFRES.md` § 2.2, L6-05).
+- **Pour un aperçu (plan offert) : rien de la visite.** Ni `index.html`, ni `plan.json`, ni le moteur, sur aucune route. La page d'aperçu est rendue côté serveur avec les images publiées et les seules données de la fiche (surfaces, points à faire confirmer), échappées et passées au filtre des textes. **Contrôle automatique** : une page d'aperçu qui charge `engine.js`, `/vendor/three` ou `plan.json`, ou qui affiche un texte technique, fait échouer la publication (`OFFRES.md` § 2.2, L6-05). En 360° (si retenu pour l'offre gratuite, L6-13), la page ne reçoit que les faces des panoramas et la liste des arrêts (pièce, niveau, arrêts voisins), jamais la géométrie ni la maquette précalculée ; le même contrôle automatique s'applique.
 
 ### 5.4 Publication
 
@@ -912,11 +946,11 @@ connect-src 'self' https://cdn.<domaine>; font-src https://cdn.<domaine>; worker
 object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors <liste>
 ```
 
-- Ces deux politiques sont des points de départ. **La visite de contrôle relève chaque violation de CSP** (événement `securitypolicyviolation`) **et chaque requête vers une origine non prévue, et échoue s'il y en a.** Les besoins réels du moteur sont ainsi mesurés et non devinés. Exemple : `ui.js` écrit des attributs `style` par `innerHTML` (`ui.js:363`, `:366`), ce qui peut demander un `style-src-attr 'unsafe-inline'` provisoire.
+- Ces deux politiques sont des points de départ. **La visite de contrôle relève chaque violation de CSP** (événement `securitypolicyviolation`) **et chaque requête vers une origine non prévue, et échoue s'il y en a.** Les besoins réels du moteur sont ainsi mesurés et non devinés. Exemple : `ui.js` écrit des attributs `style` par `innerHTML` (`ui.js:363`, `:366`), ce qui peut demander un `style-src-attr 'unsafe-inline'` provisoire. De même, un décodeur de maquette compressée ou un transcodeur de textures KTX2 en WebAssembly (L4-14, L4-18) peut demander `'wasm-unsafe-eval'` : mesuré par la visite de contrôle, pas deviné.
 - Les rapports de violation en production vont à `/api/csp` et déclenchent une alerte s'ils augmentent.
 - En plus : `X-Robots-Tag: noindex, nofollow` ; `Referrer-Policy: no-referrer` (le jeton est dans l'URL) ; `Cache-Control: private, no-store` pour `index.html` et `plan.json`.
 
-**Aperçu (`app.<domaine>/plans/<id>/apercu`, `visite.<domaine>/a/<jeton>`).** Même base que la visite, mais sans `cdn.<domaine>/moteur/` ni `/vendor/` dans `script-src` : la page ne charge aucun script du moteur. `noindex`, `no-referrer`. Le contrôle de publication vérifie qu'aucune requête ne part vers `engine.js`, `/vendor/three` ou `plan.json` (§ 5.3).
+**Aperçu (`app.<domaine>/plans/<id>/apercu`, `visite.<domaine>/a/<jeton>`).** Même base que la visite, mais sans `cdn.<domaine>/moteur/` ni `/vendor/` dans `script-src` : la page ne charge aucun script du moteur. Si le 360° devient l'offre gratuite, seule la visionneuse 360° y est autorisée, par son adresse exacte (L4-16, L5-27). `noindex`, `no-referrer`. Le contrôle de publication vérifie qu'aucune requête ne part vers `engine.js`, `/vendor/three` ou `plan.json` (§ 5.3).
 
 **`frame-ancestors` par client.**
 - Par défaut `'none'` : un lien de conseiller n'a pas à être intégré.
@@ -1000,7 +1034,7 @@ Dans la CI, selon la règle « tout défaut devient un contrôle » :
 - webhooks Stripe non signés ou rejoués refusés ;
 - en-têtes présents sur chaque type de réponse ;
 - `/.env`, `/plans/…/reponse-ia.json` et `/…/page.png` inaccessibles par toutes les voies (application, CDN, scripts Chrome) ;
-- pour un aperçu : `index.html`, `plan.json` et `engine.js` répondent 404 par toutes les voies avant le déblocage ;
+- pour un aperçu : `index.html`, `plan.json`, `engine.js`, la maquette et l'éclairage précalculés répondent 404 par toutes les voies avant le déblocage, y compris sur une page gratuite en 360° ;
 - jeton de rappel de rendu rejoué, expiré ou falsifié : refusé ;
 - aucun secret dans les journaux produits par les tests.
 
@@ -1045,11 +1079,13 @@ class ConfigRendu:
     photos_max: int             # 2 au lancement ; galerie complète plus tard (L13-02)
     mode_simple: bool           # D.simple (ui.js:261, :387, :632)
     mention: str                # texte incrusté, non modifiable par les clients
+    panoramas: bool = True      # panoramas 360° à chaque arrêt, toutes les visites, dès que L4-15 est livré
 
 @dataclass(frozen=True)
 class ConfigProduit:
     type_plan: str              # 'apercu' | 'complet' (suit le lot réservé)
-    niveaux_max: int = 1        # duplex refusés tant qu'ils ne sont pas validés
+    niveaux_max: int = 2        # production : 2, duplex acceptés (décision n° 11, L4-08) ;
+                                # local : sans limite
     superposition_autorisee: bool = False
 
 @dataclass(frozen=True)
@@ -1090,19 +1126,19 @@ Les réglages de marque sont servis à côté de la visite (`reglages.json`), **
 
 ## 8. Chemin de migration
 
-### 8.1 Coordination avec le travail sur les duplex
+### 8.1 Coordination avec le travail sur les niveaux
 
-Au 27/09/2026, un autre agent modifie `pipeline/extract.py`, `lire.py`, `murs.py`, `serveur.py`, `accueil.html` et crée `pipeline/niveaux.py` (arbre de travail non validé).
+Le travail sur les logements à plusieurs niveaux est terminé depuis le 27/09/2026 dans l'arbre de travail. 23 fichiers sont modifiés, dont `pipeline/extract.py`, `lire.py`, `murs.py`, `serveur.py`, `accueil.html`, `moteur/engine.js`, `ui.js`, `controle.mjs`, `photos.mjs`, et `pipeline/niveaux.py` est créé. Il est validé sur la duplex 3081-613 avec une lecture préparée à la main ; les 4 plans à un niveau sortent à l'identique. Il n'est pas encore commité.
 
 Règles :
 1. **Ajouter plutôt que modifier.** Les nouveaux éléments vont dans `service/` (application et workers), `outils/`, ou de nouveaux fichiers de `pipeline/` (`etapes.py`, `messages.py`, `config.py`, `marquage.py`). Les tickets `[P]` et `[M]` sont de **petits diffs isolés**, sur une branche courte.
-2. **Les refontes mécaniques** (M1.1 configuration, M1.4 étapes ; L4-01, L4-04) touchent `lire.py` et `serveur.py` partout. Elles se font **après la fusion du travail sur les duplex**, ou par le même agent, jamais en parallèle.
+2. **Les refontes mécaniques** (M1.1 configuration, M1.4 étapes ; L4-01, L4-04) touchent `lire.py` et `serveur.py` partout. Elles se font **après le commit du travail sur les niveaux**, jamais en parallèle d'un autre chantier sur ces fichiers.
 3. **Critère de fusion commun à tout ticket `[P]` ou `[M]` :**
    - rejeu sans IA des plans de référence (M0.1, L1-02) avec des `plan.json` identiques, ou des écarts voulus et justifiés, `evaluer.py` au moins égal à la référence ;
    - visite de contrôle réussie ;
    - contrôle des textes réussi ;
    - test de fumée de l'outil local réussi.
-4. **`niveaux.py` n'est pas touché par la migration.** Le service applique `niveaux_max = 1` et ne communique pas sur les duplex tant qu'ils ne sont pas validés sur des plans réels.
+4. **`niveaux.py` n'est pas touché par la migration.** Le service applique `niveaux_max = 2` (duplex acceptés, décision n° 11) ; le périmètre affiché dit « un ou deux niveaux (duplex) ».
 5. Aucun ticket ne généralise un comportement à des plans inconnus.
 
 ### 8.2 Correspondance entre le code actuel et la cible
@@ -1113,7 +1149,9 @@ Règles :
 | `slug` (`serveur.py:46`) | UUID ; jeton de partage séparé |
 | `format_fichier` (`:52`), `ouvrir_image` (`:112`), `choisir_page` (`:126`) | repris tels quels dans l'étape d'analyse |
 | `state`, `_state`, `lire_etat` (`:67-97`), `etat.json` | interface `Suivi` : `SuiviEtatJson` en local (comportement actuel), `SuiviBase` en service (`travaux`, `etapes`) |
-| `technique` (`:100`), `technique_erreur` | `etapes.detail_technique`, journal seulement |
+| `technique` (`:134`), `technique_erreur` | `etapes.detail_technique`, journal seulement |
+| `masquer`, `montrable` (`:106-:132`) : filtre automatique des textes techniques à chaque écriture d'`etat.json` (27/09/2026) | repris par `SuiviEtatJson` (L4-04) ; filet derrière le catalogue de messages (L4-05) |
+| `pipeline/niveaux.py` (27/09/2026) ; `texte_niveaux`, `nom_niveau`, `fait_niveaux`, `niveaux_refus` (`:243-:271`) | appelés tels quels par `analyser` et `lire` (L4-04) ; refus au-delà de `niveaux_max` (L4-08) |
 | `analyse`, `qualifier`, `lecture`, `controle`, `photos` (`:132`, `:260`, `:289`, `:346`, `:378`) | `pipeline/etapes.py`, appelées par `serveur.py` en local et par les workers |
 | `expliquer` (`:396`) | `pipeline/messages.py` : code, puis texte du catalogue |
 | `run` (`:419`), `SLOTS`, fils de fond | local : inchangé ; service : chaîne de tâches Procrastinate (files `analyse`, `lecture`, `rendu`) |
@@ -1145,7 +1183,7 @@ Charges : estimations pour une personne, hors imprévus. Chaque ticket est livra
 
 | Ticket | Contenu | Touche | Accepté quand |
 |---|---|---|---|
-| **M0.1** Jeu de référence rejouable · L1-02 | `outils/rejouer_references.sh` (nouveau). Les 4 plans réels (432, D201, Soline, lot 11) sont copiés hors du dépôt (dossier local de l'équipe, plus tard `references-privees/`) avec leur source, `extract.json` et `reponse-ia.json`. Le script rejoue chaque plan sans IA dans un dossier temporaire, lance `evaluer.py` (432, D201), la visite de contrôle et le rendu de 3 vues fixes, puis enregistre une ligne de base | — | Tourne clés vidées, sans aucun appel payant ; produit un tableau (ouvertures, équipements, contrôle, écart d'image) ; la ligne de base est enregistrée |
+| **M0.1** Jeu de référence rejouable · L1-02 | `outils/rejouer_references.sh` (nouveau). Les 4 plans réels à un niveau (432, D201, Soline, lot 11), plus la duplex 3081-613 avec sa lecture préparée à la main (plan de promoteur, jamais versionné), sont copiés hors du dépôt (dossier local de l'équipe, plus tard `references-privees/`) avec leur source, `extract.json` et `reponse-ia.json`. Le script rejoue chaque plan sans IA dans un dossier temporaire, lance `evaluer.py` (432, D201), la visite de contrôle et le rendu de 3 vues fixes, puis enregistre une ligne de base | — | Tourne clés vidées, sans aucun appel payant ; produit un tableau (ouvertures, équipements, contrôle, écart d'image) ; la ligne de base est enregistrée |
 | **M0.2** Appartement témoin fictif · L1-03, L1-12 | Un plan de vente **créé par nous** (T2 ou T3 sur un niveau, PDF vectoriel), avec son relevé `plan.json` fait à la main et sa lecture gardée, **versionné** dans `references/temoin/`. Il sert à la CI, à la démonstration et aux visuels marketing | — | `finalise.sh` passe ; contrôle réussi ; utilisable en CI sans aucun fichier de promoteur |
 | **M0.3** Scripts Chrome fermés (B6) · L1-01 | `listen(0, '127.0.0.1')` ; liste blanche `plans/<id>/` et `moteur/` | [M] | `curl` sur `/.env` et sur un autre plan → 404 ; le port n'écoute que sur 127.0.0.1 ; rejeu M0.1 identique |
 | **M0.4** Contrôle « aucun texte technique », version 1 · L1-04 | `outils/textes.mjs` (nouveau) : ouvre la visite, parcourt chaque mode (galerie, fiche, plan, maquette, visite), extrait le texte visible, lit les champs texte de `plan.json` et les messages de `etat.json`. Motifs interdits : `.env`, `Error`, `Exception`, `Traceback`, `json`, `undefined`, `NaN`, `null`, `[object`, URL, chemins de fichier, identifiants techniques (`[a-z0-9-]+-[0-9a-f]{8}`), coordonnées `(1.23 ; 4.56)`, noms anglais des types d'équipement (`shower`, `bath`, `sink`…), jargon listé dans le prompt (`lire.py:239`) | — | Échoue sur les fuites connues (`ui.js:724`, titre par défaut `lire.py:1263`) ; passe une fois M0.5 livré ; chaque nouvelle fuite trouvée ajoute un motif |
@@ -1160,17 +1198,17 @@ Tickets du lot 1 sans équivalent M : L1-10 (masquage du cartouche avant l'envoi
 
 | Ticket | Contenu | Touche | Accepté quand |
 |---|---|---|---|
-| **M1.1** Objet de configuration (B10) · L4-01 | `pipeline/config.py` ; `read_plan` et `call` reçoivent `config` ; `Config.depuis_env()` ; rechargement de modules derrière un drapeau | [P], **après la fusion des duplex** | Rejeu M0.1 identique ; `grep os.environ pipeline/lire.py` ne trouve plus que `depuis_env` ; l'outil local marche avec le `.env` comme avant |
+| **M1.1** Objet de configuration (B10) · L4-01 | `pipeline/config.py` ; `read_plan` et `call` reçoivent `config` ; `Config.depuis_env()` ; rechargement de modules derrière un drapeau | [P], **après le commit du travail sur les niveaux** | Rejeu M0.1 identique ; `grep os.environ pipeline/lire.py` ne trouve plus que `depuis_env` ; l'outil local marche avec le `.env` comme avant |
 | **M1.2** Journal fiable et budget par plan (B8, A7) · L4-02 | L'appel est journalisé **avant** toute exception (erreur au milieu du flux, `lire.py:150-164`) ; coût de la qualification compté dans le total ; le cumul n'est plus remis à zéro par `ecarter_lecture` (`serveur.py:251`) ; objet `Budget` | [P] | Tests avec un faux serveur OpenRouter : appel interrompu compté ; budget dépassé → arrêt propre et code d'erreur du catalogue |
 | **M1.3** Nouvelles tentatives (A2) · L4-03 | 429, 5xx et erreurs réseau : 3 essais espacés de façon croissante dans `call` ; 402 et 403 : aucun | [P] | Tests avec le faux serveur |
-| **M1.4** Étapes extraites · L4-04 | `pipeline/etapes.py` : `analyser`, `qualifier`, `calibrer`, `lire`, `controler`, `photographier`, qui prennent `(dossier, config, suivi)` ; `serveur.py` garde le HTTP et l'enchaînement ; interface `Suivi` | [P], **après la fusion des duplex** | Même suite d'états dans `etat.json` sur une exécution `PLAN_MOCK` ; rejeu identique |
+| **M1.4** Étapes extraites · L4-04 | `pipeline/etapes.py` : `analyser`, `qualifier`, `calibrer`, `lire`, `controler`, `photographier`, qui prennent `(dossier, config, suivi)` ; `serveur.py` garde le HTTP et l'enchaînement ; interface `Suivi` | [P], **après le commit du travail sur les niveaux** | Même suite d'états dans `etat.json` sur une exécution `PLAN_MOCK` ; rejeu identique |
 | **M1.5** Catalogue de messages (B9) · L4-05 | `pipeline/messages.py` : code, texte pour l'utilisateur, relance possible ou non ; `expliquer` renvoie un code | [P] | Test unitaire : chaque message du catalogue passe le filtre de M0.4 ; injection d'exceptions dans chaque étape → l'état public ne contient que des textes du catalogue |
 | **M1.6** Chrome configurable (B11) · L1-09 | `moteur/chrome.mjs` partagé par `photos.mjs` et `controle.mjs` (serveur statique en liste blanche, lancement) ; rendu choisi par `RENDU_CHROME=metal|swiftshader|vulkan` : SwiftShader par défaut en conteneur, partout (D3) ; Metal par défaut en local sur macOS | [M] | Local inchangé ; en SwiftShader sur Mac : même verdict de contrôle, images à moins de 2/255 (mesure de la recherche reproduite) |
 | **M1.7** Moteur servi par nous (A5) · L4-06 | `moteur/vendor/` : three.js 0.180.0, three-mesh-bvh 0.9.1, three-gpu-pathtracer 0.0.24 et les polices Archivo et DM Mono, avec empreintes vérifiées ; importmap de `modele.html` et polices d'`accueil.html` pointées dessus | [M] [P] | La visite se charge et le contrôle passe avec tout accès réseau extérieur bloqué (interception des requêtes dans puppeteer) ; contrôle ajouté : aucune requête hors de nos origines |
 | **M1.8** Mention et métadonnées (A6) · L4-07 | `pipeline/marquage.py` : mention incrustée dans chaque photo, métadonnées de contenu généré (valeur IPTC à choisir avec l'avocat, `recherche/juridique.md` § 5.4) ; mention permanente dans la visite et la fiche | [P] (+ [M] pour la visite) | Test : chaque JPEG porte la mention (zone de pixels vérifiée) et la métadonnée ; M0.4 passe |
-| **M1.9** Réglage `niveaux_max` · L4-08 | Le refus existant (`niveaux_refus`, `serveur.py:218`) lit `ConfigProduit.niveaux_max` ; valeur locale inchangée | [P], avec l'agent des duplex | En service, un plan à 2 niveaux est refusé avant tout appel payant, avec un message du catalogue |
+| **M1.9** Réglage `niveaux_max` · L4-08 | Le refus existant (`niveaux_refus`, `serveur.py:271`) lit `ConfigProduit.niveaux_max` ; valeur locale inchangée | [P], après le commit du travail sur les niveaux | En service, un plan qui dépasse `niveaux_max` (2) est refusé avant tout appel payant, avec un message du catalogue ; l'outil local traite la duplex 3081-613 comme avant |
 
-Tickets du lot 4 sans équivalent M, tous `[M]` et soumis au critère de fusion du § 8.1 : L4-09 (images d'aperçu rendues par le serveur, dans l'ordre vue du dessus, plan 2D, 2 photos ; galerie adaptable de 0 à N photos), L4-10 (visite dans le navigateur du client : compatibilité, repli sans WebGL), L4-11 (en mode simple, le moteur masque « Rendu photoréaliste de la vue » et la superposition du plan du promoteur, réservée au propriétaire ou à l'accord du promoteur ; avant la bêta fermée).
+Tickets du lot 4 sans équivalent M, tous `[M]` et soumis au critère de fusion du § 8.1 : L4-12 (qualité adaptative), L4-13 (éclairage précalculé), L4-14 (maquette compressée et itinéraires précalculés), L4-15 (panoramas 360°), L4-16 (visionneuse 360° sans moteur), L4-17 (culling par pièces et maquette découpée), L4-18 (textures compressées et niveaux de détail), L4-09 (images d'aperçu rendues par le serveur, dans l'ordre vue du dessus, plan 2D, 2 photos ; galerie adaptable de 0 à N photos), L4-10 (visite dans le navigateur du client : compatibilité, repli sans WebGL), L4-11 (en mode simple, le moteur masque « Rendu photoréaliste de la vue » et la superposition du plan du promoteur, réservée au propriétaire ou à l'accord du promoteur ; avant la bêta fermée).
 
 #### Phase 2 : socle en ligne et bêta fermée (15 à 22 jours)
 
@@ -1194,7 +1232,7 @@ Tickets du lot 4 sans équivalent M, tous `[M]` et soumis au critère de fusion 
 
 Ces tickets ne touchent pas `pipeline/` ni `moteur/` : ils les appellent.
 
-Tickets du lot 5 sans équivalent M : L5-08 (catalogue d'offres modifiable sans déploiement, versions immuables, droits acquis, § 4.2), L5-09 (budgets IA à quatre niveaux et clés séparées, § 6.5), L5-11 (livraison en deux temps, état public qui liste les images disponibles, mesure T0, § 2.3), L5-19 (tests de sécurité et limites de débit, § 6.8), L5-21 (exploitation, mode maintenance), L5-22 (capacité, concurrence, essai de charge sans payer), L5-23 (dépôt provisoire anonyme de 24 h). Lot 6 (parcours particulier et bêta fermée) : L6-01 à L6-12, dont L6-02 (qualification avant toute lecture payante, refus « plusieurs lots »), L6-03 (écran d'attente avec les images en direct), L6-05 (page d'aperçu), L6-10 (ouverture de la bêta fermée).
+Tickets du lot 5 sans équivalent M : L5-08 (catalogue d'offres modifiable sans déploiement, versions immuables, droits acquis, § 4.2), L5-09 (budgets IA à quatre niveaux et clés séparées, § 6.5), L5-11 (livraison en deux temps, état public qui liste les images disponibles, mesure T0, § 2.3), L5-19 (tests de sécurité et limites de débit, § 6.8), L5-21 (exploitation, mode maintenance), L5-22 (capacité, concurrence, essai de charge sans payer), L5-23 (dépôt provisoire anonyme de 24 h), L5-27 (panoramas 360° dans le socle), L5-28 (précalcul dans la chaîne en ligne). Lot 6 (parcours particulier et bêta fermée) : L6-01 à L6-13, dont L6-13 (aperçu gratuit en 360°, si confirmé), dont L6-02 (qualification avant toute lecture payante, refus « plusieurs lots »), L6-03 (écran d'attente avec les images en direct), L6-05 (page d'aperçu), L6-10 (ouverture de la bêta fermée).
 
 #### Phase 3 : paiement des particuliers (6 à 9 jours)
 
@@ -1230,7 +1268,7 @@ Tickets du lot 9 sans équivalent M : L9-02 (essai pro, sur la clé `prod-payant
 | **M5.4** Superposition autorisée · L10-06 | preuve d'accord déposée et vérifiée par l'équipe, puis superposition dans les publications de cette organisation |
 | **M5.5** SSO · L10-07 | broker branché comme un `FournisseurIdentite` (D1) |
 | **M5.6** Clés IA par client · L11-03 | clé OpenRouter propre par client de marque blanche ou refacturé au coût réel |
-| Plus tard | lot 13 : accélération du rendu (L13-01), galerie complète (L13-02), aperçu interactif à tester (L13-03), meublé, réalisme (GPU), 4K, TMA, visite de la résidence, plusieurs niveaux (L13-04 à L13-08) : hors de ce document |
+| Plus tard | lot 13 : accélération du rendu (L13-01), galerie complète (L13-02), vue du dessus manipulable à tester (L13-03), meublé, réalisme (GPU), 4K, TMA, visite de la résidence (L13-04 à L13-07) ; plusieurs niveaux (L13-08, fait) : hors de ce document |
 
 Tickets des lots 10 et 11 sans équivalent M : L10-03 (validation des lots par le promoteur), L10-05 (portail distributeurs), L10-08 (premier pilote), L11-02 (thème par organisation), L11-04 (contrat et mise en service d'une instance).
 
@@ -1287,7 +1325,7 @@ Alertes par e-mail dès le premier jour :
 - disponibilité de `app.`, `visite.` et `cdn.` ;
 - battement de cœur absent depuis plus de 10 min pour un worker ;
 - âge du plus vieux travail en file ;
-- taux d'échec de la visite de contrôle ; image d'aperçu omise après nouvelles tentatives ; exécutant de rendu déclaré inapte ;
+- taux d'échec de la visite de contrôle ; image d'aperçu ou panorama omis après nouvelles tentatives ; précalcul en échec ; exécutant de rendu déclaré inapte ;
 - coût IA d'un plan au-delà de 3 $ ; plafond d'organisation, du jour (plan offert) ou global atteint ; seuils de 50, 80 et 100 % sur chaque clé OpenRouter ; clé sans plafond ; toute erreur 402 ;
 - réservation de crédit orpheline ; invariant du grand livre en échec ; webhook Stripe en échec ;
 - rebonds et plaintes d'e-mails ;
@@ -1304,7 +1342,7 @@ Tableau interne (SQL sur `appels_ia`, `travaux`, `evenements`, `credit_mouvement
 | Unitaires | fonctions pures du cœur, `Budget`, catalogue de messages, résolution de la configuration, grand livre | chaque PR | oui |
 | Chaîne sans IA, témoin | dépôt → analyse → lecture rejouée → murs → contrôle → images d'aperçu dans l'ordre (SwiftShader) → publication de l'aperçu et de la visite → ouverture par un jeton | chaque PR, en CI | oui |
 | Aperçu verrouillé | page d'aperçu : aucune requête vers `engine.js`, `/vendor/three` ni `plan.json`, qui répondent 404 ; images ni noires ni uniformes ; galerie de 0, 1, 2 photos sans vignette vide | chaque PR ; **chaque publication d'aperçu** | oui : bloque la publication |
-| Rejeu des références privées | 4 plans réels rejoués sans IA : `plan.json` identiques ou écarts approuvés ; `evaluer.py` au moins égal à la référence (D201 : 7 ouvertures sur 7 et 6 équipements sur 6 ; 432 : 6 sur 7 et 6 sur 7, relevés dans `HISTORIQUE.md`) ; visite de contrôle réussie | chaque PR `[P]` ou `[M]` ; chaque nuit en préproduction | oui |
+| Rejeu des références privées | 4 plans réels à un niveau et la duplex 3081-613 rejoués sans IA : `plan.json` identiques ou écarts approuvés ; `evaluer.py` au moins égal à la référence (D201 : 7 ouvertures sur 7 et 6 équipements sur 6 ; 432 : 6 sur 7 et 6 sur 7, relevés dans `HISTORIQUE.md`) ; visite de contrôle réussie | chaque PR `[P]` ou `[M]` ; chaque nuit en préproduction | oui |
 | Non-régression visuelle | 3 vues fixes et le plan 2D de chaque plan de référence, comparés aux images approuvées (celles du témoin sont versionnées dans `references/temoin/images-approuvees/`, L1-11) : écart moyen au plus 2/255, au plus 0,05 % des pixels au-delà de 16/255 (seuils tirés des mesures de `recherche/hebergement.md` § 2.1). Détecte aussi une texture noire ou un contexte WebGL absent | PR `[M]`, changement d'exécutant de rendu, mise à jour de Chrome ou de three.js | oui ; une nouvelle image de référence s'approuve explicitement |
 | Aucun texte technique | M0.4 étendu : chaque mode de la visite, `plan.json` publié, messages d'état, e-mails, catalogue, textes saisis par les clients | chaque PR ; **chaque publication en production** | oui : bloque la publication |
 | CSP et réseau | aucune violation de CSP, aucune requête hors de nos origines pendant la visite de contrôle | chaque publication | oui |
@@ -1313,6 +1351,9 @@ Tableau interne (SQL sur `appels_ia`, `travaux`, `evenements`, `credit_mouvement
 | Fumée de l'outil local | `serveur.py` avec `PLAN_MOCK` sur le témoin | chaque PR `[P]` ou `[M]` | oui |
 | Lecture payante | relecture complète des plans de référence avec l'IA (clé `dev`) | seulement pour un changement de prompt, de modèle, d'effort ou de réglage IA pro, **après** le rejeu gratuit réussi, et sur accord explicite | décision humaine |
 | Restauration | § 9.3 | mensuel | alerte |
+| Contrôles de la visite du 27/09/2026 | dans la visite de contrôle, sur tous les plans : test d'immersion `etancheite` (portes et fenêtres fermées, grille de cubes de 2 cm sur les maillages affichés, eau versée dans chaque pièce, trou de 4 cm et plus détecté), `baie` (chaque baie recoupée avec le sigle écrit près d'elle, lu dans la légende de son propre plan), `garde-corps` (aucun garde-corps de trémie sur un tracé de cloison), `escalier`, `vide`, `niveau`, `dalle`, `cloison`, `menuiserie`, `rebord`, `lumiere`, `maquette`, `texte` | chaque contrôle de plan | oui : bloque la publication |
+| Fluidité | i/s et confort (clic, regard, déplacement) sur un profil d'appareil modeste (processeur ralenti, écran de téléphone ; processeur ralenti ×4 et écran non Retina) et sur les appareils réels (L1-14, L4-10, L4-12) ; 60 i/s visés par les optimisations du § 2.6 (L4-17, L4-18) ; contrôle de visibilité du culling (L4-17) | PR `[M]` (seuils relatifs) ; appareils réels avant chaque jalon | seuils à décider avec l'utilisateur |
+| 360° | aucune face noire ou uniforme, coutures sous un seuil, chaque arrêt dans sa pièce ; page gratuite sans moteur, `plan.json` ni maquette (L4-15, L4-16, L5-27) | chaque publication | oui |
 
 Les jeux privés (plans réels de l'utilisateur) ne quittent jamais le poste de l'équipe ou le seau `references-privees/` de la préproduction. La CI publique n'utilise que le témoin fictif, créé par nous et versionné dans `references/temoin/`.
 
@@ -1321,8 +1362,9 @@ Les jeux privés (plans réels de l'utilisateur) ne quittent jamais le poste de 
 ## 10. Hors périmètre et points ouverts
 
 **Hors périmètre de ce document :**
-- logements sur plusieurs niveaux, tant que le travail en cours n'est pas validé sur des plans réels ;
-- galerie complète (une dizaine de photos, L13-02), jamais promise au lancement ; aperçu interactif (L13-03) ;
+- logements sur plus de deux niveaux en production : triplex refusé par `niveaux_max = 2` tant qu'un plan réel de triplex n'a pas été validé ; escalier quart tournant, entrée au niveau haut et plan en image se valident chacun quand un tel plan est fourni ;
+- rendu en direct sur le serveur (streaming vidéo) : écarté pour son coût ;
+- galerie complète (une dizaine de photos, L13-02), jamais promise au lancement ; vue du dessus manipulable (L13-03 ; les points par pièce sont devenus le mode 360°, décision n° 15) ;
 - visite de la résidence ; meublé et aménagement ; réalisme (lancer de rayons sur GPU) ; 4K ; TMA ;
 - saisie manuelle pré-remplie (dernier recours, selon les consignes) ;
 - application mobile.
@@ -1338,4 +1380,9 @@ Les jeux privés (plans réels de l'utilisateur) ne quittent jamais le poste de 
 - Besoins réels de CSP du moteur (workers, `blob:`, styles en ligne) : mesurés par la visite de contrôle.
 - Effet de la ZDR sur la durée et la qualité de lecture (M0.8).
 - Valeur IPTC du marquage des photos, et qualification de notre rôle au sens de l'AI Act (avocat).
+- Coût et durée des panoramas en SwiftShader (environ 10 par plan), capacité à provisionner (L1-16).
+- Méthode et durée du précalcul d'éclairage en SwiftShader (L4-13) ; décodeurs de la maquette compressée et CSP (L4-14).
+- Gain réel du culling par pièces et des textures compressées ; format des textures et transcodeur (L4-17, L4-18, § 2.6).
+- Durée de la visite de contrôle en SwiftShader avec le test d'immersion et les contrôles de niveaux (L5-10).
+- Coût réel d'une lecture IA d'un plan à plusieurs niveaux (L1-13).
 - Réutilisation d'une lecture entre organisations pour le même plan : exclue sans avis juridique.

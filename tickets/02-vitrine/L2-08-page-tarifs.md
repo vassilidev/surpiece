@@ -2,7 +2,7 @@
 
 | Lot | Priorité | Taille | Dépend de | Touche | Statut |
 |---|---|---|---|---|---|
-| 2 · Vitrine | P0 | M (1 à 3 j) | L0-04, L2-01 | `site/`, `outils/` | À faire |
+| 2 · Vitrine | P0 | M (1 à 3 j) | L0-04, L1-16, L2-01 | `site/`, `outils/` | À faire |
 
 ## Pourquoi
 Le visiteur de `/tarifs` cherche le piège : abonnement caché, plans qui expirent, remboursement impossible (MESSAGES.md § 5). Tous les prix d'OFFRES.md sont des hypothèses ; aucun n'est publié avant validation (L0-04). Et les offres évolueront (décision 7) : les prix et le contenu de chaque offre doivent venir d'un seul fichier de données, lu par toutes les pages, en attendant le catalogue en base (L5-08) que la vitrine et l'application liront ensemble.
@@ -10,7 +10,7 @@ Le visiteur de `/tarifs` cherche le piège : abonnement caché, plans qui expire
 ## À faire
 1. **Fichier unique** `site/donnees/offres.json`, calqué sur les champs du futur catalogue (L5-08 : prix, crédits, contenu débloqué, durée d'essai, validité) :
    - par offre : `id` (identifiant du catalogue, jamais un code figé dans le code, R5 ; codes stables du catalogue, sans prix, SUIVI.md § 3.2 : `particulier_visite`, `particulier_plan_suivant`, `particulier_pack_3`, `pro_solo`, `pro_cabinet`, `pro_equipe`…), `cible`, `libelle`, `prix_centimes`, `taxe` (`TTC` ou `HT`), `periodicite`, `plans_inclus`, `contenu` (liste de livrables), `conditions`, `valide` (booléen posé seulement après L0-04), `date_validation` ;
-   - un bloc `livrables_lancement` qui dit ce que le service livre vraiment (R1) : aperçu offert = vue du dessus 3D découpée, plan 2D coté, 2 photos, surfaces, points à faire confirmer ; visite débloquée = visite dans le navigateur (marche libre, arrêts par pièce, maquette, plan 2D interactif, fiche complète, partage) et les mêmes images ; aucun nombre de photos, pas de galerie complète. Repris par tous les tableaux comparatifs.
+   - un bloc `livrables_lancement` qui dit ce que le service livre vraiment (R1) : aperçu offert = vue du dessus 3D découpée, plan 2D coté, 2 photos, surfaces, points à faire confirmer ; visite débloquée = visite dans le navigateur (marche libre, arrêts par pièce, maquette, plan 2D interactif, fiche complète, partage) et les mêmes images ; aucun nombre de photos, pas de galerie complète. Le contenu de l'aperçu offert suit la confirmation de L1-16 (aperçu de R1, mode 360°, ou les deux) ; le mode 360° n'entre dans `livrables_lancement` qu'une fois livré (décision 15). La limite sur les niveaux suit MARQUE.md § 3.4 (un ou deux niveaux, duplex compris). Repris par tous les tableaux comparatifs.
 2. **Rendu dans les pages** : `outils/site.py` (L2-01, R19) injecte les prix et contenus du catalogue dans les zones marquées `data-offre="<id>"` de `/tarifs`, de l'accueil (§ 1.5, § 1.8), de `/pro` (§ 2.7), de `/promoteurs` (§ 3.6) et de `/marque-blanche` ; une offre `valide: false` n'est jamais écrite, et sa zone est masquée.
 3. **Sections de `/tarifs`, dans l'ordre** (MESSAGES.md § 5) :
    1. Premier écran § 5.1 : surtitre « TARIFS », H1 « Des prix simples, payés au plan. », sous-titre (TTC particuliers, HT professionnels), onglets **Particuliers · Professionnels** (onglets accessibles : `role="tablist"`, flèches du clavier).

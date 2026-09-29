@@ -29,6 +29,7 @@ Une fois les conversions transmises et vérifiées (R15), on peut acheter du tra
 - Non vérifié : classement « Housing » de nos annonces, politiques Google Ads propres à l'immobilier.
 - **Tranché : R8.** Aucun prix n'est testé par annonce : les tests de prix se font par périodes (L8-06), jamais par un prix tiré au sort par personne (L221-5).
 - Coût : l'IA des aperçus induits (1,10 à 1,85 $ par plan) s'ajoute à la dépense publicitaire.
+- **Offre gratuite en 360° (à confirmer)** : si le 360° devient l'offre gratuite (décision de principe n° 15, L1-16, L6-13), le coût d'un aperçu offert comprend le rendu des panoramas. Le repère de 2,56 € et le seuil de 11,1 % (OFFRES.md § 8.8) sont à recalculer avant la première campagne.
 
 ## Références
 - produit/SUIVI.md § 2.9, § 4.2 à § 4.7, § 5.2, § 7.3 ; produit/OFFRES.md § 8.8, § 8.11, § 9.1, § 9.2 (T3, T10, T11).

@@ -10,9 +10,10 @@ La visite charge three.js, three-mesh-bvh et three-gpu-pathtracer depuis `cdn.js
 ## À faire
 1. **`moteur/vendor/`**, versions de `moteur/modele.html:15-19` :
    - `three@0.180.0/build/` : `three.module.js` et le fichier qu'il importe (`three.core.js` pour cette version, à vérifier), plus les modules de `examples/jsm/` importés par `engine.js:3-13` (`OrbitControls`, `RoundedBoxGeometry`, `BufferGeometryUtils`, `EffectComposer`, `RenderPass`, `GTAOPass`, `OutputPass`, `UnrealBloomPass`, `ShaderPass`, `RectAreaLightUniformsLib`, `Reflector`) **et leurs imports transitifs**, suivis par script, pas à la main ;
-   - `three-mesh-bvh@0.9.1/build/index.module.js` ; `three-gpu-pathtracer@0.0.24/build/index.module.js` (import dynamique, `engine.js:1572`) ;
+   - `three-mesh-bvh@0.9.1/build/index.module.js` ; `three-gpu-pathtracer@0.0.24/build/index.module.js` (import dynamique, `engine.js:1650`) ;
    - `polices/` : Archivo variable (chasse et graisse, `visite.css:130` utilise `"wdth" 105`) et DM Mono 400 et 500, en woff2, feuille `polices.css` (`@font-face`, `font-display: swap`) ;
-   - licences (MIT pour les trois bibliothèques, SIL OFL pour les polices) et `EMPREINTES` (empreinte de chaque fichier, version, source).
+   - décodeurs de la maquette compressée et des textures, si L4-14 en retient (WebAssembly compris), et visionneuse 360° (L4-16) : même règle, servis par nous ;
+- licences (MIT pour les trois bibliothèques, SIL OFL pour les polices) et `EMPREINTES` (empreinte de chaque fichier, version, source).
 2. **Outils** : reprendre `outils/vendoriser.sh` (L2-09, empreintes SHA-384) et `outils/polices.sh` (L2-01), pour que la vitrine et le moteur aient des copies identiques. S'ils n'existent pas encore, les créer ici avec ce même contrat. Mode `--verifier` : recalcule les empreintes et échoue au moindre écart.
 3. **`moteur/modele.html`** : table d'import vers `../../moteur/vendor/…` ; retrait des `preconnect` et du lien Google Fonts (`:9-11`) ; feuille `../../moteur/vendor/polices/polices.css`. Tous les chemins gardent le préfixe `../../moteur/`, pour que la publication (L5-12) n'ait qu'un préfixe à réécrire.
 4. **`pipeline/accueil.html:8-9`** : polices vers `/moteur/vendor/polices/polices.css`.
@@ -36,11 +37,11 @@ La visite charge three.js, three-mesh-bvh et three-gpu-pathtracer depuis `cdn.js
 - **Polices** : vérifier que le fichier retenu garde l'axe de chasse, sinon `font-variation-settings` est ignoré sans erreur et le rendu change. OFL : vérifier un éventuel « Reserved Font Name » avant de réduire la police (L2-01). Le marquage des images (L4-07) a besoin d'Archivo en TTF (Pillow ne lit pas le woff2) : le fournir ici.
 - **Anciens plans locaux** : leur `index.html` a été copié de l'ancien `modele.html` ; il est recopié à chaque contrôle ou séance photo par `serveur.py`, mais pas par `finalise.sh` s'il existe déjà. Les visites locales jamais rejouées gardent jsdelivr ; sans effet sur le service, qui produit `index.html` à la publication.
 - L'attribut `integrity` des tables d'import n'est pas pris en charge partout : ne pas s'y fier ; les empreintes sont contrôlées au build et à la publication.
-- **Coordination avec le travail sur les duplex** : `modele.html`, `controle.mjs`, `photos.mjs`, `accueil.html` et `serveur.py` sont modifiés en parallèle ; après L1-09 (`chrome.mjs`) ; petits diffs ; critère de fusion d'ARCHITECTURE.md § 8.1.
+- **Coordination avec le travail sur les niveaux** (terminé le 27/09/2026, pas encore commité : 23 fichiers, dont `pipeline/niveaux.py`) : partir de son commit ; `modele.html`, `controle.mjs`, `photos.mjs`, `accueil.html` et `serveur.py` le portent ; après L1-09 (`chrome.mjs`) ; petits diffs ; critère de fusion d'ARCHITECTURE.md § 8.1.
 
 ## Références
 - produit/ARCHITECTURE.md § 5.2, § 5.5, § 6.2, § 9.5 (contrôle CSP et réseau), M1.7 ; produit/recherche/audit-code.md A5, A3 ; produit/recherche/hebergement.md § 1 (poids d'une visite), § 4 ; produit/MARQUE.md § 11 (polices).
-- moteur/modele.html:9-20 ; moteur/engine.js:2-13, :1572 ; moteur/visite.css:6, :130 ; moteur/ui.js:839 (message qui cite jsdelivr) ; pipeline/accueil.html:8-9 ; pipeline/serveur.py:464 (`servable`) ; moteur/controle.mjs:18-23 et moteur/photos.mjs:18-24 (serveurs statiques, avant L1-01 et L1-09).
+- moteur/modele.html:9-20 ; moteur/engine.js:2-13, :1650 ; moteur/visite.css:6, :130 ; moteur/ui.js:879 (message qui cite jsdelivr) ; pipeline/accueil.html:8-9 ; pipeline/serveur.py:568 (`servable`) ; moteur/controle.mjs:20-24 et moteur/photos.mjs:18-24 (serveurs statiques, avant L1-01 et L1-09).
 
 ## Hors périmètre
 - Publication versionnée sur le CDN, `outils/publier_moteur`, CSP des pages de visite : L5-12. Compatibilité des navigateurs et repli : L4-10. Émission des événements par le moteur : L7-04.

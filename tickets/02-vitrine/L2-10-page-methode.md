@@ -15,7 +15,7 @@ Le particulier prudent, le conseiller qui vérifie avant de recommander et le pr
    4. Sur le PDF du promoteur § 9.3 ; sur une capture ou une photo § 9.4.
    5. Comment nous vérifions § 9.5.
    6. Ce que nous supposons § 9.6.
-   7. Nos essais § 9.7 : seulement les faits de MESSAGES.md § 0.5 ; la phrase « toutes les cotes lues correspondent » masquée jusqu'à l'avis de l'avocat ; aucun délai en dur : marqueur ‹délai›, et passage masqué, jusqu'à la mesure en production (T0, R12).
+   7. Nos essais § 9.7 : seulement les faits de MESSAGES.md § 0.5 ; « 4 plans réels testés » reste le fait publié ; y ajouter la duplex, assemblée et contrôlée avec une lecture préparée à la main, est à valider (MARQUE.md § 3.3) ; le test d'immersion n'est cité que si MARQUE.md § 3.3 l'ajoute aux preuves (à valider) ; la phrase « toutes les cotes lues correspondent » masquée jusqu'à l'avis de l'avocat ; aucun délai en dur : marqueur ‹délai›, et passage masqué, jusqu'à la mesure en production (T0, R12).
    8. Qui lit votre plan, et où vont vos données § 9.8.
    9. Ce que nous ne faisons pas § 9.9, bouton **Importer mon plan** (suit `mode_depot`, L2-04), lien « Visiter l'appartement témoin → ».
    10. Pied § 8.2.

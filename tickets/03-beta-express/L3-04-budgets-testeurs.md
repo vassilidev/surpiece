@@ -13,7 +13,7 @@ Décision n° 3 : blocages côté logiciel d'abord (on sait qui consomme quoi, p
    - `plans(pid, email, lance_le, relances_payantes, statut)` ;
    - `couts(pid, email, source, cout_usd, le)` alimentée à la fin de chaque étape payante.
 2. **Quota par testeur** (1 plan par défaut : « 1 crédit offert par testeur », CLAUDE.md ; réglable par l'équipe) :
-   - compté **au début de la lecture payante** (`lecture`, `pipeline/serveur.py:289`), pas au dépôt : un fichier refusé à l'analyse ou à la qualification ne coûte rien au testeur ;
+   - compté **au début de la lecture payante** (`lecture`, `pipeline/serveur.py:352`), pas au dépôt : un fichier refusé à l'analyse ou à la qualification ne coûte rien au testeur ;
    - dépôts limités à 10 par testeur et par jour, pour borner les qualifications (environ 0,02 $ chacune) ;
    - quota épuisé : refus avant tout appel, message sans jargon (texte proposé plus bas).
 3. **Relances** (`POST /api/relancer`, `:561`) : au plus **une** relance qui repaie une lecture (reprise à l'étape `lecture` sans `reponse-ia.json` gardé) ; relances sans IA (lecture gardée, contrôle, photos) acceptées. Au-delà : refus poli, l'équipe reprend par `outils/finalise.sh`.
@@ -40,13 +40,13 @@ Décision n° 3 : blocages côté logiciel d'abord (on sait qui consomme quoi, p
 - **Découpage** : le budget par plan est l'objet de L4-02 (lot 4), absent des dépendances. Recommandation : faire L4-02 avant ce ticket ; sinon le garde du point 4 est du code jetable, dont les tests seront repris par L4-02 et L5-09.
 - **Tranché : R6.** Plafond IA de 3 $ par plan, toutes passes et relances confondues (pas de nouveau plafond pour une relance payante).
 - **Ce qu'obtient un testeur** : OFFRES.md § 2.2 donne un plan complet (question ouverte, PARCOURS.md § 8.3, n° 4, tranchée par L0-04). La bêta express livre l'outil actuel, galerie complète comprise : c'est plus que le contenu du lancement (R1), et rien dans la bêta ne promet cette galerie pour la suite.
-- **Ordre de grandeur** (estimation) : 30 testeurs × 1,10 à 1,85 $, plus les échecs et quelques relances, soit environ 60 à 100 $ pour la bêta.
+- **Ordre de grandeur** (estimation) : 30 testeurs × 1,10 à 1,85 $, plus les échecs et quelques relances, soit environ 60 à 100 $ pour la bêta. Une lecture de plan à plusieurs niveaux est estimée à 1,5 à 2 $ (non mesurée, L1-13) : sous le plafond de 3 $, à suivre.
 - **Données personnelles** : e-mails dans le registre ; à purger en fin de bêta (L3-06).
-- **Coordination avec le travail sur les duplex** : diff limité à `lecture`, `do_POST` (relance) et `depot` dans `serveur.py`, nouveau module de registre à part ; critère de fusion d'ARCHITECTURE.md § 8.1.
+- **Coordination avec le travail sur les niveaux** (fini le 27/09/2026, non commité) : partir du commit qui l'intègre ; diff limité à `lecture`, `do_POST` (relance) et `depot` dans `serveur.py`, nouveau module de registre à part ; critère de fusion d'ARCHITECTURE.md § 8.1.
 
 ## Références
 - produit/recherche/audit-code.md B8, A7 ; produit/OFFRES.md § 6.7, § 8.1, § 8.7 ; produit/ARCHITECTURE.md § 6.5 ; produit/recherche/hebergement.md § 10 (plafonds et 402) ; produit/MESSAGES.md § 7.4.
-- pipeline/serveur.py:251 (`ecarter_lecture`), :260 (`qualifier`, `cout_qualif`), :289 (`lecture`), :561 (`do_POST`, relance), :596 (`depot`) ; pipeline/lire.py:107 (`call`), :163 (journal OpenRouter), :1308 (`read_plan`, `appels-ia.json`).
+- pipeline/serveur.py:314 (`ecarter_lecture`), :323 (`qualifier`, `cout_qualif`), :352 (`lecture`), :665 (`do_POST`, relance), :701 (`depot`) ; pipeline/lire.py:107 (`call`), :163 (journal OpenRouter), :1480 (`read_plan`, `appels-ia.json`).
 
 ## Hors périmètre
 - Journal fiable et objet `Budget` : L4-02. Budgets à quatre niveaux, clés séparées en production, table `appels_ia` : L5-09. Grand livre de crédits : L5-07.

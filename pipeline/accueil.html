@@ -108,7 +108,7 @@ a.btn{text-decoration:none;display:inline-block}
     <div class="result" id="result" hidden>
       <div class="rooms" id="rooms"></div>
       <div class="thumbs" id="thumbs"></div>
-      <div><a class="btn primary" id="open" href="#">Ouvrir la visite</a></div>
+      <div><a class="btn primary" id="open" href="#">Ouvrir la visite</a> <a class="btn" id="open360" href="#" hidden>Visite 360°</a></div>
     </div>
   </section>
 
@@ -116,8 +116,10 @@ a.btn{text-decoration:none;display:inline-block}
 </main>
 <script>
 const $ = s => document.querySelector(s);
-const STEPS = [['analyse', 'Analyse du fichier'], ['calibration', 'Échelle'], ['lecture', 'Lecture du plan'], ['controle', 'Visite de contrôle'], ['photos', '3D et photos'], ['fini', 'Visite prête']];
+const STEPS = [['analyse', 'Analyse du fichier'], ['calibration', 'Échelle'], ['lecture', 'Lecture du plan'], ['controle', 'Visite de contrôle'], ['photos', '3D et photos'], ['pano', 'Visite à 360°'], ['fini', 'Visite prête']];
 let cur = null, timer = null, pts = [], shown = 0, lastPct = 0, busy = false, sendTok = 0;
+// détail technique (erreur brute, avertissements destinés à l'IA) : jamais montré à l'acquéreur, seulement avec ?debug=1
+const DEBUG = new URLSearchParams(location.search).get('debug') === '1';
 // chronologie de chantier : chaque phrase apparaît quand la barre atteint son pourcentage, une seule fois, dans l'ordre
 const CHANTIER = [
   [0, 'Réception du plan…'], [2, 'On déroule le plan sur la table de chantier…'], [4, 'On cherche le nord…'], [6, 'On vérifie l’échelle au mètre ruban…'], [8, 'On repère les murs porteurs…'],
@@ -182,9 +184,9 @@ async function poll() {
   if (id !== cur) return;  // réponse d'un plan qu'on a quitté entre-temps
   const doneSteps = (s.etapes || []).map(e => e.etape), idx = STEPS.findIndex(t => t[0] === s.etape);
   $('#steps').innerHTML = STEPS.filter(t => t[0] !== 'calibration' || doneSteps.includes('calibration') || s.etape === 'calibration').map(([k, t]) => {
-    const d = (s.etapes || []).find(e => e.etape === k), i = STEPS.findIndex(x => x[0] === k);
+    const ds = (s.etapes || []).filter(e => e.etape === k), d = ds[0], i = STEPS.findIndex(x => x[0] === k);  // une étape peut avoir plusieurs textes (plan reconnu, niveaux)
     const cls = d || s.statut === 'fini' || i < idx ? 'done' : k === s.etape ? (s.statut === 'attente' ? 'wait' : s.statut === 'en_cours' ? 'cur' : '') : '';
-    return `<li class="${cls}"><span>${t}${d ? `<small>${esc(d.texte)}</small>` : ''}</span></li>`;
+    return `<li class="${cls}"><span>${t}${ds.filter(x => x.texte).map(x => `<small>${esc(x.texte)}</small>`).join('')}</span></li>`;
   }).join('');
   $('#msg').className = 'msg ' + (s.statut || ''); $('#msg').textContent = ['refus', 'erreur', 'attente'].includes(s.statut) ? (s.message || '') : '';
   if (s.pct != null) lastPct = Math.max(lastPct, s.pct);
@@ -198,14 +200,17 @@ async function poll() {
   }
   stopped = ['refus', 'erreur', 'attente'].includes(s.statut);
   if (stopped) $('#fun').textContent = s.statut === 'attente' ? 'Le chantier attend votre coup de mètre.' : 'Chantier à l’arrêt.';
-  $('#warns').innerHTML = (s.avertissements || []).map(a => `<li>${esc(a)}</li>`).join('');
+  $('#warns').innerHTML = [...(s.avertissements || []), ...(DEBUG ? s.avertissements_lecture || [] : [])].map(a => `<li>${esc(a)}</li>`).join('');
   if (!(s.statut === 'attente' && s.etape === 'calibration')) $('#calib').hidden = true;
   else if ($('#calib').hidden) showCalib(s);
   $('#retry').hidden = s.statut !== 'erreur';
-  $('#detail').hidden = !(['erreur', 'refus'].includes(s.statut) && s.technique_erreur); $('#detail').textContent = s.technique_erreur || '';
+  $('#detail').hidden = !(DEBUG && ['erreur', 'refus'].includes(s.statut) && s.technique_erreur); $('#detail').textContent = DEBUG ? s.technique_erreur || '' : '';
   if (['refus', 'erreur', 'fini'].includes(s.statut)) clearInterval(timer);
   if (s.statut !== 'fini') { $('#result').hidden = true; return; }
   $('#open').href = s.lien || planUrl(id);
+  // visite à 360° : lien seulement si ses panoramas existent (plans traités avant elle : pas de lien)
+  $('#open360').hidden = true;
+  fetch(planUrl(id, 'pano/visite.json'), { method: 'HEAD' }).then(r => { if (r.ok && id === cur) { $('#open360').href = planUrl(id, 'pano/'); $('#open360').hidden = false; } }).catch(() => {});
   $('#rooms').innerHTML = (s.pieces || []).map(p => `<span>${esc(p[0])}${p[1] ? ' · ' + esc(p[1]) + (/^\d/.test(p[1]) ? ' m²' : '') : ''}</span>`).join('');
   let plan = {}; try { plan = await (await fetch(planUrl(id, 'plan.json'))).json(); } catch (e) {}
   if (id !== cur) return;

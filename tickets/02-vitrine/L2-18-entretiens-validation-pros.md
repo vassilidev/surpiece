@@ -10,7 +10,7 @@ Les offres Pro (lot 9) et Programme (lot 10) reposent sur des hypothèses : que 
 ## À faire
 1. **Préparer** (1/2 j) :
    - liste de cibles : CGP qui vendent du neuf (annuaires CNCGP et ANACOFI), mandataires qui utilisent le filtre « Neuf » d'iad, commercialisateurs ; promoteurs via les chambres régionales de la FPI ;
-   - guide d'entretien de 30 min : contexte (lots vendus par mois, part à distance, outils actuels), démonstration du témoin (visite, plan 2D, fiche ; page L2-09 si publiée, sinon outil local sur `plans/temoin`, copie de `references/temoin/`, R11), questions de mesure (point 2), réaction aux prix, autorisation du promoteur, taux de désistement ;
+   - guide d'entretien de 30 min : contexte (lots vendus par mois, part à distance, outils actuels), démonstration du témoin (visite, plan 2D, fiche ; page L2-09 si publiée, sinon outil local sur `plans/temoin`, copie de `references/temoin/`, R11 ; démonstration faite aussi sur un appareil modeste, portable d'entrée de gamme ou téléphone, décision 12 : un défaut de fluidité vu en entretien devient un cas du banc de L1-14), questions de mesure (point 2), réaction aux prix, autorisation du promoteur, taux de désistement ;
    - tableau de suivi privé (hors dépôt) ; message d'invitation ; consentement à la prise de notes et, si l'entretien est enregistré, à l'enregistrement.
 2. **Mesurer chez les conseillers** (test T6) :
    - la part qui **demande l'essai** (intention déclarée ou inscription à la bêta fondateurs via L2-12, puisque l'essai n'existe pas encore) ;

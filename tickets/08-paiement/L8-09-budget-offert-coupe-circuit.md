@@ -9,7 +9,7 @@ Le plan offert coûte autant en IA qu'un plan payant (2,56 € au cas prudent, `
 
 ## À faire
 1. **Tâche quotidienne** `service/budgets/offert.py`, `calculer_plafond(jour)` (Procrastinate, peu après 00 h UTC, heure de remise à zéro des limites quotidiennes d'OpenRouter) :
-   - `marge_7j` = somme sur 7 jours glissants des ventes aux particuliers (`achat_paye` moins `achat_rembourse`, HT) − frais Stripe réels (transactions de solde) − coût IA réel des plans consommés par ces offres, échecs compris − rendu et stockage (0,15 € et 0,05 € par plan tant qu'ils ne sont pas mesurés, `SUIVI.md` § 5.5) ; dollars comptés à 1 $ = 1 € (`OFFRES.md` § 8.1) ;
+   - `marge_7j` = somme sur 7 jours glissants des ventes aux particuliers (`achat_paye` moins `achat_rembourse`, HT) − frais Stripe réels (transactions de solde) − coût IA réel des plans consommés par ces offres, échecs compris − rendu et stockage (0,15 € et 0,05 € par plan tant qu'ils ne sont pas mesurés, `SUIVI.md` § 5.5 ; puis la mesure de L1-16, panoramas 360° et précalcul compris) ; dollars comptés à 1 $ = 1 € (`OFFRES.md` § 8.1) ;
    - `plafond = max(10, 0,30 × marge_7j ÷ 7)` ; tant que la conversion n'est pas mesurée sur 150 aperçus : `plafond = min(plafond, 50)` ;
    - écriture dans `reglages_service.plafond_gratuit_jour_usd` (L5-09) et dans une table `budget_offert_jours` (jour, marge, aperçus mesurés, conversion, seuil, plafond, état du coupe-circuit). Toute modification manuelle passe par l'administration, avec motif (`journal_equipe`).
 2. **Conversion à 30 jours** : cohorte des aperçus livrés entre J-60 et J-30 ; part de ceux débloqués (ou suivis d'un achat) dans les 30 jours ; « mesurée » seulement si la cohorte compte au moins 150 aperçus.
@@ -36,6 +36,7 @@ Le plan offert coûte autant en IA qu'un plan payant (2,56 € au cas prudent, `
 - **Monnaie** : plafonds en dollars, marge en euros, taux prudent 1:1 ; à revoir si le dollar s'apprécie.
 - **Tranché : R7.** `OFFRES.md` § 8.8 fait foi : minimum de 10 $ par jour, puis indexation, 50 $ au plus avant 150 aperçus mesurés ; `ARCHITECTURE.md` § 6.5 s'y aligne (10 $ par jour au départ).
 - **« Réservé aux PDF »** : PDF vectoriels seulement, ou aussi PDF d'image ? À trancher sur les échecs mesurés par format (L6-02 lit l'état du coupe-circuit avant la création du compte, pour ne pas refuser après coup).
+- **Rendu des plans offerts** : si le 360° devient l'offre gratuite, chaque aperçu occupe aussi le rendu SwiftShader (environ 10 panoramas par plan, à mesurer, L1-16), hors du budget OpenRouter. Le plafond du jour borne aussi cette charge ; les limites de concurrence de L5-22 font le reste.
 
 ## Références
 - produit/OFFRES.md § 2.2, § 6.7, § 8.1, § 8.8, § 8.11, § 10 (risque 1) ; produit/ARCHITECTURE.md § 6.5, § 9.4.

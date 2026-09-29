@@ -14,7 +14,7 @@ L'argument promoteur est « tous les lots, pas quelques lots types » (marche.md
    3. Le constat § 3.2 (chiffres FPI du 2e trimestre 2026, sourcés).
    4. Ce que vous obtenez § 3.3 (par lot, par programme ; portail distributeurs masqué, [SI LIVRÉ]).
    5. Qualité § 3.4 (faits autorisés de MESSAGES.md § 0.5 seulement ; lien « Notre méthode en détail → » si L2-10 est publié).
-   6. Déroulé et délais § 3.5 (avec la phrase « appartements sur un seul niveau »).
+   6. Déroulé et délais § 3.5 (phrase de périmètre : « appartements sur un ou deux niveaux (duplex) », selon MARQUE.md § 3.4).
    7. Prix § 3.6 : depuis `site/donnees/offres.json`, masqués tant que L0-04 ne les a pas validés et que l'offre Programme n'existe pas (L10-01, R21).
    8. Engagements de service § 3.7 : masqués tant que le contrat et le SLA ne sont pas validés (L0-07, L10-01).
    9. Sécurité, données et droits § 3.8 ([À CONFIRMER : hébergeur] rempli après L0-03 ; « aucune conservation » seulement si L1-08 est livré).

@@ -32,16 +32,17 @@ Le code actuel n'a aucun plafond en argent : la seule limite est le nombre de pl
 - `plan_echoue` avec `cause` = `budget_depasse`, `refus_402`, `refus_403` ; `credit_offert_refuse` avec `motif` = `budget_jour_attente` ; `credit_rendu` avec `motif` = `refus_402_403` (écrit par L5-07).
 
 ## Points d'attention
-- Coordination `pipeline/` : ce ticket ne modifie pas `pipeline/`. Si le `Budget` de L4-02 n'expose pas de crochet par appel (enregistrement et autorisation), le demander dans L4-02 : petit diff isolé, critère de fusion d'ARCHITECTURE § 8.1, à coordonner avec l'agent des duplex.
+- Coordination `pipeline/` : ce ticket ne modifie pas `pipeline/`. Si le `Budget` de L4-02 n'expose pas de crochet par appel (enregistrement et autorisation), le demander dans L4-02 : petit diff isolé, critère de fusion d'ARCHITECTURE § 8.1, après le commit du le travail sur les niveaux (terminé le 27/09/2026, pas encore commité).
 - Les clés OpenRouter sont créées et réglées par L0-08 (clé de gestion hors des serveurs). Ce ticket les vérifie, il ne les crée pas.
 - Un message pour « plans offerts suspendus » (interrupteur coupé) n'existe pas dans MESSAGES.md : réutiliser `attente.plafond_jour` ou ajouter une clé.
 - Recharge automatique OpenRouter coupée, pas plus de 2 à 3 mois de crédits prépayés (ils expirent au bout d'un an) : réglages du compte, à vérifier par L0-08.
 - L3-04 (bêta express) a écrit une version jetable de ces budgets : en reprendre les tests.
+- **Plans à plusieurs niveaux** : la relecture ajoute une consigne propre aux niveaux (`RELECTURE_NIVEAUX`, `pipeline/lire.py:653`). Le coût d'une lecture réelle est estimé entre 1,5 et 2 $, à mesurer par L1-13. Plafond de 3 $ par plan inchangé (R6), sauf décision de l'utilisateur.
 
 ## Références
 - produit/OFFRES.md § 6.7, § 8.8, § 8.11 ; produit/ARCHITECTURE.md § 4.2 (`appels_ia`), § 4.3, § 6.5, § 9.4.
 - produit/recherche/hebergement.md § 10 ; produit/recherche/audit-code.md B8, A7 ; produit/SUIVI.md § 5.5.
-- `pipeline/lire.py:107` (`call`), `:123-127` (corps OpenRouter), `:162-164` (journal de l'appel) ; `pipeline/serveur.py:260` (`qualifier`).
+- `pipeline/lire.py:107` (`call`), `:123-127` (corps OpenRouter), `:162-164` (journal de l'appel) ; `pipeline/serveur.py:323` (`qualifier`).
 
 ## Hors périmètre
 - Budget du gratuit indexé sur la marge et coupe-circuit : L8-09. Crédit offert et anti-abus : L6-06.

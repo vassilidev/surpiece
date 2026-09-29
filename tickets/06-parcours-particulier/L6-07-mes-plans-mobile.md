@@ -11,7 +11,7 @@
 1. **Page « Mes plans »** `app.<domaine>/plans` (A14, MESSAGES.md § 7.7) :
    - titre `compte.plans.titre` ; en tête `compte.plans.dispo` ou `compte.plans.aucun` ;
    - action principale **« Ajouter un plan »** : même dépôt que L6-01, dans le compte (`plan_depose` avec `connecte=true`) ;
-   - une carte par plan : vignette (vue du dessus, jamais le plan du promoteur), cartouche, état `compte.plans.etat.*` (`chantier` avec pourcentage, `echelle`, `apercu`, `visite`, `arrete`), date de fin de conservation ;
+   - une carte par plan : vignette (vue du dessus du niveau d'entrée pour un plan à plusieurs niveaux, `entry` de `moteur/SCHEMA.md` ; jamais le plan du promoteur), cartouche, état `compte.plans.etat.*` (`chantier` avec pourcentage, `echelle`, `apercu`, `visite`, `arrete`), date de fin de conservation ;
    - clic sur une carte : écran d'attente (L6-03), calibration (L6-04), aperçu (L6-05) ou visite (vue propriétaire, L5-12) selon l'état ;
    - suppression : `compte.plans.supprimer` et `compte.plans.supprimer.confirmer` (liens et visite cessent, c'est dit avant).
    La liste est cadrée par l'organisation (faille B1 de l'audit) : 404 en accès croisé.
@@ -24,7 +24,7 @@
    - `prefers-reduced-motion` respecté ; aucune perte à 200 % de zoom ni à 320 px ; texte de 11 px au moins ; cibles de 40 px sur écran tactile ; champs en 16 px au moins ;
    - jamais la couleur seule.
 5. **Contrôle automatique** dans `outils/` (puppeteer, dépendances figées) : pour chaque page, à 320 px et à 1280 px, analyse axe-core (règles WCAG 2.2 A et AA), absence de défilement horizontal, parcours au clavier scripté (tabulation, Entrée, Échap), capture en mouvement réduit émulé. Bloquant en CI.
-6. **Tests sur appareils réels** (manuels, consignés dans le ticket à la livraison) : iPhone Safari, Android Chrome d'entrée de gamme, navigateur intégré d'Instagram ; parcours complet dépôt → compte → attente → aperçu sur téléphone ; dépôt sur ordinateur et e-mail ouvert sur téléphone.
+6. **Tests sur appareils réels** (manuels, consignés dans le ticket à la livraison) : iPhone Safari, Android Chrome d'entrée de gamme, un portable d'entrée de gamme, navigateur intégré d'Instagram ; sur chacun, la visite du témoin est mesurée avec les indicateurs et seuils de L1-14 (images par seconde, clic, déplacement), et la qualité adaptative (L4-12) est vérifiée (niveau retenu, aucun défaut visible) ; parcours complet dépôt → compte → attente → aperçu sur téléphone ; dépôt sur ordinateur et e-mail ouvert sur téléphone.
 7. Proposition facultative (levier L12, P2) : « M'envoyer le lien par e-mail » sur l'aperçu vu sur téléphone. Seulement si L0-05 la retient.
 
 ## Critères d'acceptation
@@ -51,5 +51,5 @@
 - `pipeline/accueil.html:275` (`list`, liste globale actuelle des plans, à ne pas reprendre).
 
 ## Hors périmètre
-- Compatibilité de la visite 3D dans le navigateur du client : L4-10. Comparateur de lots : plus tard (OFFRES.md § 2.4).
+- Compatibilité de la visite 3D dans le navigateur du client : L4-10. Seuils de fluidité sur appareil modeste : L1-14 ; corrections : L1-15, L4-12. Comparateur de lots : plus tard (OFFRES.md § 2.4).
 - Plan suivant à 15 € et achat : L8-01. Export et suppression du compte : L5-20.

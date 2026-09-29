@@ -5,15 +5,15 @@
 | 1 · Filets de sécurité et correctifs immédiats | P0 | M (1 à 3 j) | — | `outils/` | À faire |
 
 ## Pourquoi
-Chaque changement de `pipeline/` ou de `moteur/` (travail sur les duplex compris) peut casser un plan qui marchait. Aujourd'hui, le vérifier demande de relancer des lectures payantes (1,10 à 1,85 $ par plan) ou de rejouer à la main. Ce ticket livre un rejeu automatique des 4 plans réels, **sans aucun appel à l'IA**, avec une ligne de base. C'est le critère de fusion commun à tout ticket `[P]` ou `[M]` (ARCHITECTURE.md § 8.1, règle 3 ; M0.1).
+Chaque changement de `pipeline/` ou de `moteur/` (travail sur les niveaux compris) peut casser un plan qui marchait. Aujourd'hui, le vérifier demande de relancer des lectures payantes (1,10 à 1,85 $ par plan) ou de rejouer à la main. Ce ticket livre un rejeu automatique des 5 plans réels (les 4 plans à un niveau et la duplex `plans/3081-613-ef700f1f`, dont la lecture gardée a été préparée à la main, sans appel à l'IA), **sans aucun appel à l'IA**, avec une ligne de base. C'est le critère de fusion commun à tout ticket `[P]` ou `[M]` (ARCHITECTURE.md § 8.1, règle 3 ; M0.1).
 
 ## À faire
-1. **Constituer le jeu privé, hors du dépôt** : un dossier local de l'équipe (chemin donné par une variable, par exemple `REFERENCES_PRIVEES=~/visite-plans-references`), jamais versionné ni envoyé en CI. Pour chacun des 4 plans (432, D201, Soline, lot 11 ; identifier leurs dossiers de `plans/` avec l'utilisateur), copier : `source.*`, `extract.json`, `plan-src.png` (lu par `build_messages` même quand la lecture est reprise), `page.png`, `plan-<id>.png` (superposition), `calibration.json` s'il existe, `etat.json` (pour `k_saisi`), `reponse-ia.json`, `relecture-ia.json`, `appels-ia.json`, `plan.json`, `controle.json`.
+1. **Constituer le jeu privé, hors du dépôt** : un dossier local de l'équipe (chemin donné par une variable, par exemple `REFERENCES_PRIVEES=~/visite-plans-references`), jamais versionné ni envoyé en CI. Pour chacun des 5 plans (432, D201, Soline, lot 11 et la duplex `plans/3081-613-ef700f1f` ; identifier les dossiers des quatre premiers avec l'utilisateur), copier : `source.*`, `extract.json`, `plan-src.png` (lu par `build_messages` même quand la lecture est reprise), `page.png`, `plan-<id>.png` (superposition), `calibration.json` s'il existe, `etat.json` (pour `k_saisi`), `reponse-ia.json`, `relecture-ia.json`, `appels-ia.json`, `plan.json`, `controle.json`.
 2. **Écrire `outils/rejouer_references.sh`** (nouveau), qui pour chaque référence :
    - copie la référence dans `plans/_rejeu-<nom>/` (sous `plans/`, déjà ignoré par Git, et seul endroit servi par les scripts Chrome) ; ne touche jamais aux dossiers de travail de l'utilisateur ;
    - réassemble sans IA avec la logique de `outils/finalise.sh` (`lire.read_plan` sur la lecture gardée, puis visite de contrôle et `lire.repare_moteur`, 6 passages au plus), **sans modifier `finalise.sh`** ni lancer les photos (trop longues en SwiftShader) ; option `--photos` pour les ajouter ;
-   - lance `python3 pipeline/evaluer.py` : contre `432` et `d201` pour ces deux plans ; pour Soline et lot 11, qui n'ont pas de relevé manuel, contre le `plan.json` de la ligne de base (evaluer.py accepte déjà un chemin de `plan.json` comme référence) ;
-   - rend les **3 vues fixes** avec `outils/vues.mjs` (maquette, vue du dessus découpée, plan 2D) ;
+   - lance `python3 pipeline/evaluer.py` : contre `432` et `d201` pour ces deux plans ; pour Soline, lot 11 et la duplex, qui n'ont pas de relevé manuel, contre le `plan.json` de la ligne de base ; la duplex niveau par niveau (`--niveau 0`, `--niveau 1`). À vérifier d'abord : dans le bloc `__main__` d'`evaluer.py`, `--niveau` ne s'applique qu'au plan lu, la référence garde toujours le niveau d'entrée (`un_niveau`) ; correction et test dans L1-13 (evaluer.py accepte déjà un chemin de `plan.json` comme référence) ;
+   - rend les **3 vues fixes** avec `outils/vues.mjs` (maquette, vue du dessus découpée, plan 2D) ; pour un plan à plusieurs niveaux, les 3 vues de chaque niveau (onglets de niveau) ;
    - compare `plan.json` à la ligne de base (JSON normalisé : clés triées, nombres arrondis au millimètre) et les 3 vues aux images de base.
 3. **Garantir l'absence d'appel payant**, par trois verrous :
    - variables vidées au lancement de Python : `OPENROUTER_API_KEY= ANTHROPIC_API_KEY= PLAN_PROVIDER=` (comme `finalise.sh`) ;
@@ -29,16 +29,19 @@ Chaque changement de `pipeline/` ou de `moteur/` (travail sur les duplex compris
 10. **Documenter** dans `pipeline/README.md` (section « Tests sans clé ») l'usage des deux scripts.
 
 ## Critères d'acceptation
-- [ ] `outils/rejouer_references.sh` tourne de bout en bout sur les 4 plans, clés vidées, sans aucune nouvelle entrée dans `appels-ia.json` et sans requête sortante depuis Python.
+- [ ] `outils/rejouer_references.sh` tourne de bout en bout sur les 5 plans (duplex comprise), clés vidées, sans aucune nouvelle entrée dans `appels-ia.json` et sans requête sortante depuis Python.
 - [ ] Il produit le tableau de l'étape 8 et enregistre la ligne de base ; une seconde exécution sans changement de code donne des `plan.json` identiques et des écarts d'image sous les seuils.
 - [ ] `evaluer.py` retrouve au moins les chiffres de `HISTORIQUE.md` : D201 à 7 ouvertures sur 7 et 6 équipements sur 6 ; 432 à 6 sur 7 et 6 sur 7.
 - [ ] `outils/ecart_images.py` détecte une image noircie à dessein et une image décalée (tests fournis).
 - [ ] `outils/fumee.sh` réussit dans une copie de travail séparée, sans toucher à `plans/` du dépôt principal.
 - [ ] Aucun fichier des plans réels n'entre dans le dépôt : `git status` ne montre que les scripts et la documentation.
+- [ ] La ligne de base est prise sur le commit qui intègre le travail sur les niveaux du 27/09/2026 ; le script confirme que les 4 plans à un niveau y sortent à l'identique de leur `plan.json` d'avant (constat de HISTORIQUE.md).
+- [ ] Pour la duplex, `reponse-ia.json` est une lecture préparée à la main : le tableau de sortie l'indique (« lecture préparée ») ; la lecture réelle de L1-13 s'ajoutera comme seconde lecture gardée.
 
 ## Points d'attention
-- Les 4 plans sont des plans de promoteurs : ils ne quittent jamais le poste de l'équipe (puis le seau `references-privees/` de la préproduction, L5-18). Aucun nom, aucune adresse, aucune capture dans les journaux du script ni dans les tickets.
-- `outils/` est aussi en cours de modification par l'agent des duplex (`finalise.sh`, `vues.mjs`…) : ajouter des fichiers, ne pas modifier les siens.
+- Les 5 plans sont des plans de promoteurs : ils ne quittent jamais le poste de l'équipe (puis le seau `references-privees/` de la préproduction, L5-18). Aucun nom, aucune adresse, aucune capture dans les journaux du script ni dans les tickets.
+- Ajout de la duplex au jeu privé (poste de l'équipe, puis seau de préproduction) : même régime que les 4 autres plans, mais à confirmer par l'utilisateur (PLAN.md § 2.2) ; d'ici là, rejeu sur le poste seulement.
+- `outils/` porte aussi le travail sur les niveaux (`finalise.sh`, `vues.mjs`…, fini le 27/09/2026, non commité) : ajouter des fichiers, ne pas modifier les siens.
 - `outils/vues.mjs` attend un temps fixe (9 s) par vue : en SwiftShader, environ 11 fois plus lent, ce délai peut ne pas suffire ; à surveiller dans L1-09 et L1-11.
 - Un changement d'`extract.py` peut décaler les indices des murs lus par l'IA : le mode `--extraction` le détecte ; seule une nouvelle lecture payante, sur accord, peut alors refaire la base.
 - Durée attendue sur le Mac (Metal) : quelques dizaines de secondes par plan sans photos (contrôle 5 à 6 s par passage, 3 vues d'environ 9 s).

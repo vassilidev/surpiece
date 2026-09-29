@@ -34,6 +34,7 @@ Avant la première vente à un particulier (`recherche/juridique.md` § 7, n° 8
 - **Nom** : les CGV portent la raison sociale et le nom de marque ; si L0-01 change le nom, reprendre les PDF avant J1.
 - **Tests de prix** (L8-06, R8 : par périodes seulement, le même prix pour tous pendant une période) : écrire dans les CGV qu'aucune différence n'est remboursée d'une période de prix à l'autre, si l'avocat l'accepte.
 - L'encadré D211-3 n'a pas été relu dans les recherches : le prendre sur Légifrance au moment de la rédaction.
+- **Appareils et périmètre** : ne décrire dans les CGV que les appareils et navigateurs réellement testés (matrice de L4-10, seuils de L1-14) : une fluidité annoncée devient une caractéristique couverte par la garantie de conformité. Le périmètre écrit (appartements sur un ou deux niveaux, duplex compris) suit les formats acceptés en service (`niveaux_max`, L4-08) : à reprendre si le triplex est ouvert un jour. À faire relire par l'avocat (L0-07).
 
 ## Références
 - produit/recherche/juridique.md § 1.1, § 1.5 à § 1.8, § 5.3, § 7 (n° 8 à 10), § 8 ; produit/OFFRES.md § 2.5, § 2.6, § 7.3, § 8.10, § 10, annexe B.

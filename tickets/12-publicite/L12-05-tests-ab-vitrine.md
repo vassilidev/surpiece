@@ -40,4 +40,4 @@ MESSAGES.md propose des variantes de titres pour chaque page (§ 1.1, § 2.1, §
 - produit/recherche/suivi.md § 2.2, § 8.
 
 ## Hors périmètre
-- Entonnoirs : L7-05. Tests de prix : L8-06. Campagnes : L12-04. Aperçu interactif comparé à l'aperçu en images : L13-03.
+- Entonnoirs : L7-05. Tests de prix : L8-06. Campagnes : L12-04. Aperçu 360° comparé à l'aperçu en images : L1-16 (mesure et décision), L6-13 (mise en service). Vue du dessus manipulable : L13-03.

@@ -5,7 +5,7 @@
 | 10 · Offre promoteurs (Programme) | P0 | L (3 à 5 j) | L1-10, L2-18, L5-06, L5-09, L6-02, L10-01 | `service/` | À faire |
 
 ## Pourquoi
-Un promoteur dépose tous les plans d'un programme d'un coup (PARCOURS.md C2, C4). Il faut rattacher chaque plan à son lot, qualifier sans rien payer pour produire le rapport de prise en charge qui fonde le devis, puis lancer la production sans surveillance, en basse priorité et sous un budget d'import (OFFRES.md § 4.9). Consigne du projet : plan par plan, sans généraliser. Un lot hors périmètre (duplex, maison, plusieurs logements sur une page, plan illisible) est signalé avec sa raison, jamais forcé (ARCHITECTURE.md M5.1). **Tranché : R17.** Aujourd'hui, l'analyse empilerait un PDF de plusieurs lots comme des niveaux : en service, la qualification refuse « plusieurs lots » (L6-02), et ce ticket est le **seul** endroit qui découpe un PDF multi-lots (`OFFRES.md` § 1, § 4.1).
+Un promoteur dépose tous les plans d'un programme d'un coup (PARCOURS.md C2, C4). Il faut rattacher chaque plan à son lot, qualifier sans rien payer pour produire le rapport de prise en charge qui fonde le devis, puis lancer la production sans surveillance, en basse priorité et sous un budget d'import (OFFRES.md § 4.9). Consigne du projet : plan par plan. Depuis le 27/09/2026 (décision 11), l'outil local gère les logements sur plusieurs niveaux (duplex, triplex) ; ils sont validés sur une duplex, avec une lecture préparée à la main. En service, les duplex sont acceptés (décision 11, `niveaux_max = 2`, L4-08) ; au-delà de deux niveaux, le lot est refusé. Un lot hors périmètre (maison, plusieurs logements sur une page, plan illisible, plan de plus de deux niveaux) est signalé avec sa raison, jamais forcé (ARCHITECTURE.md M5.1). **Tranché : R17.** Aujourd'hui, l'analyse empilerait un PDF de plusieurs lots comme des niveaux : en service, la qualification refuse « plusieurs lots » (L6-02), et ce ticket est le **seul** endroit qui découpe un PDF multi-lots (`OFFRES.md` § 1, § 4.1).
 
 ## À faire
 1. **Migration** : `programmes`, `lots`, `imports` (ARCHITECTURE.md § 4.2), plus :
@@ -16,7 +16,7 @@ Un promoteur dépose tous les plans d'un programme d'un coup (PARCOURS.md C2, C4
    Toutes les requêtes sont cadrées par `organisation_id` (404 en accès croisé, L5-05).
 2. **Dépôt** (URL signées de L5-05) :
    - plusieurs fichiers ; ou une archive ZIP, ouverte dans le worker isolé de L5-19 (nombre de fichiers, taille décompressée, chemins `../` refusés, type reconnu aux premiers octets comme `format_fichier`, `pipeline/serveur.py:52`) ;
-   - ou un PDF à plusieurs lots, **découpé une page = un plan dans `service/`, avant toute analyse** (R17). Raison : `analyse` (`pipeline/serveur.py`, l. 164-176) traite un PDF de plusieurs pages soit comme des niveaux superposés (`pages_niveaux`, `empiler`), soit en ne lisant que la page la plus détaillée (`choisir_page`). Un PDF à plusieurs lots ne doit jamais lui être passé tel quel.
+   - ou un PDF à plusieurs lots, **découpé une page = un plan dans `service/`, avant toute analyse** (R17). Raison : `analyse` (`pipeline/serveur.py:166`, pages empilées l. 199-202) traite un PDF de plusieurs pages soit comme les niveaux d'un même logement (`pages_niveaux`, `empiler` : depuis le 27/09/2026, les pages d'un même logement sont empilées puis recalées par corrélation des murs), soit en ne lisant que la page la plus détaillée (`choisir_page`, l. 160). Un PDF à plusieurs lots ne doit jamais lui être passé tel quel.
 3. **Grille des lots** en CSV, facultative : référence, typologie, étage, surface annoncée, nom du fichier. Sinon, références lues dans les noms de fichiers. Rapprochement automatique, puis manuel pour le reste (écran C4). Doublons repérés par l'empreinte SHA-256, dans la même organisation seulement (ARCHITECTURE.md § 5.7).
 4. **Mode `rapport`** (C2) :
    - acceptation des conditions du rapport rédigées par L10-01 (ligne `acceptations`) ;
@@ -30,14 +30,14 @@ Un promoteur dépose tous les plans d'un programme d'un coup (PARCOURS.md C2, C4
 6. **Garde-fous invisibles pour le client** (OFFRES.md § 4.9) :
    - après 5 lots, coût moyen au-delà de 2,50 $ : plus aucun lancement, alerte à l'équipe, `import_arrete` ;
    - fichier identique déjà lu : pas relu ;
-   - `niveaux_max = 1` (L4-08) : un plan à plusieurs niveaux est `non_pris_en_charge` (`plusieurs_niveaux`), jamais tenté ;
+   - `niveaux_max` du service (L4-08) : 2, duplex acceptés (décision 11). Un plan au-delà est `non_pris_en_charge` (`plusieurs_niveaux`), jamais tenté. Le rapport compte ces lots à part : leur nombre chiffre l'intérêt d'ouvrir le triplex ;
    - lot en échec : passe à l'équipe (`echec_equipe`, rejeu sans IA, PARCOURS.md E4), jamais facturé tant qu'il n'est pas validé ; un défaut de notre fait est corrigé gratuitement (R14).
 7. **Suivi par lot** (tableau C4) : statuts ci-dessus, libellés du catalogue, en lecture seule tant que L10-03 n'est pas livré.
 8. **Fin d'import** : `imports.fini_le`, `lots_ok`, `lots_echec`, e-mail à l'équipe.
 
 ## Critères d'acceptation
 - [ ] Programme de test fait du témoin fictif dupliqué en 5 lots et d'un plan fabriqué avec deux logements sur une page : rapport produit sans lecture payante (qualification rejouée depuis une réponse gardée ou `PLAN_MOCK`), le plan fabriqué signalé `plusieurs_lots` avec sa raison en clair.
-- [ ] PDF de 5 pages, une par lot : 5 plans d'une page chacun, jamais empilés en niveaux (test sur les fichiers remis à l'étape d'analyse).
+- [ ] PDF de 5 pages, une par lot : 5 plans d'une page chacun, jamais empilés en niveaux (test sur les fichiers remis à l'étape d'analyse) ; `pages_niveaux` n'est jamais appelé sur le PDF d'origine (test).
 - [ ] ZIP piégé (chemin `../`, bombe de décompression, fichier qui n'est pas un plan) : refus propre, rien écrit hors du dossier de travail.
 - [ ] Coût moyen simulé à 2,60 $ après 5 lots : aucun lancement de plus, `import_arrete`, alerte reçue.
 - [ ] Jamais plus de 4 lectures simultanées par organisation ; un plan de particulier lancé pendant l'import passe devant (test de file).
@@ -54,19 +54,19 @@ Un promoteur dépose tous les plans d'un programme d'un coup (PARCOURS.md C2, C4
 - **Taille** : L au plafond, avec deux livrables distincts. Si le ticket déborde, le couper en « rapport de prise en charge » et « import de production ».
 - **Tranché** : L6-02 (qualification, refus « plusieurs lots ») et L1-10 (masquage du cartouche : les plans d'un promoteur portent son nom et celui du programme) sont des dépendances déclarées. L10-01 (conditions du rapport, licence) ne l'est pas : le code peut se faire avant, mais les modes `rapport` et `production` ne s'ouvrent pas sans ses textes.
 - **Tranché : R7.** OFFRES.md § 4.9 et ARCHITECTURE.md § 6.5 disent désormais la même chose : dollars d'IA réservés dans `imports.budget_usd`, lots commandés au grand livre comme un lot `programme`.
-- **Capacité** : « 5 jours ouvrés pour 50 lots » suppose 50 lectures de 8 à 15 min (mesure sur Mac), 4 à la fois (2 à 3 h d'IA), plus le rendu des images en SwiftShader dans le conteneur, la base partout (R3, L5-11) ; une accélération (L13-01) reste optionnelle. À mesurer au pilote (L10-08).
+- **Capacité** : « 5 jours ouvrés pour 50 lots » suppose 50 lectures de 8 à 15 min (mesure sur Mac), 4 à la fois (2 à 3 h d'IA), plus le rendu des images en SwiftShader dans le conteneur, la base partout (R3, L5-11), et, si le mode 360° entre au contenu des lots, les panoramas de chaque arrêt (environ 10 par plan, temps mesuré par L1-16) et le précalcul d'éclairage (L4-13, L5-28) ; une accélération (L13-01) reste optionnelle. À mesurer au pilote (L10-08).
 - **Coût** : 50 lots × 1,10 à 1,85 $ mesurés, 3 $ au plafond par lot ; aucune lecture payante pour tester ce ticket.
-- **Coordination avec le travail sur les duplex** : aucun fichier de `pipeline/` modifié ; le découpage des pages se fait dans `service/` avec PyMuPDF, avant l'étape `analyser` de L4-04. `niveaux.py` n'est pas touché (ARCHITECTURE.md § 8.1, règle 4).
+- **Travail sur les niveaux** : fait le 27/09/2026 (23 fichiers, non commité). Partir du code commité ; aucun fichier de `pipeline/` modifié ; le découpage des pages se fait dans `service/` avec PyMuPDF, avant l'étape `analyser` de L4-04. `niveaux.py` n'est pas touché (ARCHITECTURE.md § 8.1, règle 4).
 - La saisie des devis, pilotes et commandes (`devis_envoye`, `pilote_signe`, `commande_signee`) est construite par L10-09.
 
 ## Références
 - produit/ARCHITECTURE.md § 4.2 (`programmes`, `lots`, `imports`), § 5.7, § 6.5, § 8.1, M5.1, D7.
 - produit/OFFRES.md § 4.1, § 4.3, § 4.9, § 6.2 ; produit/PARCOURS.md § 1.6, C2, C4, E4, § 8.1.
 - produit/SUIVI.md § 3.2, § 3.6, § 3.8, § 3.13, § 4.4, § 7.5 (R11) ; produit/recherche/hebergement.md § 6 (imports de promoteurs).
-- `pipeline/serveur.py:52` (`format_fichier`), `:126` (`choisir_page`), `:132-195` (`analyse`, pages 164-176), `:218` (`niveaux_refus`), `:260` (`qualifier`).
+- `pipeline/serveur.py:52` (`format_fichier`), `:160` (`choisir_page`), `:166` (`analyse`, pages empilées `:199-202`), `:271` (`niveaux_refus`), `:323` (`qualifier`), relevés le 27/09/2026 ; `pipeline/niveaux.py` ; `moteur/SCHEMA.md` § Plusieurs niveaux.
 
 ## Hors périmètre
 - Offre, licence et conditions du rapport : L10-01. Contrôle et validation par le promoteur : L10-03.
 - Intégration, liens acquéreurs, clés d'API : L10-04. Pilote : L10-08. Saisie commerciale et facturation : L10-09.
 - Refus « plusieurs lots » dans le parcours des particuliers et des conseillers : L6-02.
-- Budgets IA génériques : L5-09. Accélération du rendu : L13-01. Plans sur plusieurs niveaux : L13-08.
+- Budgets IA génériques : L5-09. Accélération du rendu : L13-01. Plans sur plusieurs niveaux : L13-08 (fait) et L4-08.

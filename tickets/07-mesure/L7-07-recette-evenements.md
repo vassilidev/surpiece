@@ -10,7 +10,7 @@ Un marquage cassé ne se voit pas : l'entonnoir baisse et on croit à un problè
 ## À faire
 1. **Script** `outils/recette_mesure.mjs` (puppeteer, dépendances figées) qui démarre sur la pile Docker Compose de recette (Umami de recette, Mailpit, MinIO, Stripe en mode test plus tard) et joue les scénarios disponibles à ce stade :
    - R1 vitrine sans consentement (défilement, sections, FAQ, boutons d'appel, formulaires vide puis rempli, passage de `<domaine>` à `app.<domaine>`) ;
-   - R2 démonstration (trois modes, deux pièces, une photo, plein écran, fermeture) ;
+   - R2 démonstration (trois modes, et le mode 360° quand il existe, deux pièces, une photo, plein écran, fermeture ; ouverture avec processeur ralenti ×4 : propriété de qualité émise si L7-04 la porte) ; R6 inclut la visionneuse 360° de l'aperçu si elle y entre (aucune requête vers le moteur) ;
    - R3 dépôts (PDF du témoin, PNG, `.docx`, 45 Mo, envoi coupé, PDF protégé, cote de calibration, alerte après refus) ;
    - R4 compte (lien magique via Mailpit, lien expiré, domaine jetable, e-mail normalisé en double, 4e plan offert depuis la même IP, questions de source et de situation, suppression) ;
    - R5 génération sans payer (`PLAN_MOCK`, lecture rejouée depuis `reponse-ia.json`, échecs simulés : budget à 0, refus 402 simulé par le faux serveur OpenRouter de L4-03, contrôle bloquant sur un plan abîmé exprès, tâche orpheline) ;

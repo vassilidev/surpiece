@@ -16,7 +16,7 @@ L'acquéreur montre son futur logement au conjoint, à la famille, à son consei
    - liste des liens : libellé, date, « Copier », « Couper le lien » ;
    - règle affichée : lien privé, non référencé, coupable à tout moment, pour ses proches, pas de publication sur un réseau social ni dans une annonce.
 3. **Page du destinataire** `visite.<domaine>/v/<jeton>` (MESSAGES.md § 7.8) :
-   - aperçu partagé : cartouche, images, plan 2D, surfaces, points à faire confirmer, `partage.mention`. **Même règle que L6-05** : ni moteur ni `plan.json`, et ni prix ni bouton de déblocage (ce n'est pas le plan du destinataire) ;
+   - aperçu partagé : cartouche, images, plan 2D, surfaces, points à faire confirmer, visionneuse 360° si elle est dans l'aperçu (L6-13), `partage.mention`. La visite partagée garde aussi son mode 360° quand il existe (décision 15 : dans toutes les visites ; L4-16). **Même règle que L6-05** : ni moteur ni `plan.json`, et ni prix ni bouton de déblocage (ce n'est pas le plan du destinataire) ;
    - visite partagée : `partage.bandeau`, `partage.entrer`, visite servie comme en L5-12, sans superposition ;
    - en bas : `partage.invitation` et son bouton `partage.invitation.bouton`, vers `/offert` ; en pied discret : `partage.pro`, vers `/pro/decouvrir` ;
    - sur les pages créées par un conseiller (lot 9) : ni invitation ni prix, seulement la signature `prospect.signature`.
@@ -29,7 +29,7 @@ L'acquéreur montre son futur logement au conjoint, à la famille, à son consei
 ## Critères d'acceptation
 - [ ] Scénario R8 (SUIVI.md § 7.5) joué par puppeteer sur le témoin en `PLAN_MOCK` : création, chaque canal, ouverture dans un contexte privé (+1 au compteur du jour, une seule fois par jour), clics sur les deux boutons (compteur agrégé sans identifiant de lien), révocation puis ouverture (message du catalogue en moins d'une seconde), lien expiré.
 - [ ] **Zéro requête** vers le domaine de mesure ou un tiers pendant l'ouverture de `/v/` (interception puppeteer, contrôle C6 de SUIVI.md § 7.4) ; en-têtes du point 4 présents.
-- [ ] Aperçu partagé : le contrôle de L6-05 (ni `engine.js` ni `plan.json`, aucun texte technique, aucune image cassée) passe aussi sur la page du destinataire.
+- [ ] Aperçu partagé : le contrôle de L6-05 (ni `engine.js` ni `plan.json`, ni fichier précalculé de la visite, aucun texte technique, aucune image cassée) passe aussi sur la page du destinataire. Visite partagée ouverte sur le téléphone d'entrée de gamme de référence : seuils de L1-14 tenus.
 - [ ] Aucune superposition du plan du promoteur ni `page.png` accessible par un lien (test des chemins connus : 404).
 - [ ] Libellé « Pour qui ? » jamais visible du destinataire.
 - [ ] Captures à 320 px ; contrôle des textes (L1-04) passé.

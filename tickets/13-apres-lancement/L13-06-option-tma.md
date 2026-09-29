@@ -25,7 +25,7 @@ Les travaux modificatifs acquéreur (TMA) sont un moment clé de l'achat sur pla
 - **Tranché : R7.** Le résumé du JSON dit « modifier des cloisons pour visualiser des travaux modificatifs », ce qui évoque un éditeur de cloisons dans l'application. OFFRES.md § 7.2, qui fait foi pour les offres, l'exclut (plan modificatif seulement, jamais un croquis, aucune faisabilité). Ce ticket suit OFFRES.md ; un éditeur serait une nouvelle décision de l'utilisateur (risque : laisser croire qu'une cloison est déplaçable, gaines et porteurs ignorés).
 - **Taille** : L au plafond ; découper si besoin en « recalage et différences » puis « vue comparée dans la visite ».
 - Pour les promoteurs, une nouvelle version d'un lot existe déjà à 50 % du prix (OFFRES.md § 4.6) : ne pas facturer deux fois.
-- Coordination avec le travail sur les duplex : nouveaux fichiers, petits diffs isolés.
+- Plusieurs niveaux : travail du 27/09/2026 fait (non commité) ; nouveaux fichiers, petits diffs isolés ; variante TMA possible pour un duplex (acceptés en service, `niveaux_max = 2`, L4-08) ; pas au-delà de deux niveaux.
 
 ## Références
 - produit/OFFRES.md § 0.1 et § 2.3 (plan suivant), § 4.6, § 7.1, § 7.2 (option 4) ; produit/recherche/marche.md § 2.6, § 3.1, § 5.2 ; produit/MESSAGES.md § 3.10.

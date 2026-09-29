@@ -3,9 +3,11 @@
   python3 pipeline/evaluer.py plans/<auto>/plan.json <référence>
   référence : un plan.json, ou « d201 » (visite de production du D201, references/d201.app-d.json),
   ou « 432 » (relevé manuel du T2 432, references/432.plan.json)
+  --niveau k : plan sur plusieurs niveaux, niveau comparé (par défaut celui de la porte palière, avec un avertissement)
 
 Recale la lecture sur la référence (translation), puis mesure : murs (recouvrement), pièces (surface,
-recouvrement), ouvertures (type, position, largeur, charnières, sens d'ouverture), équipements (type, position).
+recouvrement), ouvertures (type, position, largeur, charnières, sens d'ouverture), équipements (type, position à 10 cm, largeur et
+profondeur à 8 cm, côté ouvert du tableau), gaines (recouvrement) et soffites (recouvrement des zones de la référence).
 """
 import json, math, sys
 from pathlib import Path
@@ -28,8 +30,22 @@ def norm_name(s):
     return s
 
 
-def from_plan(P):
+def un_niveau(P, k=None):
+    """plan réduit à un seul niveau : les niveaux d'un duplex sont superposés dans plan.json, ils ne se comparent pas
+    ensemble à un relevé d'un seul niveau"""
+    if not P.get('levels') or len(P['levels']) < 2:
+        return P
+    if k is None:
+        k = next((i for i, l in enumerate(P['levels']) if l.get('entry')), 0)
+        print(f"plan sur {len(P['levels'])} niveaux : seul le niveau {P['levels'][k].get('name', k)} est comparé (--niveau pour un autre)", file=sys.stderr)
+    lv = lambda e: e.get('level', 0) == k
+    return {**P, 'walls': [w for w in P['walls'] if lv(w)], 'gaines': [g for g in P.get('gaines', []) if lv(g)], 'rooms': [r for r in P['rooms'] if lv(r)],
+            'openings': {i: o for i, o in P['openings'].items() if lv(o)}, 'fixtures': [f for f in P.get('fixtures', []) if lv(f)]}
+
+
+def from_plan(P, niveau=None):
     """modèle d'évaluation depuis un plan.json (manuel ou automatique)"""
+    P = un_niveau(P, niveau)
     W = {w['id']: w for w in P['walls']}
     walls = unary_union([Polygon(wall_quad(w)).buffer(0) for w in P['walls'] if not w.get('virtual')] + [Polygon(g['poly']).buffer(0) for g in P.get('gaines', [])])
     ops = []
@@ -50,6 +66,8 @@ def from_plan(P):
     for f in P.get('fixtures', []):
         if 'x' in f:
             c = ((f['x'][0] + f['x'][1]) / 2, (f['z'][0] + f['z'][1]) / 2)
+            fx.append({'t': f['type'], 'c': c, 'dim': (abs(f['x'][1] - f['x'][0]), abs(f['z'][1] - f['z'][0])), 'r': box(min(f['x']), min(f['z']), max(f['x']), max(f['z'])), **({'dir': tuple(f['dir'])} if f.get('dir') else {})})
+            continue
         elif 'p' in f:  # cuvette : point contre le mur, orientée par dir
             d = f.get('dir', [0, 0]) if f['type'] == 'wc' else [0, 0]
             c = (f['p'][0] + d[0] * 0.33, f['p'][1] + d[1] * 0.33)
@@ -57,7 +75,9 @@ def from_plan(P):
             c = None
         if c:
             fx.append({'t': f['type'], 'c': c, **({'dir': tuple(f['dir'])} if f.get('dir') else {})})
-    return {'walls': walls, 'ops': ops, 'rooms': rooms, 'fx': fx}
+    gaines = [Polygon(g['poly']).buffer(0) for g in P.get('gaines', []) if len(g.get('poly', [])) >= 3]
+    soff = unary_union([Polygon(r['poly']).buffer(0) for r in P['rooms'] if (r.get('soffite') or {}).get('part', 0) >= 0.3 and len(r.get('poly', [])) >= 3])
+    return {'walls': walls, 'ops': ops, 'rooms': rooms, 'fx': fx, 'gaines': gaines, 'soffites': soff}
 
 
 def from_d201():
@@ -98,16 +118,19 @@ def from_d201():
     for k, t in (('bath', 'bath'), ('basin', 'vanity'), ('wc', 'wc'), ('towel', 'towel'), ('tableau', 'tableau')):
         if k in s:
             d = dos(s[k]) if t in ('wc', 'vanity') else None
-            fx.append({'t': t, 'c': ((s[k]['x'][0] + s[k]['x'][1]) / 2, (s[k]['z'][0] + s[k]['z'][1]) / 2), **({'dir': d} if d else {})})
+            dim = {} if t == 'wc' else {'dim': (s[k]['x'][1] - s[k]['x'][0], s[k]['z'][1] - s[k]['z'][0]), 'r': rect(s[k])}
+            fx.append({'t': t, 'c': ((s[k]['x'][0] + s[k]['x'][1]) / 2, (s[k]['z'][0] + s[k]['z'][1]) / 2), **dim, **({'dir': d} if d else {})})
     fx.append({'t': 'placard', 'c': ((3.737 + 5.046) / 2, (-2.115 - 1.45) / 2)})
-    return {'walls': walls, 'ops': ops, 'rooms': rooms, 'fx': fx}
+    return {'walls': walls, 'ops': ops, 'rooms': rooms, 'fx': fx, 'gaines': [rect(g) for g in D['gaines']],
+            'soffites': unary_union([box(q[0], q[2], q[1], q[3]) for q in D.get('soffites', [])])}
 
 
 def shift(m, dx, dz):
     from shapely.affinity import translate
     t = lambda p: (p[0] + dx, p[1] + dz)
     return {'walls': translate(m['walls'], dx, dz), 'ops': [{**o, 'c': t(o['c']), **({'hinge': t(o['hinge'])} if 'hinge' in o else {})} for o in m['ops']],
-            'rooms': [{**r, 'poly': translate(r['poly'], dx, dz)} for r in m['rooms']], 'fx': [{**f, 'c': t(f['c'])} for f in m['fx']]}
+            'rooms': [{**r, 'poly': translate(r['poly'], dx, dz)} for r in m['rooms']], 'fx': [{**f, 'c': t(f['c']), **({'r': translate(f['r'], dx, dz)} if 'r' in f else {})} for f in m['fx']],
+            'gaines': [translate(g, dx, dz) for g in m.get('gaines', [])], 'soffites': translate(m['soffites'], dx, dz) if m.get('soffites') is not None else None}
 
 
 def align(ref, auto):
@@ -179,19 +202,37 @@ def evaluate(ref, auto):
         a = A['fx'][cand[0][1]]
         if f.get('dir') and a.get('dir'):
             e['orientation_ok'] = f['dir'][0] * a['dir'][0] + f['dir'][1] * a['dir'][1] > 0.7
+        if f.get('dim') and a.get('dim'):  # largeur et profondeur (constat du 28/09/2026 : vasque de 0,59 m au lieu de 0,80 comptée juste)
+            e['ecart_dim_cm'] = round(max(abs(f['dim'][0] - a['dim'][0]), abs(f['dim'][1] - a['dim'][1])) * 100, 1)
+        if f['t'] == 'tableau' and f.get('r') is not None and a.get('r') is not None:  # côté ouvert du coffret (façade ou porte)
+            ouv = lambda m, R: {n for n, p in (('n', (R.centroid.x, R.bounds[1] - 0.04)), ('s', (R.centroid.x, R.bounds[3] + 0.04)), ('w', (R.bounds[0] - 0.04, R.centroid.y)), ('e', (R.bounds[2] + 0.04, R.centroid.y))) if not m['walls'].contains(Point(p))}
+            e['cote_ouvert_ref'], e['cote_ouvert_lu'] = sorted(ouv(ref, f['r'])), sorted(ouv(A, a['r']))
+            e['cote_ouvert_ok'] = bool(set(e['cote_ouvert_ref']) & set(e['cote_ouvert_lu'])) or not e['cote_ouvert_ref']
         fxs.append(e)
     out['equipements'] = fxs; out['equipements_en_trop'] = [A['fx'][i]['t'] for i in range(len(A['fx'])) if i not in usedf]
+    # gaines (recouvrement de chaque gaine de la référence) et soffites (recouvrement des zones)
+    ga = unary_union(A.get('gaines') or [])
+    out['gaines'] = [{'ref': [round(v, 2) for v in g.bounds], 'recouvrement': round(g.intersection(ga).area / max(g.area, 1e-9), 2)} for g in ref.get('gaines') or []]
+    if ref.get('soffites') is not None and not ref['soffites'].is_empty:
+        sa = A.get('soffites') if A.get('soffites') is not None else Polygon()
+        out['soffites_recouvrement'] = round(ref['soffites'].intersection(sa).area / max(ref['soffites'].area, 1e-9), 2)
     # note globale simple : ce qui est juste sur ce qui existe
     ok = sum(1 for o in ops if o.get('lu') and o['ecart_centre_cm'] <= 15 and abs(o['ecart_largeur_cm']) <= 15 and o.get('sens_ok', True) and o.get('charnieres_ok', True))
-    okf = sum(1 for f in fxs if 'ecart_cm' in f and f['ecart_cm'] <= 30 and f.get('orientation_ok', True))
+    # un équipement est juste à 10 cm près au centre et 8 cm près en largeur et profondeur (30 cm au centre jusqu'au 28/09/2026 : trop large)
+    okf = sum(1 for f in fxs if 'ecart_cm' in f and f['ecart_cm'] <= 10 and f.get('ecart_dim_cm', 0) <= 8 and f.get('orientation_ok', True) and f.get('cote_ouvert_ok', True))
     okr = sum(1 for r in rooms if r.get('recouvrement', 0) >= 0.9)
+    okg = sum(1 for g in out['gaines'] if g['recouvrement'] >= 0.5)
     out['synthese'] = {'ouvertures_justes': f'{ok}/{len(ops)}', 'equipements_justes': f'{okf}/{len(fxs)}', 'pieces_justes': f'{okr}/{len(rooms)}',
+                       'gaines_justes': f'{okg}/{len(out["gaines"])}', **({'soffites_recouvrement': out['soffites_recouvrement']} if 'soffites_recouvrement' in out else {}),
                        'en_trop': len(extra) + len(out['equipements_en_trop']), 'murs_recouvrement': round(iou, 3)}
     return out
 
 
 if __name__ == '__main__':
-    auto = from_plan(json.loads(Path(sys.argv[1]).read_text()))
+    niv = int(sys.argv[sys.argv.index('--niveau') + 1]) if '--niveau' in sys.argv else None
+    if '--niveau' in sys.argv:
+        del sys.argv[sys.argv.index('--niveau'):sys.argv.index('--niveau') + 2]
+    auto = from_plan(json.loads(Path(sys.argv[1]).read_text()), niv)
     cible = {'432': ROOT / 'references' / '432.plan.json'}.get(sys.argv[2], sys.argv[2])
     ref = from_d201() if sys.argv[2] == 'd201' else from_plan(json.loads(Path(cible).read_text()))
     r = evaluate(ref, auto)
